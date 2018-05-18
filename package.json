@@ -1,0 +1,35 @@
+{
+  "name": "kinesis-explorer",
+  "version": "1.0.0",
+  "description": "Kinesis-compatible chain explorer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "parcel index.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KinesisNetwork/kinesis-explorer.git"
+  },
+  "keywords": [
+    "kinesis",
+    "explorer",
+    "stellar",
+    "blockchain"
+  ],
+  "author": "Kinesis",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/KinesisNetwork/kinesis-explorer/issues"
+  },
+  "homepage": "https://github.com/KinesisNetwork/kinesis-explorer#readme",
+  "dependencies": {
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.8.1",
+    "tslint": "^5.10.0",
+    "typescript": "^2.8.3"
+  }
+}
