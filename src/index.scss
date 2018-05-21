@@ -1,0 +1,39 @@
+$secondary_color: #273655;
+$very_dark_color: #1a1a21;
+$dark_color: #1e1f26;
+$mid_color: #4d648d;
+$light_color: #d0e1f9;
+$monotone_color: #9da4ad;
+
+$bgcolor: $dark_color;
+
+$nav-background: $dark_color;
+$nav-text: #a0a1a4;
+
+$body-background: #191f2f;
+$body-text: #999999;
+
+$label-background: #555555;
+
+$gold: #ffd700;
+$blue: #00a5e7;
+$dark-blue: #273655;
+$white: #fff;
+
+@import url('https://fonts.googleapis.com/css?family=Lato:300,400,400i,600,700,900');
+
+// Update Bulma's global variables
+$family-sans-serif: "Lato", serif;
+$grey-dark: $mid_color;
+$grey-light: $light_color;
+$primary: $gold;
+$link: $blue;
+
+// Update some of Bulma's component variables
+// $control-border-width: 2px;
+$input-background-color: $label-background;
+$input-border-color: transparent;
+$input-shadow: none;
+
+// Import the rest of Bulma
+@import "bulma";
