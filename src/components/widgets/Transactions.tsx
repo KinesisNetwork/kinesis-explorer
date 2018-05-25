@@ -1,5 +1,16 @@
 import * as React from 'react'
 
+function formatTransaction(t: any /* Transaction */): Element {
+  return (
+    <tr key={t.id} className='tr'>
+      <td className='td'>{t.id.substr(0, 22)}</td>
+      <td className='td'>{t.created_at.toString()}</td>
+      <td className='td'>{t.label}</td>
+      <td className='td'>{t.amount}</td>
+    </tr>
+  )
+}
+
 const Transactions: React.SFC = (props: any) => {
   return (
     <article className='tile is-child notification is-primary'>
@@ -15,20 +26,10 @@ const Transactions: React.SFC = (props: any) => {
               <th className='th'>Type</th>
               <th className='th'>Value</th>
             </tr>
+
           </thead>
           <tbody className='tbody'>
-            <tr className='tr'>
-              <td className='td'>1</td>
-              <td className='td'>Old</td>
-              <td className='td'>Create Account</td>
-              <td className='td'>15</td>
-            </tr>
-            <tr className='tr'>
-              <td className='td'>2</td>
-              <td className='td'>Older</td>
-              <td className='td'>Payment</td>
-              <td className='td'>25</td>
-            </tr>
+            { props.transactions.map(formatTransaction)}
           </tbody>
         </table>
       </div>
