@@ -1,17 +1,23 @@
 import * as React from 'react'
+import { TransactionListItem } from '../../types'
+import { renderRelativeDate } from '../../utils'
 
-function formatTransaction(t: any /* Transaction */): Element {
+function formatTransaction(t: TransactionListItem): JSX.Element {
   return (
     <tr key={t.id} className='tr'>
       <td className='td'>{t.id.substr(0, 22)}</td>
-      <td className='td'>{t.created_at.toString()}</td>
+      <td className='td'>{renderRelativeDate(t.created_at)}</td>
       <td className='td'>{t.label}</td>
       <td className='td'>{t.amount}</td>
     </tr>
   )
 }
 
-const Transactions: React.SFC = (props: any) => {
+interface TransactionProps {
+  transactions: TransactionListItem[]
+}
+
+const Transactions: React.SFC<TransactionProps> = ({ transactions }): JSX.Element => {
   return (
     <article className='tile is-child notification is-primary'>
       <p className='title'>
@@ -26,10 +32,9 @@ const Transactions: React.SFC = (props: any) => {
               <th className='th'>Type</th>
               <th className='th'>Value</th>
             </tr>
-
           </thead>
           <tbody className='tbody'>
-            { props.transactions.map(formatTransaction)}
+            { transactions.map(formatTransaction) }
           </tbody>
         </table>
       </div>

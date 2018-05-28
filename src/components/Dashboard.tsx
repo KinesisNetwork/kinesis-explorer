@@ -12,61 +12,64 @@ import Navigation from './layout/Navigation'
 import Header from './layout/Header'
 import Footer from './layout/Footer'
 import { CashMoneyGamble, Converter, Ledgers, Statistics, Transactions } from './widgets'
-import { Connection, TransactionOperationView } from '../types'
+import { Connection, LedgerListItem, TransactionOperationView, TransactionListItem } from '../types'
 import { flatten } from '../utils'
 import { DEFAULT_CONNECTIONS } from '../services/connections'
-import { getServer, getTransactionStream } from '../services/kinesis'
+import { getServer, getLedgerStream, getTransactionStream } from '../services/kinesis'
 const STROOPS_IN_ONE_KINESIS = 10000000
 
 interface DashboardProps {
-   history: any,
-   location: any,
-   match: any,
-   staticContext: any,
+  history: any,
+  location: any,
+  match: any,
+  staticContext: any,
 }
 
 interface DashboardState {
-  initialData: any[],
-  ledgers: any[],
-  streamData: any,
-  transactions: any[],
+  ledgers: LedgerListItem[],
+  transactions: TransactionListItem[],
 }
 
 export default class Dashboard extends React.Component<DashboardProps, DashboardState> {
-  constructor(props: DashboardProps) {
-    super(props)
-    this.state = {
-      initialData: [],
-      streamData: '',
-      transactions: [],
-      ledgers: [],
-    }
 
+  state = {
+    transactions: [],
+    ledgers: [],
   }
 
+  public paymentStream: any
   public transactionStream: any
+  public ledgerStream: any
 
-  componentDidMount(): void {
-    const server: Server = getServer(DEFAULT_CONNECTIONS[0])
+  async componentDidMount(): Promise<void> {
+    const server: Server = getServer(DEFAULT_CONNECTIONS[0] as Connection)
 
-    this.transactionStream = getTransactionStream({
+    this.transactionStream = await getTransactionStream({
       server,
       handleLoadData: this.handleLoadData('transactions'),
       handleStreamData: this.handleStreamData('transactions')
+    })
+
+    this.ledgerStream = await getLedgerStream({
+      server,
+      handleLoadData: this.handleLoadData('ledgers'),
+      handleStreamData: this.handleStreamData('ledgers')
     })
   }
 
   componentWillUnmount() {
     this.transactionStream.close()
+    this.ledgerStream.close()
+    this.paymentStream.close()
   }
 
   handleLoadData = (dataType: string) => (initialData: any[]): void => {
     this.setState((prevState: DashboardState) => ({ ...prevState, [dataType]: initialData }))
   }
 
-  handleStreamData = (dataType: string) => (nextData: any): void => {
+  handleStreamData = (dataType: string) => async (nextData: any): Promise<void> => {
     this.setState((prevState: DashboardState) => {
-      const updatedData: any[] = [ nextData, ...prevState[dataType].slice(0, 10)]
+      const updatedData: any[] = [ nextData, ...prevState[dataType].slice(0, 9)]
       return ({
         ...prevState,
         [dataType]: updatedData
@@ -88,8 +91,8 @@ export default class Dashboard extends React.Component<DashboardProps, Dashboard
                 <CashMoneyGamble  />
               </div>
               <div className='tile is-vertical is-parent'>
-                <Ledgers />
-                <Transactions transactions={this.state.transactions}/>
+                <Ledgers ledgers={this.state.ledgers} />
+                <Transactions transactions={this.state.transactions} />
               </div>
             </div>
           </div>

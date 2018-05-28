@@ -1,6 +1,23 @@
 import * as React from 'react'
+import { LedgerListItem } from '../../types'
+import { renderRelativeDate } from '../../utils'
 
-const Ledgers: React.SFC = (props: any) => {
+function renderLedger(ledger: LedgerListItem): JSX.Element {
+  return (
+    <tr className='tr' key={ledger.id}>
+      <td className='td'>{ledger.sequence}</td>
+      <td className='td'>{renderRelativeDate(ledger.closed_at)}</td>
+      <td className='td'>{ledger.transaction_count}</td>
+      <td className='td'>{ledger.operation_count}</td>
+    </tr>
+  )
+}
+
+interface LedgerProps {
+  ledgers: LedgerListItem[]
+}
+
+const Ledgers: React.SFC<LedgerProps> = ({ ledgers }): JSX.Element => {
   return (
     <article className='tile is-child notification is-primary'>
       <p className='title'>
@@ -17,18 +34,7 @@ const Ledgers: React.SFC = (props: any) => {
             </tr>
           </thead>
           <tbody className='tbody'>
-            <tr className='tr'>
-              <td className='td'>1</td>
-              <td className='td'>Old</td>
-              <td className='td'>10</td>
-              <td className='td'>15</td>
-            </tr>
-            <tr className='tr'>
-              <td className='td'>2</td>
-              <td className='td'>Older</td>
-              <td className='td'>17</td>
-              <td className='td'>25</td>
-            </tr>
+            { ledgers.map(renderLedger) }
           </tbody>
         </table>
       </div>

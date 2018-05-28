@@ -9,7 +9,7 @@ export function getServer(connection: Connection): Server {
   return new Server(connection.horizonURL)
 }
 
-const operationTypes = {
+const operationTypes: any = {
   createAccount: {
     label: 'Create Account',
     amount: 'startingBalance',
@@ -40,24 +40,30 @@ function formatTransaction(transactionRecord: TransactionRecord) {
   }
 }
 
-export async function getTransactionStream({ handleStreamData, handleLoadData, server }: any){
-  try {
-    const { records }: any = await server.transactions().cursor().limit(10).order('desc').call()
-    const initialTransactions: any = records.map((record: any) => {
-      const { operations, signatures }: any = new Transaction(record.envelope_xdr)
-      return formatTransaction(record)
-    })
+export async function getTransactionStream({ handleStreamData, handleLoadData, server }: any): Promise<EventSource> {
+  const { records }: any = await server.transactions().cursor().limit(10).order('desc').call()
+  const initialTransactions: any = records.map((record: any) => {
+    const { operations, signatures }: any = new Transaction(record.envelope_xdr)
+    return formatTransaction(record)
+  })
 
-    handleLoadData(initialTransactions)
-    const transactionStream = await server.transactions().order('asc').cursor(initialTransactions.length ? records[0].paging_token : 'now')
+  handleLoadData(initialTransactions)
+  const transactionStream = await server.transactions().order('asc').cursor(initialTransactions.length ? records[0].paging_token : 'now')
 
-    return transactionStream.stream({ onmessage: function(record: any) {
-      const formattedRecord = formatTransaction(record)
-      return handleStreamData(formattedRecord)
-    }})
-  } catch(err){
-    console.error(err)
-  }
+  return transactionStream.stream({ onmessage: function(record: any) {
+    const formattedRecord = formatTransaction(record)
+    return handleStreamData(formattedRecord)
+  }})
+}
+
+export async function getLedgerStream({ handleStreamData, handleLoadData, server }: any): Promise<any>{
+  const { records }: any = await server.ledgers().cursor().limit(10).order('desc').call()
+
+  handleLoadData(records)
+
+  const ledgerStream = await server.ledgers().order('asc').cursor(records.length ? records[0].paging_token : 'now')
+
+  return ledgerStream.stream({ onmessage: handleStreamData })
 }
 
 export async function getFeeInStroops(
