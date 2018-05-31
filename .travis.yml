@@ -5,7 +5,7 @@ jobs:
 
     - stage: build and deploy
       env: BUCKET=integration.kinesisexplorer.com
-      if: branch = master and type = push
+      if: branch = master and type = push or tag is present
       script: npm run build
       deploy: &deploy
         provider: s3
@@ -18,8 +18,12 @@ jobs:
       script: npm run build
       deploy:
         <<: *deploy
+        on:
+          tags: true
     - env: BUCKET=www.kinesisexplorer.com
       if: tag is present and tag =~ ^((?!beta).)*$
       script: npm run build
       deploy:
         <<: *deploy
+        on:
+          tags: true
