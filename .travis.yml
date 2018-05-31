@@ -1,0 +1,25 @@
+language: node_js
+stages:
+  - name: deploy integration
+    if: branch = master
+  - name: deploy uat
+    if: tag is present
+  - name: deploy live
+    if: tag =~ ^((?!beta).)*$
+jobs:
+  include:
+    - &deploy
+      script: npm run build
+      provider: s3
+      region: ap-southeast-2
+      skip_cleanup: true
+
+    - <<: *deploy
+      stage: deploy integration
+      bucket: integration.kinesisexplorer.com
+    - <<: *deploy
+      stage: deploy uat
+      bucket: uat.kinesisexplorer.com
+    - <<: *deploy
+      stage: deploy live
+      bucket: www.kinesisexplorer.com
