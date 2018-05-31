@@ -12,6 +12,7 @@ jobs:
         region: ap-southeast-2
         skip_cleanup: true
         bucket: $BUCKET
+        local_dir: dist
     - env: BUCKET=uat.kinesisexplorer.com
       if: tag is present
       script: npm run build
