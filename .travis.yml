@@ -4,8 +4,8 @@ jobs:
     - stage: test
 
     - stage: build and deploy
-      env: BUCKET=integration.kinesisexplorer.com
-      if: branch = master and type = push
+      env: BUCKET=integration.kinesisexplorer.com TRAVIS_TAG=true
+      if: branch = master and type = push or tag is present
       script: npm run build
       deploy: &deploy
         provider: s3
@@ -13,6 +13,8 @@ jobs:
         skip_cleanup: true
         bucket: $BUCKET
         local_dir: dist
+        on:
+          tags: true 
     - env: BUCKET=uat.kinesisexplorer.com
       if: tag is present
       script: npm run build
