@@ -5,7 +5,7 @@ jobs:
 
     - stage: build and deploy
       env: BUCKET=integration.kinesisexplorer.com
-      if: branch = master
+      if: branch = master and type is push
       script: npm run build
       deploy: &deploy
         provider: s3
