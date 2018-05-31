@@ -4,8 +4,9 @@
   "description": "Kinesis-compatible chain explorer",
   "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "parcel index.html"
+    "test": "echo 'No tests yet'",
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
   },
   "repository": {
     "type": "git",
