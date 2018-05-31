@@ -3,7 +3,7 @@ jobs:
   include:
     - stage: test
 
-    - stage: deploy
+    - stage: build and deploy
       env: BUCKET=integration.kinesisexplorer.com
       if: branch = master
       script: npm run build
