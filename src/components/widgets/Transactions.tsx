@@ -1,20 +1,19 @@
 import * as React from 'react'
-import { TransactionListItem } from '../../types'
+import { TransactionRecord } from 'js-kinesis-sdk'
 import { renderRelativeDate } from '../../utils'
 
-function formatTransaction(t: TransactionListItem): JSX.Element {
+function renderTransaction(t: TransactionRecord): JSX.Element {
   return (
     <tr key={t.id} className='tr'>
       <td className='td'>{t.id.substr(0, 22)}</td>
       <td className='td'>{renderRelativeDate(t.created_at)}</td>
-      <td className='td'>{t.label}</td>
-      <td className='td'>{t.amount}</td>
+      <td className='td'>{t.operation_count}</td>
     </tr>
   )
 }
 
 interface TransactionProps {
-  transactions: TransactionListItem[]
+  transactions: TransactionRecord[]
 }
 
 const Transactions: React.SFC<TransactionProps> = ({ transactions }): JSX.Element => {
@@ -29,12 +28,11 @@ const Transactions: React.SFC<TransactionProps> = ({ transactions }): JSX.Elemen
             <tr className='tr'>
               <th className='th'>ID</th>
               <th className='th'>Age</th>
-              <th className='th'>Type</th>
-              <th className='th'>Value</th>
+              <th className='th'>Operations</th>
             </tr>
           </thead>
           <tbody className='tbody'>
-            { transactions.map(formatTransaction) }
+            { transactions.map(renderTransaction) }
           </tbody>
         </table>
       </div>

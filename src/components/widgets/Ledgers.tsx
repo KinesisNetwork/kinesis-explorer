@@ -1,8 +1,12 @@
 import * as React from 'react'
-import { LedgerListItem } from '../../types'
+import { LedgerRecord } from 'js-kinesis-sdk'
 import { renderRelativeDate } from '../../utils'
 
-function renderLedger(ledger: LedgerListItem): JSX.Element {
+interface LedgerProps {
+  ledgers: LedgerRecord[]
+}
+
+function renderLedger(ledger: LedgerRecord): JSX.Element {
   return (
     <tr className='tr' key={ledger.id}>
       <td className='td'>{ledger.sequence}</td>
@@ -11,10 +15,6 @@ function renderLedger(ledger: LedgerListItem): JSX.Element {
       <td className='td'>{ledger.operation_count}</td>
     </tr>
   )
-}
-
-interface LedgerProps {
-  ledgers: LedgerListItem[]
 }
 
 const Ledgers: React.SFC<LedgerProps> = ({ ledgers }): JSX.Element => {

@@ -1,7 +1,8 @@
 @import "bulma/sass/utilities/initial-variables";
 @import "bulma/sass/utilities/functions";
 
-$secondary_color: #273655;
+// colours from promo stylesheet
+$primary_color: #273655;
 $very_dark_color: #1a1a21;
 $dark_color: #1e1f26;
 $mid_color: #4d648d;
@@ -10,13 +11,12 @@ $monotone_color: #9da4ad;
 
 $bgcolor: $dark_color;
 
-$nav-background: $dark_color;
 $nav-text: #a0a1a4;
 
 $body-background: #191f2f;
 $body-text: #999999;
 
-$label-background: #555555;
+// $label-background: #555555;
 
 $gold: #ffd700;
 $blue: #00a5e7;
@@ -29,18 +29,18 @@ $white: #fff;
 $family-sans-serif: "Lato", serif;
 $grey-dark: $mid_color;
 $grey-light: $light_color;
-// $primary: $gold;
-$primary: $secondary_color;
+$primary: $primary_color;
 $link: $blue;
 
 // Update some of Bulma's component variables
-// $control-border-width: 2px;
-// $input-background-color: $label-background;
-$input-border-color: transparent;
-$input-shadow: none;
+
+$navbar-dropdown-background-color: $primary;
+$navbar-item-active-background-color: $primary;
+$navbar-item-hover-background-color: $primary;
+
 $primary-invert: findColorInvert($primary);
 
-// 3. Add new color variables to the color map.
+// Add new color variables to the color map.
 @import "bulma/sass/utilities/derived-variables.sass";
 $addColors: (
 "primary":($primary, $primary-invert),
