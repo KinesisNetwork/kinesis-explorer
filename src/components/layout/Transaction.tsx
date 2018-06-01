@@ -1,20 +1,21 @@
 import * as React from 'react'
-
-import { TransactionRecord } from 'js-kinesis-sdk'
 import { Redirect, RouteComponentProps } from 'react-router'
-import { DEFAULT_CONNECTIONS } from '../../services/connections'
+import { TransactionRecord } from 'js-kinesis-sdk'
+import { Subscribe } from 'unstated'
+import { ConnectionContext, ConnectionContainer } from '../../services/connections'
 import { getTransaction } from '../../services/kinesis'
 import { Connection } from '../../types'
 import { TransactionInfo } from '../widgets/TransactionInfo'
 
-interface Props extends RouteComponentProps<{ id: string }> {
-  connection: Connection
-}
+interface ConnectedTransactionProps extends RouteComponentProps<{ id: string }> {}
+interface Props extends ConnectedTransactionProps, ConnectionContext {}
+
 interface State {
   transaction: TransactionRecord | null
   invalidTransaction: boolean
 }
-export class TransactionPage extends React.Component<Props, State> {
+
+class TransactionPage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
     this.state = { transaction: null, invalidTransaction: false }
@@ -22,7 +23,7 @@ export class TransactionPage extends React.Component<Props, State> {
 
   loadTransaction = async () => {
     try {
-      const transaction = await getTransaction(DEFAULT_CONNECTIONS[1], this.props.match.params.id)
+      const transaction = await getTransaction(this.props.selectedConnection, this.props.match.params.id)
       this.setState({ transaction })
     } catch (e) {
       this.setState({ invalidTransaction: true })
@@ -54,3 +55,15 @@ export class TransactionPage extends React.Component<Props, State> {
     )
   }
 }
+
+class ConnectedTransaction extends React.Component<ConnectedTransactionProps> {
+  render() {
+    return (
+      <Subscribe to={[ ConnectionContainer ]}>
+        { ({ state }: ConnectionContainer) => <TransactionPage {...this.props} {...state} />}
+      </Subscribe>
+    )
+  }
+}
+
+export default ConnectedTransaction

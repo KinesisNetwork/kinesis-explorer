@@ -14,3 +14,7 @@ export function renderAmount(amount: string | number) {
     useGrouping: true,
   })
 }
+
+export function isEqual(a: any, b: any){
+  return Object.is(a, b)
+}

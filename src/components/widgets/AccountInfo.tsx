@@ -1,5 +1,4 @@
 import * as React from 'react'
-
 import { AccountRecord, CollectionPage, OperationRecord } from 'js-kinesis-sdk'
 import { startCase } from 'lodash'
 import { renderAmount } from '../../utils'
@@ -37,7 +36,7 @@ export class AccountInfo extends React.Component<Props, State> {
     }
   }
 
-  // This will need to be abstracted with the multi network change
+  // TODO: This will need to be abstracted with the multi network change
   renderBalances = () => {
     const balances = this.props.account.balances
       .map((balance) => balance.asset_type === 'native' ? { ...balance, asset_type: 'KAU' } : balance)
@@ -61,11 +60,12 @@ export class AccountInfo extends React.Component<Props, State> {
     const thresholds = Object.entries(this.props.account.thresholds)
       .map(([key, value]) => (
         <HorizontalLabelledField
+          key={key}
           label={startCase(key)}
           value={value}
           wideLabel={true}
-
-        />),
+        />
+      )
     )
     return (
       <React.Fragment>{thresholds}</React.Fragment>

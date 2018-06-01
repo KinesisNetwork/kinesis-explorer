@@ -1,33 +1,22 @@
 import * as React from 'react'
+import { Link } from 'react-router-dom'
+import { Subscribe } from 'unstated'
 import icon from '../../../icon.png'
-import { DEFAULT_CONNECTIONS } from '../../services/connections'
+import { ConnectionContext, ConnectionContainer, ConnectionContextHandlers } from '../../services/connections'
 import { Connection } from '../../types'
 import { SearchBar } from '../widgets/SearchBar'
 
-enum connections {
-  local,
-  uat,
-}
-
-interface Props {
-  connections: Connection[],
-  onConnectionChange: (connection: Connection) => void,
-  selectedConnection: Connection,
-}
-
-interface NetworkSelectProps {
-  connections: Connection[],
-  isLoading: boolean,
-  onConnectionChange: (connection: Connection) => () => void,
-  selectedConnection: Connection,
-}
-
+interface NavigationProps extends ConnectionContext, ConnectionContextHandlers {}
 interface State {
   isExpanded: boolean,
   isLoading: boolean,
 }
 
-class Navigation extends React.Component<Props, State> {
+interface NetworkSelectProps extends NavigationProps {
+  isLoading: boolean,
+}
+
+class Navigation extends React.Component<NavigationProps, State> {
   state = {
     isExpanded: false,
     isLoading: false,
@@ -39,15 +28,15 @@ class Navigation extends React.Component<Props, State> {
 
   public get expandedClass() { return this.state.isExpanded ? 'is-active' : '' }
 
-  public handleConnectionChange = (connection: Connection) => () => {
+  public handleConnectionChange = (handler: (c: Connection) => void, connection: Connection) => () => {
     this.setState({ isLoading: true })
-    const timeOut = setTimeout(() => {
-      this.props.onConnectionChange(connection)
+    setTimeout(() => {
+      handler(connection)
       this.setState({ isLoading: false })
     }, 500)
   }
 
-  public renderNetworkSelect = ({ connections, isLoading, selectedConnection, onConnectionChange }: NetworkSelectProps): JSX.Element => {
+  public renderNetworkSelect = ({ connections, isLoading, onConnectionChange, selectedConnection }: NetworkSelectProps): JSX.Element => {
     return (
       <div className='navbar-item has-dropdown is-hoverable'>
         <div className='navbar-link'>
@@ -57,14 +46,15 @@ class Navigation extends React.Component<Props, State> {
           Select Network
           <div className='navbar-dropdown is-right'>
             {connections.map((connection) => (
-              <a
+              <Link
                 key={connection.name}
+                to={'/'}
                 className={`navbar-item ${connection === selectedConnection && 'is-active'}`}
-                onClick={onConnectionChange(connection)}
+                onClick={this.handleConnectionChange(onConnectionChange, connection)}
               >
                 {connection.name}
-              </a>
-            ))
+              </Link>
+              ))
             }
           </div>
         </div>
@@ -73,16 +63,16 @@ class Navigation extends React.Component<Props, State> {
   }
 
   render() {
-    const { connections, selectedConnection } = this.props
+    const { connections, onConnectionChange, selectedConnection } = this.props
 
     return (
       <div className='hero-head'>
         <nav className='navbar' role='navigation' aria-label='navigation'>
           <div className='container'>
             <div className='navbar-brand'>
-              <a className='navbar-item'>
+              <Link to={'/'} className='navbar-item'>
                 <img src={icon} alt='Logo' />
-              </a>
+              </Link>
               <span className={`navbar-burger burger ${this.expandedClass}`} onClick={this.toggleExpansion}>
                 <span></span>
                 <span></span>
@@ -91,15 +81,22 @@ class Navigation extends React.Component<Props, State> {
             </div>
             <div className={`navbar-menu ${this.expandedClass}`}>
               <div className='navbar-start'>
-                <a className='navbar-item'>
+                <Link to={'/'} className='navbar-item'>
                   <span className=''>Kinesis Explorer</span>
-                </a>
+                </Link>
               </div>
               <div className='navbar-end'>
                 <a className='navbar-item'>
                   {selectedConnection.name}
                 </a>
-                {this.renderNetworkSelect({ connections, isLoading: this.state.isLoading, onConnectionChange: this.handleConnectionChange, selectedConnection })}
+                {
+                  this.renderNetworkSelect({
+                    connections: connections,
+                    isLoading: this.state.isLoading,
+                    onConnectionChange,
+                    selectedConnection: selectedConnection
+                  })
+                }
                 <div className='navbar-item'>
                   <SearchBar />
                 </div>
@@ -112,4 +109,14 @@ class Navigation extends React.Component<Props, State> {
   }
 }
 
-export default Navigation
+class ConnectedNavigation extends React.Component {
+  render() {
+    return (
+      <Subscribe to={[ ConnectionContainer ]}>
+        { ({ onConnectionChange, state }: ConnectionContainer) => <Navigation onConnectionChange={onConnectionChange} {...state} />}
+      </Subscribe>
+    )
+  }
+}
+
+export default ConnectedNavigation

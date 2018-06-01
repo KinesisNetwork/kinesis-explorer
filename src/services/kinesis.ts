@@ -15,6 +15,11 @@ export function getServer(connection: Connection): Server {
   return new Server(connection.horizonURL)
 }
 
+export async function getTransaction(connection: Connection, transactionId: string) {
+  const server = getServer(connection)
+  return await server.transactions().transaction(transactionId).call()
+}
+
 export async function getTransactions(connection: Connection): Promise<TransactionRecord[]> {
   const server = getServer(connection)
   const { records }: CollectionPage<TransactionRecord> = await server.transactions().limit(10).order('desc').call()
@@ -26,9 +31,10 @@ export async function getTransactionStream(connection: Connection, cursor = 'now
   return await server.transactions().cursor(cursor)
 }
 
-export async function getTransaction(connection: Connection, transactionId: string) {
+export async function getLedger(connection: Connection, sequence: number | string): Promise<LedgerRecord> {
   const server = getServer(connection)
-  return await server.transactions().transaction(transactionId).call()
+  const ledger = await server.ledgers().ledger(sequence).call() as LedgerRecord
+  return ledger
 }
 
 export async function getLedgers(connection: Connection): Promise<LedgerRecord[]> {
@@ -44,6 +50,6 @@ export async function getLedgerStream(connection: Connection, cursor = 'now'): P
 
 export async function getAccount(connection: Connection, accountId: string) {
   const server = getServer(connection)
-  const account: AccountRecord = await server.accounts().accountId(accountId).call() as any
+  const account: AccountRecord = await server.loadAccount(accountId)
   return account
 }

@@ -12,3 +12,5 @@ export const DEFAULT_CONNECTIONS: Connection[] = [
     networkPassphrase: 'Kinesis UAT',
   },
 ]
+
+export { ConnectionContext, ConnectionContainer, ConnectionContextHandlers } from './ConnectionContext'
