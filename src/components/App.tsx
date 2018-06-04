@@ -1,24 +1,25 @@
 import * as React from 'react'
 import {
-  BrowserRouter as Router,
-  Link,
+  Redirect,
   Route,
   Switch,
-  Redirect
-} from 'react-router-dom'
-import NotFound from './NotFound'
+} from 'react-router'
+import { BrowserRouter } from 'react-router-dom'
 import Dashboard from './Dashboard'
+import { TransactionPage } from './layout/Transaction'
+import NotFound from './NotFound'
 
 export default class App extends React.Component<null, null> {
   render() {
     return (
-      <Router basename='/'>
+      <BrowserRouter basename='/'>
         <Switch>
-          <Route exact path='/' component={ Dashboard } />
-          <Route path='/404' component={ NotFound } />
+          <Route exact={true} path='/' component={Dashboard} />
+          <Route path='/transaction/:id' component={TransactionPage} />
+          <Route path='/404' component={NotFound} />
           <Redirect to='/404' />
         </Switch>
-      </Router>
+      </BrowserRouter>
     )
   }
 }

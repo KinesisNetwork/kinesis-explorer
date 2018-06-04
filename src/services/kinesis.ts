@@ -1,4 +1,12 @@
-import { CollectionPage, LedgerRecord, LedgerCallBuilder, Network, Server, TransactionCallBuilder, TransactionRecord } from 'js-kinesis-sdk'
+import {
+  CollectionPage,
+  LedgerCallBuilder,
+  LedgerRecord,
+  Network,
+  Server,
+  TransactionCallBuilder,
+  TransactionRecord,
+} from 'js-kinesis-sdk'
 import { Connection } from '../types'
 
 export function getServer(connection: Connection): Server {
@@ -6,7 +14,7 @@ export function getServer(connection: Connection): Server {
   return new Server(connection.horizonURL)
 }
 
-export async function getTransactions(connection: Connection): Promise<TransactionRecord[]>{
+export async function getTransactions(connection: Connection): Promise<TransactionRecord[]> {
   const server = getServer(connection)
   const { records }: CollectionPage<TransactionRecord> = await server.transactions().limit(10).order('desc').call()
   return records
@@ -17,7 +25,14 @@ export async function getTransactionStream(connection: Connection, cursor = 'now
   return await server.transactions().cursor(cursor)
 }
 
-export async function getLedgers(connection: Connection): Promise<LedgerRecord[]>{
+export async function getTransaction(connection: Connection, transactionId: string) {
+  const server = getServer(connection)
+  const transaction: TransactionRecord = await server.transactions().transaction(transactionId).call() as any
+  console.log(transaction)
+  return transaction
+}
+
+export async function getLedgers(connection: Connection): Promise<LedgerRecord[]> {
   const server = getServer(connection)
   const { records }: CollectionPage<LedgerRecord> = await server.ledgers().limit(10).order('desc').call()
   return records
