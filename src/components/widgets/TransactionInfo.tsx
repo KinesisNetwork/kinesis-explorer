@@ -52,7 +52,6 @@ export class TransactionInfo extends React.Component<Props, State> {
             <HorizontalLabelledField
               label='Source Account'
               value={<Link to={`/account/${transaction.source_account}`}>{transaction.source_account}</Link>}
-
             />
           </div>
           <OperationList operations={this.state.operations} />

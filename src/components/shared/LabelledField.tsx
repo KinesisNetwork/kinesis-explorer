@@ -7,6 +7,7 @@ export interface Props {
   isLoading?: boolean
   isCompact?: boolean
   wideLabel?: boolean
+  tag?: string
 }
 
 export const LabelledField: React.SFC<Props> = (props) => (
@@ -25,10 +26,11 @@ export const HorizontalLabelledField: React.SFC<Props> = (props) => (
     </div>
     <div className='field-body'>
       <div className='field'>
-        <div className={`control is-expanded ${props.isLoading ? 'is-loading' : ''}`}>
+        <div className={`control is-expanded ${props.isLoading && 'is-loading'}`}>
           <p className='input is-static'>{props.value}</p>
         </div>
       </div>
+      {props.tag && <span className='tag is-info is-medium' style={{ height: '100%' }}>{props.tag}</span>}
     </div>
   </div>
 )

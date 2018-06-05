@@ -75,13 +75,8 @@ export class AccountInfo extends React.Component<Props, State> {
   renderSigners = () => {
     const signers = this.props.account.signers.map((signer, i) => {
       return (
-        <div key={i} className='level'>
-          <div className='level-left'>
-            <HorizontalLabelledField label='Public Key' value={signer.public_key} />
-          </div>
-          <div className='level-right'>
-            <HorizontalLabelledField label='Weight' value={signer.weight} />
-          </div>
+        <div key={i}>
+          <HorizontalLabelledField label='Public Key' value={signer.public_key} tag={`Weight: ${signer.weight}`} />
         </div>
       )
     })
