@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 import { AccountRecord } from 'js-kinesis-sdk'
-import { RouteComponentProps } from 'react-router'
+import { Redirect, RouteComponentProps } from 'react-router'
 import { DEFAULT_CONNECTIONS } from '../../services/connections'
 import { getAccount } from '../../services/kinesis'
 import { Connection } from '../../types'
@@ -13,18 +13,24 @@ interface Props extends RouteComponentProps<{ id: string }> {
 
 interface State {
   account: AccountRecord | null
+  invalidAccount: boolean
 }
 export class AccountPage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
     this.state = {
       account: null,
+      invalidAccount: false,
     }
   }
 
   loadAccount = async () => {
-    const account = await getAccount(DEFAULT_CONNECTIONS[1], this.props.match.params.id)
-    this.setState({ account })
+    try {
+      const account = await getAccount(DEFAULT_CONNECTIONS[1], this.props.match.params.id)
+      this.setState({ account })
+    } catch (e) {
+      this.setState({ invalidAccount: true })
+    }
   }
 
   componentDidMount() {
@@ -38,6 +44,9 @@ export class AccountPage extends React.Component<Props, State> {
   }
 
   render() {
+    if (this.state.invalidAccount) {
+      return <Redirect to='/404' />
+    }
     return (
       <section className='section'>
         <div className='container'>

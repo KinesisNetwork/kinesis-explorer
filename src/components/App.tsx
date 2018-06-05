@@ -9,6 +9,7 @@ import Dashboard from './Dashboard'
 import { AccountPage } from './layout/Account'
 import { TransactionPage } from './layout/Transaction'
 import NotFound from './NotFound'
+import { SearchRedirect } from './widgets/SearchRedirect'
 
 export default class App extends React.Component {
   render() {
@@ -18,6 +19,7 @@ export default class App extends React.Component {
           <Route exact={true} path='/' component={Dashboard} />
           <Route path='/transaction/:id' component={TransactionPage} />
           <Route path='/account/:id' component={AccountPage} />
+          <Route path='/search/:search' component={SearchRedirect} />
           <Route path='/404' component={NotFound} />
           <Redirect to='/404' />
         </Switch>

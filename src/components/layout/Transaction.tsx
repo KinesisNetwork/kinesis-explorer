@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 import { TransactionRecord } from 'js-kinesis-sdk'
-import { RouteComponentProps } from 'react-router'
+import { Redirect, RouteComponentProps } from 'react-router'
 import { DEFAULT_CONNECTIONS } from '../../services/connections'
 import { getTransaction } from '../../services/kinesis'
 import { Connection } from '../../types'
@@ -12,16 +12,21 @@ interface Props extends RouteComponentProps<{ id: string }> {
 }
 interface State {
   transaction: TransactionRecord | null
+  invalidTransaction: boolean
 }
 export class TransactionPage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
-    this.state = { transaction: null }
+    this.state = { transaction: null, invalidTransaction: false }
   }
 
   loadTransaction = async () => {
-    const transaction = await getTransaction(DEFAULT_CONNECTIONS[1], this.props.match.params.id)
-    this.setState({ transaction })
+    try {
+      const transaction = await getTransaction(DEFAULT_CONNECTIONS[1], this.props.match.params.id)
+      this.setState({ transaction })
+    } catch (e) {
+      this.setState({ invalidTransaction: true })
+    }
   }
 
   componentDidMount() {
@@ -35,6 +40,9 @@ export class TransactionPage extends React.Component<Props, State> {
   }
 
   render() {
+    if (this.state.invalidTransaction) {
+      return <Redirect to='/404' />
+    }
     return (
       <section className='section'>
         <div className='container'>
