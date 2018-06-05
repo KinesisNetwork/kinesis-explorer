@@ -26,7 +26,7 @@ export class SearchBar extends React.Component {
           </span>
         </div>
         <div className='control'>
-          <Link to={`/search/${this.state.value}`} className='button'>
+          <Link to={`/search/${this.state.value}`} className='button is-danger'>
             Search
           </Link>
         </div>
