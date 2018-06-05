@@ -19,9 +19,19 @@ export class TransactionPage extends React.Component<Props, State> {
     this.state = { transaction: null }
   }
 
-  async componentDidMount() {
+  loadTransaction = async () => {
     const transaction = await getTransaction(DEFAULT_CONNECTIONS[1], this.props.match.params.id)
     this.setState({ transaction })
+  }
+
+  componentDidMount() {
+    this.loadTransaction()
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps.match.params.id !== this.props.match.params.id) {
+      this.loadTransaction()
+    }
   }
 
   render() {
