@@ -21,9 +21,19 @@ export class TransactionInfo extends React.Component<Props, State> {
     }
   }
 
-  async componentDidMount() {
+  loadOperations = async () => {
     const operations = await this.props.transaction.operations()
     this.setState({ operations })
+  }
+
+  componentDidMount() {
+    this.loadOperations()
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps.transaction.id !== this.props.transaction.id) {
+      this.loadOperations()
+    }
   }
 
   render() {

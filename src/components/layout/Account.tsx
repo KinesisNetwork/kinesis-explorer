@@ -22,9 +22,19 @@ export class AccountPage extends React.Component<Props, State> {
     }
   }
 
-  async componentDidMount() {
+  loadAccount = async () => {
     const account = await getAccount(DEFAULT_CONNECTIONS[1], this.props.match.params.id)
     this.setState({ account })
+  }
+
+  componentDidMount() {
+    this.loadAccount()
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps.match.params.id !== this.props.match.params.id) {
+      this.loadAccount()
+    }
   }
 
   render() {

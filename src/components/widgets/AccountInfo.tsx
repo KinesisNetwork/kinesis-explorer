@@ -1,6 +1,7 @@
 import * as React from 'react'
 
 import { AccountRecord, CollectionPage, OperationRecord } from 'js-kinesis-sdk'
+import { renderBalanceAmount } from '../../utils'
 import { HorizontalLabelledField } from '../shared'
 import { OperationList } from './OperationList'
 
@@ -20,14 +21,26 @@ export class AccountInfo extends React.Component<Props, State> {
     }
   }
 
-  async componentDidMount() {
+  loadOperations = async () => {
     const operations = await this.props.account.operations({ limit: 10, order: 'desc' })
     this.setState({ operations })
   }
 
+  componentDidMount() {
+    this.loadOperations()
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps.account.account_id !== this.props.account.account_id) {
+      this.loadOperations()
+    }
+  }
+
+  // This will need to be abstracted with the multi network change
   renderBalances = () => {
     const balances = this.props.account.balances
       .map((balance) => balance.asset_type === 'native' ? { ...balance, asset_type: 'KAU' } : balance)
+      .map((balance) => ({ ...balance, balance: renderBalanceAmount(balance.balance) }))
       .map((balance, i) => (
         <HorizontalLabelledField
           key={i}
