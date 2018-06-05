@@ -1,11 +1,12 @@
-import * as React from 'react'
 import { TransactionRecord } from 'js-kinesis-sdk'
+import * as React from 'react'
+import { Link } from 'react-router-dom'
 import { renderRelativeDate } from '../../utils'
 
 function renderTransaction(t: TransactionRecord): JSX.Element {
   return (
     <tr key={t.id} className='tr'>
-      <td className='td'>{t.id.substr(0, 22)}</td>
+      <td className='td'><Link to={`transaction/${t.id}`}>{t.id.substr(0, 22)}</Link></td>
       <td className='td'>{renderRelativeDate(t.created_at)}</td>
       <td className='td'>{t.operation_count}</td>
     </tr>
@@ -32,7 +33,7 @@ const Transactions: React.SFC<TransactionProps> = ({ transactions }): JSX.Elemen
             </tr>
           </thead>
           <tbody className='tbody'>
-            { transactions.map(renderTransaction) }
+            {transactions.map(renderTransaction)}
           </tbody>
         </table>
       </div>

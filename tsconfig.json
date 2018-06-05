@@ -2,7 +2,10 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "target": "es5",
-    "lib": ["es7", "dom"],
+    "lib": [
+      "esnext",
+      "dom"
+    ],
     "module": "commonjs",
     "strict": true,
     "jsx": "preserve"
