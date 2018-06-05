@@ -3,6 +3,7 @@ import * as React from 'react'
 import { CollectionPage, OperationRecord, TransactionRecord, xdr } from 'js-kinesis-sdk'
 import { startCase } from 'lodash'
 import { Link } from 'react-router-dom'
+import { renderAmount } from '../../utils'
 import { HorizontalLabelledField } from '../shared'
 import { OperationInfo } from './OperationInfo'
 import { OperationList } from './OperationList'
@@ -44,7 +45,7 @@ export class TransactionInfo extends React.Component<Props, State> {
           <div className='tile is-child box'>
             <p className='subtitle'>Summary</p>
             <HorizontalLabelledField label='Created At' value={transaction.created_at} />
-            <HorizontalLabelledField label='Fee' value={transaction.fee_paid} />
+            <HorizontalLabelledField label='Fee' value={renderAmount(transaction.fee_paid)} />
             <HorizontalLabelledField label='Ledger' value={transaction.ledger_attr} />
             <HorizontalLabelledField label='Operation Count' value={transaction.operation_count} />
             <HorizontalLabelledField label='Memo' value={transaction.memo} />

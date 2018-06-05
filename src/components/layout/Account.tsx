@@ -39,7 +39,7 @@ export class AccountPage extends React.Component<Props, State> {
 
   render() {
     return (
-      <section>
+      <section className='section'>
         <div className='container'>
           <h1 className='title'>Account</h1>
           <h2 className='subtitle'>{this.props.match.params.id}</h2>

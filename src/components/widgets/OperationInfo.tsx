@@ -3,7 +3,7 @@ import * as React from 'react'
 import { OperationRecord } from 'js-kinesis-sdk'
 import { startCase } from 'lodash'
 import { Link } from 'react-router-dom'
-import { renderBalanceAmount, renderRelativeDate } from '../../utils'
+import { renderAmount, renderRelativeDate } from '../../utils'
 import { HorizontalLabelledField } from '../shared'
 
 const BASE_OPERATION_KEYS = [
@@ -19,7 +19,7 @@ const BASE_OPERATION_KEYS = [
   'type_i',
 ]
 
-const VALUE_OVERRIDE: { [key: string]: (value: string) => string | number | React.ReactNode } = {
+const FORMAT_VALUE: { [key: string]: (value: string) => string | number | React.ReactNode } = {
   created_at: (value) => `${value} | ${renderRelativeDate(value)}`,
   source_account: (value) => <Link to={`/account/${value}`}>{value}</Link>,
   funder: (value) => <Link to={`/account/${value}`}>{value}</Link>,
@@ -27,21 +27,21 @@ const VALUE_OVERRIDE: { [key: string]: (value: string) => string | number | Reac
   from: (value) => <Link to={`/account/${value}`}>{value}</Link>,
   to: (value) => <Link to={`/account/${value}`}>{value}</Link>,
   transaction_hash: (value) => <Link to={`/transaction/${value}`}>{value}</Link>,
-  starting_balance: (value) => renderBalanceAmount(value),
-  amount: (value) => renderBalanceAmount(value),
+  starting_balance: (value) => renderAmount(value),
+  amount: (value) => renderAmount(value),
 }
 
 export const OperationInfo: React.SFC<{ operation: OperationRecord }> = ({ operation }) => {
   const fields = Object.entries(operation)
     .filter(([, val]) => typeof val === 'string')
     .filter(([key]) => !BASE_OPERATION_KEYS.includes(key))
-    .map(([key, value]) => VALUE_OVERRIDE[key] ? [key, VALUE_OVERRIDE[key](value)] : [key, value])
+    .map(([key, value]) => FORMAT_VALUE[key] ? [key, FORMAT_VALUE[key](value)] : [key, value])
     .map(([key, value]) => (
       <HorizontalLabelledField
         key={key}
         label={startCase(key)}
         value={value}
-        isCompact={true}
+
       />
     ))
 

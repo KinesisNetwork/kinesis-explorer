@@ -9,9 +9,8 @@ export function renderRelativeDate(date: Date | string): string {
   return moment(parsedDate).fromNow()
 }
 
-export function renderBalanceAmount(amount: string) {
+export function renderAmount(amount: string | number) {
   return Number(amount).toLocaleString(undefined, {
     useGrouping: true,
-    minimumSignificantDigits: 7,
   })
 }

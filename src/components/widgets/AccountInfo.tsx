@@ -2,7 +2,7 @@ import * as React from 'react'
 
 import { AccountRecord, CollectionPage, OperationRecord } from 'js-kinesis-sdk'
 import { startCase } from 'lodash'
-import { renderBalanceAmount } from '../../utils'
+import { renderAmount } from '../../utils'
 import { HorizontalLabelledField } from '../shared'
 import { OperationList } from './OperationList'
 
@@ -41,7 +41,7 @@ export class AccountInfo extends React.Component<Props, State> {
   renderBalances = () => {
     const balances = this.props.account.balances
       .map((balance) => balance.asset_type === 'native' ? { ...balance, asset_type: 'KAU' } : balance)
-      .map((balance) => ({ ...balance, balance: renderBalanceAmount(balance.balance) }))
+      .map((balance) => ({ ...balance, balance: renderAmount(balance.balance) }))
       .map((balance, i) => (
         <HorizontalLabelledField
           key={i}
@@ -64,7 +64,7 @@ export class AccountInfo extends React.Component<Props, State> {
           label={startCase(key)}
           value={value}
           wideLabel={true}
-          isCompact={true}
+
         />),
     )
     return (
@@ -75,13 +75,8 @@ export class AccountInfo extends React.Component<Props, State> {
   renderSigners = () => {
     const signers = this.props.account.signers.map((signer, i) => {
       return (
-        <div key={i} className='level'>
-          <div className='level-left'>
-            <HorizontalLabelledField label='Public Key' value={signer.public_key} />
-          </div>
-          <div className='level-right'>
-            <HorizontalLabelledField label='Weight' value={signer.weight} />
-          </div>
+        <div key={i}>
+          <HorizontalLabelledField label='Public Key' value={signer.public_key} tag={`Weight: ${signer.weight}`} />
         </div>
       )
     })
@@ -97,7 +92,7 @@ export class AccountInfo extends React.Component<Props, State> {
             <div className='tile is-parent'>
               <div className='tile is-child box'>
                 <p className='subtitle'>Info</p>
-                <HorizontalLabelledField label='Sequence' value={account.sequence} isCompact={true} wideLabel={true} />
+                <HorizontalLabelledField label='Sequence' value={account.sequence} wideLabel={true} />
                 {this.renderThresholds()}
               </div>
             </div>
