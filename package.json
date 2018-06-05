@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/KinesisNetwork/kinesis-explorer#readme",
   "dependencies": {
-    "js-kinesis-sdk": "^0.9.4",
+    "js-kinesis-sdk": "^0.9.5",
     "lodash": "^4.17.10",
     "moment": "^2.22.1",
     "react": "^16.3.2",

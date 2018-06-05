@@ -27,9 +27,7 @@ export async function getTransactionStream(connection: Connection, cursor = 'now
 
 export async function getTransaction(connection: Connection, transactionId: string) {
   const server = getServer(connection)
-  const transaction: TransactionRecord = await server.transactions().transaction(transactionId).call() as any
-  console.log(transaction)
-  return transaction
+  return await server.transactions().transaction(transactionId).call()
 }
 
 export async function getLedgers(connection: Connection): Promise<LedgerRecord[]> {
