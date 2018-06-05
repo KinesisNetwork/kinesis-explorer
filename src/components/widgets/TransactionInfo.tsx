@@ -2,39 +2,18 @@ import * as React from 'react'
 
 import { CollectionPage, OperationRecord, TransactionRecord, xdr } from 'js-kinesis-sdk'
 import { startCase } from 'lodash'
+import { Link } from 'react-router-dom'
 import { HorizontalLabelledField } from '../shared'
 import { OperationInfo } from './OperationInfo'
+import { OperationList } from './OperationList'
 
-export interface Props {
+interface Props {
   transaction: TransactionRecord,
 }
-export const TransactionInfo: React.SFC<Props> = ({ transaction }) => {
-  return (
-    <div className='tile is-ancestor'>
-      <div className='tile is-vertical is-parent'>
-        <div className='tile is-child box'>
-          <p className='subtitle'>Summary</p>
-          <HorizontalLabelledField label='Created At' value={transaction.created_at} />
-          <HorizontalLabelledField label='Fee' value={transaction.fee_paid} />
-          <HorizontalLabelledField label='Ledger' value={transaction.ledger_attr} />
-          <HorizontalLabelledField label='Operation Count' value={transaction.operation_count} />
-          <HorizontalLabelledField label='Memo' value={transaction.memo} />
-          <HorizontalLabelledField label='Source Account' value={transaction.source_account} />
-        </div>
-        <OperationList transaction={transaction} />
-        <div className='tile is-child box'>
-          <p className='subtitle'>Signatures</p>
-          {transaction.signatures.map((sig, i) => (<HorizontalLabelledField key={i} label='' value={sig} />))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
 interface State {
   operations: CollectionPage<OperationRecord> | null
 }
-export class OperationList extends React.Component<Props, State> {
+export class TransactionInfo extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
     this.state = {
@@ -48,13 +27,29 @@ export class OperationList extends React.Component<Props, State> {
   }
 
   render() {
-    if (!this.state.operations) {
-      return (<div />)
-    }
+    const { transaction } = this.props
     return (
-      <React.Fragment>
-        {this.state.operations.records.map((op, i) => <OperationInfo key={i} operation={op} />)}
-      </React.Fragment>
+      <div className='tile is-ancestor'>
+        <div className='tile is-vertical is-parent'>
+          <div className='tile is-child box'>
+            <p className='subtitle'>Summary</p>
+            <HorizontalLabelledField label='Created At' value={transaction.created_at} />
+            <HorizontalLabelledField label='Fee' value={transaction.fee_paid} />
+            <HorizontalLabelledField label='Ledger' value={transaction.ledger_attr} />
+            <HorizontalLabelledField label='Operation Count' value={transaction.operation_count} />
+            <HorizontalLabelledField label='Memo' value={transaction.memo} />
+            <HorizontalLabelledField
+              label='Source Account'
+              value={<Link to={`/account/${transaction.source_account}`}>{transaction.source_account}</Link>}
+            />
+          </div>
+          <OperationList operations={this.state.operations} />
+          <div className='tile is-child box'>
+            <p className='subtitle'>Signatures</p>
+            {transaction.signatures.map((sig, i) => (<HorizontalLabelledField key={i} label='' value={sig} />))}
+          </div>
+        </div>
+      </div>
     )
   }
 }

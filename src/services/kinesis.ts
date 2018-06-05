@@ -1,4 +1,5 @@
 import {
+  AccountRecord,
   CollectionPage,
   LedgerCallBuilder,
   LedgerRecord,
@@ -39,4 +40,10 @@ export async function getLedgers(connection: Connection): Promise<LedgerRecord[]
 export async function getLedgerStream(connection: Connection, cursor = 'now'): Promise<LedgerCallBuilder> {
   const server = getServer(connection)
   return server.ledgers().cursor(cursor)
+}
+
+export async function getAccount(connection: Connection, accountId: string) {
+  const server = getServer(connection)
+  const account: AccountRecord = await server.accounts().accountId(accountId).call() as any
+  return account
 }
