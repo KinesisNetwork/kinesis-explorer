@@ -97,6 +97,7 @@ export class AccountInfo extends React.Component<Props, State> {
             <div className='tile is-parent'>
               <div className='tile is-child box'>
                 <p className='subtitle'>Info</p>
+                <HorizontalLabelledField label='Sequence' value={account.sequence} isCompact={true} wideLabel={true} />
                 {this.renderThresholds()}
               </div>
             </div>
