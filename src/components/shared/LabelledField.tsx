@@ -6,6 +6,7 @@ export interface Props {
   icon?: string
   isLoading?: boolean
   isCompact?: boolean
+  wideLabel?: boolean
 }
 
 export const LabelledField: React.SFC<Props> = (props) => (
@@ -19,7 +20,7 @@ export const LabelledField: React.SFC<Props> = (props) => (
 
 export const HorizontalLabelledField: React.SFC<Props> = (props) => (
   <div className={`field is-horizontal ${props.isCompact ? 'is-marginless' : ''}`}>
-    <div className='field-label is-normal'>
+    <div className='field-label is-normal' style={props.wideLabel ? { flexGrow: 3 } : {}}>
       <label className='label'>{props.label}</label>
     </div>
     <div className='field-body'>

@@ -1,6 +1,7 @@
 import * as React from 'react'
 
 import { AccountRecord, CollectionPage, OperationRecord } from 'js-kinesis-sdk'
+import { startCase } from 'lodash'
 import { renderBalanceAmount } from '../../utils'
 import { HorizontalLabelledField } from '../shared'
 import { OperationList } from './OperationList'
@@ -56,20 +57,65 @@ export class AccountInfo extends React.Component<Props, State> {
     )
   }
 
+  renderThresholds = () => {
+    const thresholds = Object.entries(this.props.account.thresholds)
+      .map(([key, value]) => (
+        <HorizontalLabelledField
+          label={startCase(key)}
+          value={value}
+          wideLabel={true}
+          isCompact={true}
+        />),
+    )
+    return (
+      <React.Fragment>{thresholds}</React.Fragment>
+    )
+  }
+
+  renderSigners = () => {
+    const signers = this.props.account.signers.map((signer, i) => {
+      return (
+        <div key={i} className='level'>
+          <div className='level-left'>
+            <HorizontalLabelledField label='Public Key' value={signer.public_key} />
+          </div>
+          <div className='level-right'>
+            <HorizontalLabelledField label='Weight' value={signer.weight} />
+          </div>
+        </div>
+      )
+    })
+    return (<React.Fragment>{signers}</React.Fragment>)
+  }
+
   render() {
     const { account } = this.props
     return (
       <div className='tile is-ancestor'>
-        <div className='tile is-vertical is-parent'>
-          <div className='tile is-child box'>
-            <p className='subtitle'>Info</p>
-            <HorizontalLabelledField label='Public Key' value={account.account_id} />
+        <div className='tile is-vertical'>
+          <div className='tile'>
+            <div className='tile is-parent'>
+              <div className='tile is-child box'>
+                <p className='subtitle'>Info</p>
+                {this.renderThresholds()}
+              </div>
+            </div>
+            <div className='tile is-parent'>
+              <div className='tile is-child box'>
+                <p className='subtitle'>Balances</p>
+                {this.renderBalances()}
+              </div>
+            </div>
           </div>
-          <div className='tile is-child box'>
-            <p className='subtitle'>Balances</p>
-            {this.renderBalances()}
+          <div className='tile is-parent'>
+            <div className='tile is-child box'>
+              <p className='subtitle'>Signers</p>
+              {this.renderSigners()}
+            </div>
           </div>
-          <OperationList operations={this.state.operations} />
+          <div className='tile is-parent is-vertical'>
+            <OperationList operations={this.state.operations} />
+          </div>
         </div>
       </div>
     )
