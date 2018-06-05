@@ -19,7 +19,7 @@ export const LabelledField: React.SFC<Props> = (props) => (
 )
 
 export const HorizontalLabelledField: React.SFC<Props> = (props) => (
-  <div className={`field is-horizontal ${props.isCompact ? 'is-marginless' : ''}`}>
+  <div className='field is-horizontal is-marginless'>
     <div className='field-label is-normal' style={props.wideLabel ? { flexGrow: 3 } : {}}>
       <label className='label'>{props.label}</label>
     </div>
