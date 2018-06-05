@@ -2,10 +2,11 @@ import * as React from 'react'
 import icon from '../../../icon.png'
 import { DEFAULT_CONNECTIONS } from '../../services/connections'
 import { Connection } from '../../types'
+import { SearchBar } from '../widgets/SearchBar'
 
 enum connections {
   local,
-  uat
+  uat,
 }
 
 interface Props {
@@ -55,15 +56,15 @@ class Navigation extends React.Component<Props, State> {
           </span>
           Select Network
           <div className='navbar-dropdown is-right'>
-            {connections.map(connection => (
+            {connections.map((connection) => (
               <a
                 key={connection.name}
                 className={`navbar-item ${connection === selectedConnection && 'is-active'}`}
                 onClick={onConnectionChange(connection)}
-                >
-                  {connection.name}
-                </a>
-              ))
+              >
+                {connection.name}
+              </a>
+            ))
             }
           </div>
         </div>
@@ -98,16 +99,9 @@ class Navigation extends React.Component<Props, State> {
                 <a className='navbar-item'>
                   {selectedConnection.name}
                 </a>
-                { this.renderNetworkSelect({ connections, isLoading: this.state.isLoading, onConnectionChange: this.handleConnectionChange, selectedConnection }) }
+                {this.renderNetworkSelect({ connections, isLoading: this.state.isLoading, onConnectionChange: this.handleConnectionChange, selectedConnection })}
                 <div className='navbar-item'>
-                  <div className='field'>
-                    <div className='control has-icons-right'>
-                      <input className='input' type='text' placeholder='Search...' />
-                      <span className='icon is-right'>
-                        <i className='fas fa-search' />
-                      </span>
-                    </div>
-                  </div>
+                  <SearchBar />
                 </div>
               </div>
             </div>
