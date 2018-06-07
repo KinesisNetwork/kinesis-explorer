@@ -101,16 +101,15 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
           <div className='tile is-vertical is-4 is-parent'>
             <Statistics />
             <Converter  />
-            <CashMoneyGamble  />
           </div>
           <div className='tile is-vertical is-parent'>
-            <article className='tile is-child notification is-primary'>
+            <article className='tile is-child'>
               <p className='title'>
                 Ledgers
               </p>
               <Ledgers ledgers={this.state.ledgers} />
             </article>
-            <article className='tile is-child notification is-primary'>
+            <article className='tile is-child'>
               <p className='title'>
                 Transactions
               </p>
