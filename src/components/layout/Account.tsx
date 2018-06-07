@@ -1,21 +1,21 @@
 import * as React from 'react'
-
-import { AccountRecord } from 'js-kinesis-sdk'
 import { Redirect, RouteComponentProps } from 'react-router'
-import { DEFAULT_CONNECTIONS } from '../../services/connections'
+import { AccountRecord } from 'js-kinesis-sdk'
+import { Subscribe } from 'unstated'
+import { ConnectionContext, ConnectionContainer } from '../../services/connections'
 import { getAccount } from '../../services/kinesis'
 import { Connection } from '../../types'
 import { AccountInfo } from '../widgets/AccountInfo'
 
-interface Props extends RouteComponentProps<{ id: string }> {
-  connection: Connection,
-}
+interface ConnectedAccountProps extends RouteComponentProps<{ id: string }> {}
+interface Props extends ConnectedAccountProps, ConnectionContext {}
 
 interface State {
   account: AccountRecord | null
   invalidAccount: boolean
 }
-export class AccountPage extends React.Component<Props, State> {
+
+class AccountPage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
     this.state = {
@@ -26,7 +26,7 @@ export class AccountPage extends React.Component<Props, State> {
 
   loadAccount = async () => {
     try {
-      const account = await getAccount(DEFAULT_CONNECTIONS[1], this.props.match.params.id)
+      const account = await getAccount(this.props.selectedConnection, this.props.match.params.id)
       this.setState({ account })
     } catch (e) {
       this.setState({ invalidAccount: true })
@@ -49,12 +49,23 @@ export class AccountPage extends React.Component<Props, State> {
     }
     return (
       <section className='section'>
-        <div className='container'>
-          <h1 className='title'>Account</h1>
-          <h2 className='subtitle'>{this.props.match.params.id}</h2>
-          {!this.state.account ? <div /> : <AccountInfo account={this.state.account} />}
-        </div>
+        <h1 className='title'>Account</h1>
+        <h2 className='subtitle'>{this.props.match.params.id}</h2>
+        {!this.state.account ? <div /> : <AccountInfo account={this.state.account} />}
       </section>
     )
   }
 }
+
+
+class ConnectedAccount extends React.Component<ConnectedAccountProps> {
+  render() {
+    return (
+      <Subscribe to={[ ConnectionContainer ]}>
+        { ({ state }: ConnectionContainer) => <AccountPage {...this.props} {...state} />}
+      </Subscribe>
+    )
+  }
+}
+
+export default ConnectedAccount

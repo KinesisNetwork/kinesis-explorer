@@ -46,7 +46,10 @@ export class TransactionInfo extends React.Component<Props, State> {
             <p className='subtitle'>Summary</p>
             <HorizontalLabelledField label='Created At' value={transaction.created_at} />
             <HorizontalLabelledField label='Fee' value={renderAmount(transaction.fee_paid)} />
-            <HorizontalLabelledField label='Ledger' value={transaction.ledger_attr} />
+            <HorizontalLabelledField
+              label='Ledger'
+              value={<Link to={`/ledger/${transaction.ledger_attr}`}>{transaction.ledger_attr}</Link>}
+            />
             <HorizontalLabelledField label='Operation Count' value={transaction.operation_count} />
             <HorizontalLabelledField label='Memo' value={transaction.memo} />
             <HorizontalLabelledField

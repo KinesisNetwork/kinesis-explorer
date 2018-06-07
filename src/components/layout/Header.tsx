@@ -7,7 +7,7 @@ const Header: React.SFC = (props: any) => {
         Kinesis Explorer
       </h1>
       <h2 className='subtitle'>
-        Transactions & Ledgers
+        {/* Transactions & Ledgers */}
       </h2>
     </React.Fragment>
   )

@@ -5,25 +5,33 @@ import {
   Route,
   Switch,
 } from 'react-router-dom'
-import Dashboard from './Dashboard'
-import { AccountPage } from './layout/Account'
-import { TransactionPage } from './layout/Transaction'
-import NotFound from './NotFound'
+import { Provider } from 'unstated'
+import Dashboard from './layout/Dashboard'
+import AppLayout from './layout/AppLayout'
+import LedgerPage from './layout/Ledger'
+import AccountPage from './layout/Account'
+import TransactionPage from './layout/Transaction'
+import NotFound from './layout/NotFound'
 import { SearchRedirect } from './widgets/SearchRedirect'
 
 export default class App extends React.Component {
   render() {
     return (
-      <BrowserRouter basename='/'>
-        <Switch>
-          <Route exact={true} path='/' component={Dashboard} />
-          <Route path='/transaction/:id' component={TransactionPage} />
-          <Route path='/account/:id' component={AccountPage} />
-          <Route path='/search/:search' component={SearchRedirect} />
-          <Route path='/404' component={NotFound} />
-          <Redirect to='/404' />
-        </Switch>
-      </BrowserRouter>
+      <Provider>
+        <BrowserRouter basename='/'>
+          <AppLayout>
+            <Switch>
+              <Route exact path='/' component={ Dashboard } />
+              <Route path='/account/:id' component={AccountPage} />
+              <Route path='/ledger/:sequence' component={ LedgerPage } />
+              <Route path='/search/:search' component={SearchRedirect} />
+              <Route path='/transaction/:id' component={TransactionPage} />
+              <Route path='/404' component={ NotFound } />
+              <Redirect to='/404' />
+            </Switch>
+          </AppLayout>
+        </BrowserRouter>
+      </Provider>
     )
   }
 }
