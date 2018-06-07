@@ -69,7 +69,7 @@ class Navigation extends React.Component<NavigationProps, State> {
         <div className='container'>
           <div className='navbar-brand'>
             <Link to={'/'} className='navbar-item'>
-              <img src={icon} alt='Logo' />
+              <img src={icon} alt='Logo' style={{ filter: 'invert(100%)' }} />
             </Link>
             <span className={`navbar-burger burger ${this.expandedClass}`} onClick={this.toggleExpansion}>
               <span />
