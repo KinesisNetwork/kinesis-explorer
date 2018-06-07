@@ -1,5 +1,4 @@
 import * as React from 'react'
-
 import { OperationRecord } from 'js-kinesis-sdk'
 import { startCase } from 'lodash'
 import { Link } from 'react-router-dom'
@@ -41,12 +40,11 @@ export const OperationInfo: React.SFC<{ operation: OperationRecord }> = ({ opera
         key={key}
         label={startCase(key)}
         value={value}
-
       />
     ))
 
   return (
-    <div className='tile notification box is-child'>
+    <div className='box'>
       <p className='subtitle is-marginless'>{startCase(operation.type)}</p>
       {fields}
     </div>

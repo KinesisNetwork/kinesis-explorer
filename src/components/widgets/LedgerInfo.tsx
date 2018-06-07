@@ -41,7 +41,7 @@ export class LedgerInfo extends React.Component<Props, State> {
         <div className='tile is-vertical'>
           <div className='tile is-parent'>
             <div className='tile is-child box'>
-              <p className='subtitle is-primary notification'>Ledger</p>
+              <p className='subtitle'>Ledger</p>
               <HorizontalLabelledField label='Sequence' value={ledger.sequence} />
               <HorizontalLabelledField label='Hash' value={ledger.hash} />
               <HorizontalLabelledField label='Closed At' value={`${ledger.closed_at} | ${renderRelativeDate(ledger.closed_at)}`} />
@@ -50,14 +50,14 @@ export class LedgerInfo extends React.Component<Props, State> {
           <div className='tile'>
             <div className='tile is-parent'>
               <div className='tile is-child box'>
-                <p className='subtitle is-primary notification'>Info</p>
+                <p className='subtitle'>Info</p>
                 <HorizontalLabelledField label='Percent Fee' value={ledger.base_percentage_fee} wideLabel />
                 <HorizontalLabelledField label='Fee Pool' value={ledger.fee_pool} wideLabel />
               </div>
             </div>
             <div className='tile is-parent'>
               <div className='tile is-child box'>
-                <p className='subtitle is-primary notification'>Count</p>
+                <p className='subtitle'>Count</p>
                 <HorizontalLabelledField label='Transactions' value={ledger.transaction_count} wideLabel />
                 <HorizontalLabelledField label='Operations' value={ledger.operation_count} wideLabel />
               </div>
@@ -65,7 +65,7 @@ export class LedgerInfo extends React.Component<Props, State> {
           </div>
           <div className='tile is-parent'>
             <article className='tile is-child box'>
-              <p className='subtitle is-primary notification'>Transactions</p>
+              <p className='subtitle'>Transactions</p>
               <Transactions transactions={this.state.transactions} />
             </article>
           </div>

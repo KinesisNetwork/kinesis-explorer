@@ -66,45 +66,43 @@ class Navigation extends React.Component<NavigationProps, State> {
     const { connections, onConnectionChange, selectedConnection } = this.props
 
     return (
-      <div className='hero-head'>
-        <nav className='navbar' role='navigation' aria-label='navigation'>
-          <div className='container'>
-            <div className='navbar-brand'>
+      <nav className='navbar' role='navigation' aria-label='navigation'>
+        <div className='container'>
+          <div className='navbar-brand'>
+            <Link to={'/'} className='navbar-item'>
+              <img src={icon} alt='Logo' />
+            </Link>
+            <span className={`navbar-burger burger ${this.expandedClass}`} onClick={this.toggleExpansion}>
+              <span></span>
+              <span></span>
+              <span></span>
+            </span>
+          </div>
+          <div className={`navbar-menu ${this.expandedClass}`}>
+            <div className='navbar-start'>
               <Link to={'/'} className='navbar-item'>
-                <img src={icon} alt='Logo' />
+                <span className=''>Kinesis Explorer</span>
               </Link>
-              <span className={`navbar-burger burger ${this.expandedClass}`} onClick={this.toggleExpansion}>
-                <span></span>
-                <span></span>
-                <span></span>
-              </span>
             </div>
-            <div className={`navbar-menu ${this.expandedClass}`}>
-              <div className='navbar-start'>
-                <Link to={'/'} className='navbar-item'>
-                  <span className=''>Kinesis Explorer</span>
-                </Link>
-              </div>
-              <div className='navbar-end'>
-                <a className='navbar-item'>
-                  {selectedConnection.name}
-                </a>
-                {
-                  this.renderNetworkSelect({
-                    connections: connections,
-                    isLoading: this.state.isLoading,
-                    onConnectionChange,
-                    selectedConnection: selectedConnection
-                  })
-                }
-                <div className='navbar-item'>
-                  <SearchBar />
-                </div>
+            <div className='navbar-end'>
+              <a className='navbar-item'>
+                {selectedConnection.name}
+              </a>
+              {
+                this.renderNetworkSelect({
+                  connections: connections,
+                  isLoading: this.state.isLoading,
+                  onConnectionChange,
+                  selectedConnection: selectedConnection
+                })
+              }
+              <div className='navbar-item'>
+                <SearchBar />
               </div>
             </div>
           </div>
-        </nav>
-      </div>
+        </div>
+      </nav>
     )
   }
 }

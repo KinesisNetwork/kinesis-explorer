@@ -57,7 +57,9 @@ export class TransactionInfo extends React.Component<Props, State> {
               value={<Link to={`/account/${transaction.source_account}`}>{transaction.source_account}</Link>}
             />
           </div>
-          <OperationList operations={this.state.operations} />
+          <div className='tile is-child'>
+            <OperationList operations={this.state.operations} />
+          </div>
           <div className='tile is-child box'>
             <p className='subtitle'>Signatures</p>
             {transaction.signatures.map((sig, i) => (<HorizontalLabelledField key={i} label='' value={sig} />))}
