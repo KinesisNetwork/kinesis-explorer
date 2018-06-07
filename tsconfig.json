@@ -7,7 +7,9 @@
       "dom"
     ],
     "module": "commonjs",
+    "rootDir": "src",
+    "outDir": "build",
     "strict": true,
-    "jsx": "preserve"
+    "jsx": "react"
   }
 }

@@ -1,20 +1,18 @@
+import { LedgerRecord, TransactionRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
 import { RouteComponentProps } from 'react-router'
-import { LedgerRecord, TransactionRecord } from 'js-kinesis-sdk'
 import { Subscribe } from 'unstated'
-import { Connection } from '../../types'
-import { ConnectionContext, ConnectionContainer } from '../../services/connections'
+import { ConnectionContainer, ConnectionContext } from '../../services/connections'
 import {
   getLedgers,
   getLedgerStream,
-  getServer,
   getTransactions,
   getTransactionStream,
 } from '../../services/kinesis'
-import { CashMoneyGamble, Converter, Ledgers, Statistics, Transactions } from '../widgets'
+import { Converter, Ledgers, Statistics, Transactions } from '../widgets'
 
-interface ConnectedDashboardProps extends RouteComponentProps<undefined> {}
-interface DashboardProps extends ConnectedDashboardProps, ConnectionContext {}
+interface ConnectedDashboardProps extends RouteComponentProps<undefined> { }
+interface DashboardProps extends ConnectedDashboardProps, ConnectionContext { }
 
 interface DashboardState {
   ledgers: LedgerRecord[],
@@ -61,7 +59,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     const transactionCursor: string = (transactions[0] || {}).paging_token
 
     const ledgerResponse = await getLedgerStream(this.props.selectedConnection, ledgerCursor)
-    const transactionResponse =  await getTransactionStream(this.props.selectedConnection, transactionCursor)
+    const transactionResponse = await getTransactionStream(this.props.selectedConnection, transactionCursor)
 
     this.closeLedgerStream = ledgerResponse.stream({ onmessage: this.handleStreamData(Entity.ledgers) })
     this.closeTransactionStream = transactionResponse.stream({ onmessage: this.handleStreamData(Entity.transactions) })
@@ -78,10 +76,10 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
 
   handleStreamData = (dataType: EntityType) => (nextData: LedgerRecord | TransactionRecord): void => {
     this.setState((state: DashboardState) => {
-      const updatedData = [ nextData, ...state[dataType].slice(0, 9) ]
+      const updatedData = [nextData, ...state[dataType].slice(0, 9)]
       return ({
         ...state,
-        [dataType]: updatedData
+        [dataType]: updatedData,
       })
     })
   }
@@ -90,7 +88,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     this.closeDataStreams()
     this.setState(
       { ledgers: [], transactions: [] },
-      this.fetchData
+      this.fetchData,
     )
   }
 
@@ -100,7 +98,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
         <div className='tile is-ancestor'>
           <div className='tile is-vertical is-4 is-parent'>
             <Statistics />
-            <Converter  />
+            <Converter />
           </div>
           <div className='tile is-vertical is-parent'>
             <article className='tile is-child'>
@@ -125,8 +123,8 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
 class ConnectedDashboard extends React.Component<ConnectedDashboardProps> {
   render() {
     return (
-      <Subscribe to={[ ConnectionContainer ]}>
-        { ({ state }: ConnectionContainer) => <Dashboard {...this.props} {...state} />}
+      <Subscribe to={[ConnectionContainer]}>
+        {({ state }: ConnectionContainer) => <Dashboard {...this.props} {...state} />}
       </Subscribe>
     )
   }

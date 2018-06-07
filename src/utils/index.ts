@@ -15,6 +15,6 @@ export function renderAmount(amount: string | number) {
   })
 }
 
-export function isEqual(a: any, b: any){
+export function isEqual(a: any, b: any) {
   return Object.is(a, b)
 }

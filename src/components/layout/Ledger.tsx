@@ -1,10 +1,10 @@
+import { LedgerRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
 import { Redirect, RouteComponentProps } from 'react-router'
 import { Subscribe } from 'unstated'
-import { LedgerRecord } from 'js-kinesis-sdk'
-import { Connection } from '../../types'
+import { ConnectionContainer, ConnectionContext } from '../../services/connections'
 import { getLedger } from '../../services/kinesis'
-import { ConnectionContext, ConnectionContainer } from '../../services/connections'
+import { Connection } from '../../types'
 import { LedgerInfo } from '../widgets/LedgerInfo'
 
 interface ConnectedLedgerProps extends RouteComponentProps<{ sequence: string }> {}
@@ -58,7 +58,7 @@ class ConnectedLedger extends React.Component<ConnectedLedgerProps> {
   render() {
     return (
       <Subscribe to={[ ConnectionContainer ]}>
-        { ({ state }: ConnectionContainer) => <LedgerPage {...this.props} {...state} />}
+        {({ state }: ConnectionContainer) => <LedgerPage {...this.props} {...state} />}
       </Subscribe>
     )
   }

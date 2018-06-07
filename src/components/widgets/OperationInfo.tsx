@@ -1,6 +1,6 @@
-import * as React from 'react'
 import { OperationRecord } from 'js-kinesis-sdk'
 import { startCase } from 'lodash'
+import * as React from 'react'
 import { Link } from 'react-router-dom'
 import { renderAmount, renderRelativeDate } from '../../utils'
 import { HorizontalLabelledField } from '../shared'

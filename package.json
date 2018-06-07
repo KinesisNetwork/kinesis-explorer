@@ -4,7 +4,9 @@
   "description": "Kinesis-compatible chain explorer",
   "main": "index.html",
   "scripts": {
-    "test": "echo 'No tests yet'",
+    "compile": "tsc",
+    "lint": "tslint -p .",
+    "test": "npm run lint && npm run compile",
     "start": "parcel index.html",
     "build": "parcel build index.html"
   },

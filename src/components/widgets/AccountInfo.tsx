@@ -1,6 +1,6 @@
-import * as React from 'react'
 import { AccountRecord, CollectionPage, OperationRecord } from 'js-kinesis-sdk'
 import { startCase } from 'lodash'
+import * as React from 'react'
 import { renderAmount } from '../../utils'
 import { HorizontalLabelledField } from '../shared'
 import { OperationList } from './OperationList'
@@ -65,7 +65,7 @@ export class AccountInfo extends React.Component<Props, State> {
           value={value}
           wideLabel={true}
         />
-      )
+      ),
     )
     return (
       <React.Fragment>{thresholds}</React.Fragment>

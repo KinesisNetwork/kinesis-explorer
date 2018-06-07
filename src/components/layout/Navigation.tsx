@@ -2,17 +2,13 @@ import * as React from 'react'
 import { Link } from 'react-router-dom'
 import { Subscribe } from 'unstated'
 import icon from '../../../icon.png'
-import { ConnectionContext, ConnectionContainer, ConnectionContextHandlers } from '../../services/connections'
+import { ConnectionContainer, ConnectionContext, ConnectionContextHandlers } from '../../services/connections'
 import { Connection } from '../../types'
 import { SearchBar } from '../widgets/SearchBar'
 
-interface NavigationProps extends ConnectionContext, ConnectionContextHandlers {}
+interface NavigationProps extends ConnectionContext, ConnectionContextHandlers { }
 interface State {
   isExpanded: boolean,
-  isLoading: boolean,
-}
-
-interface NetworkSelectProps extends NavigationProps {
   isLoading: boolean,
 }
 
@@ -36,26 +32,29 @@ class Navigation extends React.Component<NavigationProps, State> {
     }, 500)
   }
 
-  public renderNetworkSelect = ({ connections, isLoading, onConnectionChange, selectedConnection }: NetworkSelectProps): JSX.Element => {
+  connectionSelector = (connection: Connection) => (
+    <Link
+      key={connection.name}
+      to={'/'}
+      className={`navbar-item ${connection === this.props.selectedConnection && 'is-active'}`}
+      onClick={this.handleConnectionChange(this.props.onChange, connection)}
+    >
+      {connection.name}
+    </Link>
+  )
+
+  public renderNetworkSelect = () => {
+    const { connections } = this.props
+    const { isLoading } = this.state
     return (
       <div className='navbar-item has-dropdown is-hoverable'>
         <div className='navbar-link'>
           <span className='icon'>
-            <i className={`fas fa-globe ${isLoading && 'fa-spin'}`}></i>
+            <i className={`fas fa-globe ${isLoading && 'fa-spin'}`} />
           </span>
           Select Network
           <div className='navbar-dropdown is-right'>
-            {connections.map((connection) => (
-              <Link
-                key={connection.name}
-                to={'/'}
-                className={`navbar-item ${connection === selectedConnection && 'is-active'}`}
-                onClick={this.handleConnectionChange(onConnectionChange, connection)}
-              >
-                {connection.name}
-              </Link>
-              ))
-            }
+            {connections.map((connection) => this.connectionSelector(connection))}
           </div>
         </div>
       </div>
@@ -63,7 +62,7 @@ class Navigation extends React.Component<NavigationProps, State> {
   }
 
   render() {
-    const { connections, onConnectionChange, selectedConnection } = this.props
+    const { selectedConnection } = this.props
 
     return (
       <nav className='navbar' role='navigation' aria-label='navigation'>
@@ -73,9 +72,9 @@ class Navigation extends React.Component<NavigationProps, State> {
               <img src={icon} alt='Logo' />
             </Link>
             <span className={`navbar-burger burger ${this.expandedClass}`} onClick={this.toggleExpansion}>
-              <span></span>
-              <span></span>
-              <span></span>
+              <span />
+              <span />
+              <span />
             </span>
           </div>
           <div className={`navbar-menu ${this.expandedClass}`}>
@@ -88,14 +87,7 @@ class Navigation extends React.Component<NavigationProps, State> {
               <a className='navbar-item'>
                 {selectedConnection.name}
               </a>
-              {
-                this.renderNetworkSelect({
-                  connections: connections,
-                  isLoading: this.state.isLoading,
-                  onConnectionChange,
-                  selectedConnection: selectedConnection
-                })
-              }
+              {this.renderNetworkSelect()}
               <div className='navbar-item'>
                 <SearchBar />
               </div>
@@ -110,8 +102,8 @@ class Navigation extends React.Component<NavigationProps, State> {
 class ConnectedNavigation extends React.Component {
   render() {
     return (
-      <Subscribe to={[ ConnectionContainer ]}>
-        { ({ onConnectionChange, state }: ConnectionContainer) => <Navigation onConnectionChange={onConnectionChange} {...state} />}
+      <Subscribe to={[ConnectionContainer]}>
+        {({ onChange, state }: ConnectionContainer) => <Navigation onChange={onChange} {...state} />}
       </Subscribe>
     )
   }

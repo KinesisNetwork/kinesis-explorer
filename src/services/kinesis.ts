@@ -33,7 +33,7 @@ export async function getTransactionStream(connection: Connection, cursor = 'now
 
 export async function getLedger(connection: Connection, sequence: number | string): Promise<LedgerRecord> {
   const server = getServer(connection)
-  const ledger = await server.ledgers().ledger(sequence).call() as LedgerRecord
+  const ledger = await (server.ledgers() as any).ledger(sequence).call() as LedgerRecord
   return ledger
 }
 

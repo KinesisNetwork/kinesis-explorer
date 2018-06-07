@@ -1,5 +1,4 @@
-import * as React from 'react'
-import { Provider, Subscribe, Container } from 'unstated'
+import { Container } from 'unstated'
 import { Connection } from '../types'
 import { DEFAULT_CONNECTIONS } from './connections'
 
@@ -9,7 +8,7 @@ export interface ConnectionContext {
 }
 
 export interface ConnectionContextHandlers {
-  onConnectionChange: (connection: Connection) => void
+  onChange: (connection: Connection) => void
 }
 
 export class ConnectionContainer extends Container<ConnectionContext> {
@@ -18,7 +17,7 @@ export class ConnectionContainer extends Container<ConnectionContext> {
     selectedConnection: DEFAULT_CONNECTIONS[1],
   }
 
-  onConnectionChange = (connection: Connection): void => {
+  public onChange = (connection: Connection): void => {
     this.setState({ selectedConnection: connection })
   }
 }

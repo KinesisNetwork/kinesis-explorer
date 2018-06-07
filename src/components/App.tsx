@@ -6,12 +6,12 @@ import {
   Switch,
 } from 'react-router-dom'
 import { Provider } from 'unstated'
-import Dashboard from './layout/Dashboard'
-import AppLayout from './layout/AppLayout'
-import LedgerPage from './layout/Ledger'
 import AccountPage from './layout/Account'
-import TransactionPage from './layout/Transaction'
+import AppLayout from './layout/AppLayout'
+import Dashboard from './layout/Dashboard'
+import LedgerPage from './layout/Ledger'
 import NotFound from './layout/NotFound'
+import TransactionPage from './layout/Transaction'
 import { SearchRedirect } from './widgets/SearchRedirect'
 
 export default class App extends React.Component {
@@ -21,12 +21,12 @@ export default class App extends React.Component {
         <BrowserRouter basename='/'>
           <AppLayout>
             <Switch>
-              <Route exact path='/' component={ Dashboard } />
+              <Route exact={true} path='/' component={Dashboard} />
               <Route path='/account/:id' component={AccountPage} />
-              <Route path='/ledger/:sequence' component={ LedgerPage } />
+              <Route path='/ledger/:sequence' component={LedgerPage} />
               <Route path='/search/:search' component={SearchRedirect} />
               <Route path='/transaction/:id' component={TransactionPage} />
-              <Route path='/404' component={ NotFound } />
+              <Route path='/404' component={NotFound} />
               <Redirect to='/404' />
             </Switch>
           </AppLayout>

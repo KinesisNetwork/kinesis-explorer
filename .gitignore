@@ -65,3 +65,6 @@ typings/
 
 # compiled output
 dist/
+
+*.jsx
+*.js

@@ -1,8 +1,8 @@
+import { AccountRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
 import { Redirect, RouteComponentProps } from 'react-router'
-import { AccountRecord } from 'js-kinesis-sdk'
 import { Subscribe } from 'unstated'
-import { ConnectionContext, ConnectionContainer } from '../../services/connections'
+import { ConnectionContainer, ConnectionContext } from '../../services/connections'
 import { getAccount } from '../../services/kinesis'
 import { Connection } from '../../types'
 import { AccountInfo } from '../widgets/AccountInfo'
@@ -57,12 +57,11 @@ class AccountPage extends React.Component<Props, State> {
   }
 }
 
-
 class ConnectedAccount extends React.Component<ConnectedAccountProps> {
   render() {
     return (
       <Subscribe to={[ ConnectionContainer ]}>
-        { ({ state }: ConnectionContainer) => <AccountPage {...this.props} {...state} />}
+        {({ state }: ConnectionContainer) => <AccountPage {...this.props} {...state} />}
       </Subscribe>
     )
   }

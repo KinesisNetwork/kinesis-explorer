@@ -1,6 +1,6 @@
+import { LedgerRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
 import { Link } from 'react-router-dom'
-import { LedgerRecord } from 'js-kinesis-sdk'
 import { renderRelativeDate } from '../../utils'
 
 interface LedgerProps {
@@ -30,7 +30,7 @@ const Ledgers: React.SFC<LedgerProps> = ({ ledgers }): JSX.Element => (
         </tr>
       </thead>
       <tbody className='tbody'>
-        { ledgers.map(renderLedger) }
+        {ledgers.map(renderLedger)}
       </tbody>
     </table>
   </div>

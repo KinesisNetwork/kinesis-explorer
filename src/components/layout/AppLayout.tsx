@@ -14,10 +14,8 @@ class AppLayout extends React.Component<AppLayoutProps> {
         </div>
         <div className='hero-body'>
           <div className='container has-text-centered'>
-            { this.props.children }
+            {this.props.children}
           </div>
-        </div>
-        <div className='hero-foot'>
         </div>
       </section>
     )
