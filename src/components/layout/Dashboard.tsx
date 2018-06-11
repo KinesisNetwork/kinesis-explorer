@@ -101,13 +101,13 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
             <Converter />
           </div>
           <div className='tile is-vertical is-parent'>
-            <article className='tile is-child'>
+            <article className='tile is-child box'>
               <p className='title'>
                 Ledgers
               </p>
               <Ledgers ledgers={this.state.ledgers} />
             </article>
-            <article className='tile is-child'>
+            <article className='tile is-child box'>
               <p className='title'>
                 Transactions
               </p>

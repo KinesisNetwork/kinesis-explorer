@@ -19,21 +19,19 @@ function renderLedger(ledger: LedgerRecord): JSX.Element {
 }
 
 const Ledgers: React.SFC<LedgerProps> = ({ ledgers }): JSX.Element => (
-  <div className='box'>
-    <table className='table is-bordered is-striped is-fullwidth'>
-      <thead className='thead'>
-        <tr className='tr'>
-          <th className='th'>Sequence</th>
-          <th className='th'>Age</th>
-          <th className='th'>Transactions</th>
-          <th className='th'>Operations</th>
-        </tr>
-      </thead>
-      <tbody className='tbody'>
-        {ledgers.map(renderLedger)}
-      </tbody>
-    </table>
-  </div>
+  <table className='table is-bordered is-striped is-fullwidth'>
+    <thead className='thead'>
+      <tr className='tr'>
+        <th className='th'>Sequence</th>
+        <th className='th'>Age</th>
+        <th className='th'>Transactions</th>
+        <th className='th'>Operations</th>
+      </tr>
+    </thead>
+    <tbody className='tbody'>
+      {ledgers.map(renderLedger)}
+    </tbody>
+  </table>
 )
 
 export default Ledgers

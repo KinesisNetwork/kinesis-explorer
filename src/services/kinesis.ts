@@ -10,6 +10,11 @@ import {
 } from 'js-kinesis-sdk'
 import { Connection } from '../types'
 
+export function getNetwork(connection: Connection): Network {
+  Network.use(new Network(connection.networkPassphrase))
+  return Network.current()
+}
+
 export function getServer(connection: Connection): Server {
   Network.use(new Network(connection.networkPassphrase))
   return new Server(connection.horizonURL)
@@ -48,7 +53,7 @@ export async function getLedgerStream(connection: Connection, cursor = 'now'): P
   return server.ledgers().cursor(cursor)
 }
 
-export async function getAccount(connection: Connection, accountId: string) {
+export async function getAccount(connection: Connection, accountId: string): Promise<AccountRecord> {
   const server = getServer(connection)
   const account: AccountRecord = await server.loadAccount(accountId)
   return account

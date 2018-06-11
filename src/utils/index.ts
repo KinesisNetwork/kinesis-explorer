@@ -1,7 +1,7 @@
 import moment from 'moment'
 
-export function flatten(...items: any[]): any[] {
-  return [].concat(...items)
+export function flatten<T>(...items: Array<T | T[]>): T[] {
+  return ([] as T[]).concat(...items)
 }
 
 export function renderRelativeDate(date: Date | string): string {
@@ -15,6 +15,10 @@ export function renderAmount(amount: string | number) {
   })
 }
 
-export function isEqual(a: any, b: any) {
+export function isEqual(a: any, b: any): boolean {
   return Object.is(a, b)
+}
+
+export function sum(a: number, b: number): number {
+  return a + b
 }
