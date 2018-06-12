@@ -1,24 +1,16 @@
 import * as React from 'react'
 import { AccountRecord, CallFunctionTemplateOptions, CollectionPage, Keypair, LedgerRecord, Network, OperationRecord, TransactionRecord } from 'js-kinesis-sdk'
-import { createHash } from 'crypto'
 import { Subscribe } from 'unstated'
 import { Connection } from '../../types'
 import { flatten, renderAmount, sum } from '../../utils'
 import { ConnectionContainer, ConnectionContext, ConnectionContextHandlers } from '../../services/connections'
-import { getAccount, getLedgers, getNetwork } from '../../services/kinesis'
+import { convertStroopsToKinesis, getAccount, getEmissionKeypair, getMasterKeypair, getLedgers, getNetwork } from '../../services/kinesis'
 import { HorizontalLabelledField } from '../shared/LabelledField'
-
-window.sdk = require('js-kinesis-sdk')
 
 interface StatisticsWidgetProps extends ConnectionContext {}
 interface State {
   totalFeePool: number,
   totalInCirculation: number,
-}
-
-function log<T>(x: T): T {
-  console.log(x)
-  return x
 }
 
 class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
@@ -27,37 +19,28 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
     totalInCirculation: 0,
   }
 
-  async componentDidMount() {
-    /*
-      1. get account keys for emission and root accounts
-      2. fetch these accounts
-      3. (totalFees) fetch operations for root account until we find the most recent inflation operation (type === 'inflation')
-        - take paging_token from inflation operation
-        - use inflation paging_token to fetch transactions for root account filtered since this timestamp
-        - fetch all transactions for emission account
-        - sum total fees paid on all these transactions
-      4. (totalInCirculation) fetch primary balances from emission and root accounts
-        - sum these balances to find total unbacked balances
-        - subtract total unbacked balances from total_coins on latest ledger to provide total of backed balances in circulation
-      6. provide totalFees and totalInCirculation to Statistics component to render
-    */
-    const creds = this.fetchAccountKeys(this.props.selectedConnection)
+  componentDidMount() {
+    this.loadStatisticsData(this.props.selectedConnection)
+  }
+
+  loadStatisticsData = async (connection: Connection): Promise<void> => {
+    const creds = this.fetchAccountKeys(connection)
 
     const [ root, emission ] = await this.fetchAccounts(creds)
-    const { totalCoins, feePool } = await this.getLatestLedger(this.props.selectedConnection)
+    const { totalCoins, feePool } = await this.getLatestLedger(connection)
 
-    const totalBalances = this.getUnbackedBalances([ root, emission ])
-    const totalInCirculation = totalCoins - totalBalances
+    const unbackedBalances = this.getUnbackedBalances([ root, emission ])
+    const totalInCirculation = totalCoins - unbackedBalances
 
-    const totalFees = await this.getUnbackedFees([ root, emission ])
-    const totalFeePool = feePool - totalFees
+    const unbackedFees = await this.getUnbackedFees([ root, emission ])
+    const totalFeePool = feePool - unbackedFees
 
     this.setState({ totalInCirculation, totalFeePool })
   }
 
   fetchAccountKeys = (connection: Connection) => {
     const emissionKeypair = getEmissionKeypair(connection)
-    const masterKeypair = getMasterKeypair(connection)
+    const masterKeypair = getMasterKeypair()
 
     return {
       emissionId: emissionKeypair.publicKey(),
@@ -93,14 +76,9 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
   }
 
   getUnbackedFees = async ([ root, emission ]: AccountRecord[]): Promise<number> => {
-    window.root = root
-    console.log(root)
-    // 3. (totalFees) fetch operations for root account until we find the most recent inflation operation (type === 'inflation')
-    //   - take paging_token from inflation operation
-    //   - use inflation paging_token to fetch transactions for root account filtered since this timestamp
-    //   - fetch all transactions for emission account
-    //   - sum total fees paid on all these transactions
     const hasInflationType = (records: OperationRecord[]): OperationRecord | undefined => records.find(r => r.type === 'inflation')
+
+    const getInflationType = (record: OperationRecord): boolean => record.type === 'inflation'
 
     const getLatestInflationOperation = async (account: AccountRecord): Promise<OperationRecord | void> => {
       let inflationOperation: OperationRecord | undefined
@@ -108,7 +86,7 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
       const operationQuery: CallFunctionTemplateOptions = { limit: 100, order: 'desc' }
       let operationResults = await account.operations(operationQuery)
 
-      inflationOperation = hasInflationType(operationResults.records)
+      inflationOperation = operationResults.records.find(getInflationType)
 
       while (!inflationOperation) {
         operationResults = await operationResults.next()
@@ -118,16 +96,22 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
       return inflationOperation
     }
 
-    const latestInflation = await getLatestInflationOperation(root)
+    const { paging_token: cursor } = await getLatestInflationOperation(root)
 
-    const getTransactionRecords = async (account: AccountRecord, cursor?: string): Promise<TransactionRecord[]> => {
+    const getTransactionsForAccount = async (account: AccountRecord, cursor?: string): Promise<TransactionRecord[]> => {
       const { records }: CollectionPage<TransactionRecord> = await account.transactions({ cursor })
       return records
     }
 
-    const transactionRecords = await Promise.all([ getTransactionRecords(emission), getTransactionRecords(root, latestInflation.paging_token) ])
-    const uniques = flatten(...transactionRecords).map((t: TransactionRecord) => t.fee_paid)
-    return uniques.reduce(sum, 0)
+    const transactionRecords = await Promise.all([
+      getTransactionsForAccount(emission, cursor),
+      getTransactionsForAccount(root, cursor)
+    ])
+
+    const uniques = flatten(...transactionRecords).map(t => t.fee_paid)
+    const totalFeesInStroops = uniques.reduce(sum, 0)
+    const totalFeesKinesis = convertStroopsToKinesis(totalFeesInStroops)
+    return totalFeesKinesis
   }
 
   render() {
@@ -141,11 +125,10 @@ interface Props {
 }
 const Statistics: React.SFC<Props> = ({ totalFeePool, totalInCirculation }) => {
   return (
-    <article className='tile is-child notification'>
+    <article className='tile is-child box'>
       <p className='title'>Statistics</p>
-      <p className='subtitle'>Statistics Hi!</p>
       <HorizontalLabelledField label={'Kinesis in Circulation'} wideLabel value={ `KAU ${renderAmount(totalInCirculation)}` } />
-      <HorizontalLabelledField label={'Total Fee Pool'} wideLabel value={totalFeePool} />
+      <HorizontalLabelledField label={'Total Fee Pool'} wideLabel value={`KAU ${renderAmount(totalFeePool)}`} />
     </article>
   )
 }
@@ -158,16 +141,4 @@ export default class ConnectedStatistics extends React.Component {
       </Subscribe>
     )
   }
-}
-
-function getEmissionKeypair(connection: Connection): Keypair {
-  const currentNetwork = getNetwork(connection)
-  const emissionSeedString = `${currentNetwork.networkPassphrase}emission`
-  const hash = createHash('sha256')
-  hash.update(emissionSeedString)
-
-  return Keypair.fromRawEd25519Seed(hash.digest())
-}
-function getMasterKeypair(connection: Connection): Keypair {
-  return Keypair.master()
 }

@@ -19,6 +19,11 @@ export function isEqual(a: any, b: any): boolean {
   return Object.is(a, b)
 }
 
+export function log<T>(x: T, tag?: string | number): T {
+  console.log(tag, x)
+  return x
+}
+
 export function sum(a: number, b: number): number {
   return a + b
 }

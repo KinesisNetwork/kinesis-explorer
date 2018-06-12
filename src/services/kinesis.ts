@@ -1,6 +1,7 @@
 import {
   AccountRecord,
   CollectionPage,
+  Keypair,
   LedgerCallBuilder,
   LedgerRecord,
   Network,
@@ -8,7 +9,27 @@ import {
   TransactionCallBuilder,
   TransactionRecord,
 } from 'js-kinesis-sdk'
+import { createHash } from 'crypto'
 import { Connection } from '../types'
+
+const STROOPS_IN_ONE_KINESIS = 10000000
+
+export function convertStroopsToKinesis(numberInStroops: number): number {
+  return numberInStroops / STROOPS_IN_ONE_KINESIS
+}
+
+export function getEmissionKeypair(connection: Connection): Keypair {
+  const currentNetwork = getNetwork(connection)
+  const emissionSeedString = `${currentNetwork.networkPassphrase}emission`
+  const hash = createHash('sha256')
+  hash.update(emissionSeedString)
+
+  return Keypair.fromRawEd25519Seed(hash.digest())
+}
+
+export function getMasterKeypair(): Keypair {
+  return Keypair.master()
+}
 
 export function getNetwork(connection: Connection): Network {
   Network.use(new Network(connection.networkPassphrase))
