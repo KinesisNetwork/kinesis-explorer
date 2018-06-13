@@ -20,6 +20,7 @@ export function isEqual(a: any, b: any): boolean {
 }
 
 export function log<T>(x: T, tag?: string | number): T {
+  // tslint:disable-next-line:no-console
   console.log(tag, x)
   return x
 }
