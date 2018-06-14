@@ -4,11 +4,23 @@ import {
   LedgerCallBuilder,
   LedgerRecord,
   Network,
+  OperationRecord,
   Server,
   TransactionCallBuilder,
   TransactionRecord,
 } from 'js-kinesis-sdk'
 import { Connection } from '../types'
+
+const STROOPS_IN_ONE_KINESIS = 10000000
+
+export function convertStroopsToKinesis(numberInStroops: number): number {
+  return numberInStroops / STROOPS_IN_ONE_KINESIS
+}
+
+export function getNetwork(connection: Connection): Network {
+  Network.use(new Network(connection.networkPassphrase))
+  return Network.current()
+}
 
 export function getServer(connection: Connection): Server {
   Network.use(new Network(connection.networkPassphrase))
@@ -48,7 +60,7 @@ export async function getLedgerStream(connection: Connection, cursor = 'now'): P
   return server.ledgers().cursor(cursor)
 }
 
-export async function getAccount(connection: Connection, accountId: string) {
+export async function getAccount(connection: Connection, accountId: string): Promise<AccountRecord> {
   const server = getServer(connection)
   const account: AccountRecord = await server.loadAccount(accountId)
   return account

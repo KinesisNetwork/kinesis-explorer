@@ -1,8 +1,8 @@
-import * as React from 'react'
-
 import { CollectionPage, OperationRecord, TransactionRecord, xdr } from 'js-kinesis-sdk'
 import { startCase } from 'lodash'
+import * as React from 'react'
 import { Link } from 'react-router-dom'
+import { convertStroopsToKinesis } from '../../services/kinesis'
 import { renderAmount } from '../../utils'
 import { HorizontalLabelledField } from '../shared'
 import { OperationInfo } from './OperationInfo'
@@ -45,7 +45,7 @@ export class TransactionInfo extends React.Component<Props, State> {
           <div className='tile is-child box'>
             <p className='subtitle'>Summary</p>
             <HorizontalLabelledField label='Created At' value={transaction.created_at} />
-            <HorizontalLabelledField label='Fee' value={renderAmount(transaction.fee_paid)} />
+            <HorizontalLabelledField label='Fee' value={renderAmount(convertStroopsToKinesis(transaction.fee_paid))} />
             <HorizontalLabelledField
               label='Ledger'
               value={<Link to={`/ledger/${transaction.ledger_attr}`}>{transaction.ledger_attr}</Link>}
