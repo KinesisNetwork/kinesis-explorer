@@ -51,7 +51,9 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
     this.setState({ totalInCirculation, totalFeePool })
   }
 
-  fetchLatestLedger = async (connection: Connection): Promise<LedgerRecord & { totalCoins: number, feePool: number }> => {
+  fetchLatestLedger = async (
+    connection: Connection,
+  ): Promise<LedgerRecord & { totalCoins: number, feePool: number }> => {
     const ledgers = await getLedgers(connection)
     const latest = ledgers[0]
     return {
@@ -84,7 +86,7 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
 export default class ConnectedStatistics extends React.Component {
   render() {
     return (
-      <Subscribe to={[ ConnectionContainer ]}>
+      <Subscribe to={[ConnectionContainer]}>
         {({ state }: ConnectionContainer) => <StatisticsWidget {...state} />}
       </Subscribe>
     )
