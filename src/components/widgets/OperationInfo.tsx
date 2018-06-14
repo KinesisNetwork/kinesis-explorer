@@ -44,7 +44,7 @@ export const OperationInfo: React.SFC<{ operation: OperationRecord }> = ({ opera
     ))
 
   return (
-    <div className='box'>
+    <div className='tile is-child box'>
       <p className='subtitle is-marginless'>{startCase(operation.type)}</p>
       {fields}
     </div>

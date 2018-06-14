@@ -19,20 +19,18 @@ interface TransactionProps {
 
 const Transactions: React.SFC<TransactionProps> = ({ transactions }): JSX.Element => {
   return (
-    <div className='box'>
-      <table className='table is-bordered is-striped is-fullwidth'>
-        <thead className='thead'>
-          <tr className='tr'>
-            <th className='th'>ID</th>
-            <th className='th'>Age</th>
-            <th className='th'>Operations</th>
-          </tr>
-        </thead>
-        <tbody className='tbody'>
-          {transactions.map(renderTransaction)}
-        </tbody>
-      </table>
-    </div>
+    <table className='table is-bordered is-striped is-fullwidth'>
+      <thead className='thead'>
+        <tr className='tr'>
+          <th className='th'>ID</th>
+          <th className='th'>Age</th>
+          <th className='th'>Operations</th>
+        </tr>
+      </thead>
+      <tbody className='tbody'>
+        {transactions.map(renderTransaction)}
+      </tbody>
+    </table>
   )
 }
 
