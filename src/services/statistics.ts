@@ -1,3 +1,4 @@
+import { createHash } from 'crypto'
 import {
   AccountRecord,
   CallFunctionTemplateOptions,
@@ -7,14 +8,13 @@ import {
   OperationRecord,
   TransactionRecord,
 } from 'js-kinesis-sdk'
+import { Connection } from '../types'
+import { flatten, sum } from '../utils'
 import {
   convertStroopsToKinesis,
   getAccount,
   getNetwork,
 } from './kinesis'
-import { createHash } from 'crypto'
-import { flatten, sum } from '../utils'
-import { Connection } from '../types'
 
 export async function getUnbackedBalances(connection: Connection): Promise<number> {
   const accounts = await fetchUnbackedAccounts(connection)

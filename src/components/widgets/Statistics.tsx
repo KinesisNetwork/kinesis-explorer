@@ -1,4 +1,3 @@
-import * as React from 'react'
 import {
   AccountRecord,
   CallFunctionTemplateOptions,
@@ -9,12 +8,13 @@ import {
   OperationRecord,
   TransactionRecord,
 } from 'js-kinesis-sdk'
+import * as React from 'react'
 import { Subscribe } from 'unstated'
-import { Connection } from '../../types'
-import { renderAmount } from '../../utils'
 import { ConnectionContainer, ConnectionContext, ConnectionContextHandlers } from '../../services/connections'
 import { getLedgers } from '../../services/kinesis'
 import { getUnbackedBalances, getUnbackedFees } from '../../services/statistics'
+import { Connection } from '../../types'
+import { renderAmount } from '../../utils'
 import { HorizontalLabelledField } from '../shared/LabelledField'
 
 type StatisticsWidgetProps = ConnectionContext
@@ -68,12 +68,12 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
         <p className='title'>Statistics</p>
         <HorizontalLabelledField
           label={'Kinesis in Circulation'}
-          wideLabel
+          wideLabel={true}
           value={`KAU ${renderAmount(totalInCirculation)}`}
         />
         <HorizontalLabelledField
           label={'Total Fee Pool'}
-          wideLabel
+          wideLabel={true}
           value={`KAU ${renderAmount(totalFeePool)}`}
         />
       </article>
