@@ -6,7 +6,7 @@ interface Props extends RouteComponentProps<{ search: string }> { }
 export class SearchRedirect extends React.Component<Props> {
   render() {
     const { search } = this.props.match.params
-    if (!isNaN(parseInt(search, 10))) {
+    if (parseInt(search, 10).toString() === search.toLowerCase()) {
       return <Redirect to={`/ledger/${search}`} />
     } else if (!isNaN(parseInt(search, 16))) {
       return <Redirect to={`/transaction/${search}`} />
