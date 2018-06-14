@@ -10,6 +10,10 @@ export class SearchBar extends React.Component {
     this.setState({ value: event.currentTarget.value })
   }
 
+  clearInput: React.MouseEventHandler<HTMLAnchorElement> = (event) => {
+    this.setState(({ value: '' }))
+  }
+
   render() {
     return (
       <div className='field has-addons'>
@@ -26,7 +30,11 @@ export class SearchBar extends React.Component {
           </span>
         </div>
         <div className='control'>
-          <Link to={`/search/${this.state.value}`} className='button'>
+          <Link
+            to={`/search/${this.state.value}`}
+            className='button'
+            onClick={this.clearInput}
+          >
             Search
           </Link>
         </div>
