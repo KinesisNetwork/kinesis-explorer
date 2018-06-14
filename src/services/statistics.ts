@@ -3,7 +3,6 @@ import {
   AccountRecord,
   CallFunctionTemplateOptions,
   CollectionPage,
-  InflationOperationRecord,
   Keypair,
   OperationRecord,
   TransactionRecord,
@@ -22,7 +21,7 @@ export async function getUnbackedBalances(connection: Connection): Promise<numbe
 }
 
 export async function getUnbackedFees(connection: Connection): Promise<number> {
-  const [ root, emission ] = await fetchUnbackedAccounts(connection)
+  const [root, emission] = await fetchUnbackedAccounts(connection)
   const { paging_token: cursor } = await getLatestInflationOperation(root)
 
   const transactionRecords = await Promise.all([
@@ -38,12 +37,12 @@ export async function getUnbackedFees(connection: Connection): Promise<number> {
 
 async function fetchUnbackedAccounts(connection: Connection): Promise<AccountRecord[]> {
   const { rootId, emissionId } = getUnbackedAccountKeys(connection)
-  const [ root, emission ] = await Promise.all([
+  const [root, emission] = await Promise.all([
     getAccount(connection, rootId),
     getAccount(connection, emissionId),
   ])
 
-  return [ root, emission ]
+  return [root, emission]
 }
 
 function getUnbackedAccountKeys(connection: Connection) {
@@ -85,7 +84,7 @@ async function getLatestInflationOperation(account: AccountRecord): Promise<Oper
 }
 
 async function getTransactionsForAccount(account: AccountRecord, cursor?: string): Promise<TransactionRecord[]> {
-  const { records }: CollectionPage<TransactionRecord> = await account.transactions({ cursor })
+  const { records } = await account.transactions({ cursor })
   return records
 }
 
@@ -97,7 +96,7 @@ function sumNativeBalances(...accounts: AccountRecord[]): number {
   return balances.reduce((memo, { balance }) => sum(memo, Number(balance)), 0)
 }
 
-function hasNativeAssetType<T extends {asset_type: string}>(balance: T): boolean {
+function hasNativeAssetType<T extends { asset_type: string }>(balance: T): boolean {
   return balance.asset_type === 'native'
 }
 
