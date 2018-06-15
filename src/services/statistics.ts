@@ -57,7 +57,7 @@ function getUnbackedAccountKeys(connection: Connection) {
 
 export function getEmissionKeypair(connection: Connection): Keypair {
   const currentNetwork = getNetwork(connection)
-  const emissionSeedString = `${currentNetwork.networkPassphrase}emission`
+  const emissionSeedString = `${currentNetwork.networkPassphrase()}emission`
   const hash = createHash('sha256')
   hash.update(emissionSeedString)
 
