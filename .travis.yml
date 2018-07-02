@@ -4,7 +4,7 @@ jobs:
     - stage: test
 
     - stage: build and deploy
-      env: BUCKET=integration.kinesisexplorer.com TRAVIS_TAG=true
+      env: BUCKET=integration-explorer.kinesisgroup.io TRAVIS_TAG=true
       if: branch = master and type = push
       script: npm run build
       deploy: &deploy
@@ -16,12 +16,12 @@ jobs:
         on:
           tags: true
     - stage: build and deploy
-      env: BUCKET=uat.kinesisexplorer.com
+      env: BUCKET=uat-explorer.kinesisgroup.io
       if: tag is present
       script: npm run build
       deploy:
         <<: *deploy
-    - env: BUCKET=www.kinesisexplorer.com
+    - env: BUCKET=explorer.kinesisgroup.io
       if: tag is present and tag =~ ^((?!beta).)*$
       script: npm run build
       deploy:
