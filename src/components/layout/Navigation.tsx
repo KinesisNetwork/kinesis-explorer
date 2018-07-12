@@ -18,6 +18,10 @@ class Navigation extends React.Component<NavigationProps, State> {
     isLoading: false,
   }
 
+  public async componentDidMount(): Promise<void> {
+    await this.props.fetchConnections()
+  }
+
   public toggleExpansion = () => {
     this.setState(({ isExpanded }) => ({ isExpanded: !isExpanded }))
   }
@@ -103,7 +107,7 @@ class ConnectedNavigation extends React.Component {
   render() {
     return (
       <Subscribe to={[ConnectionContainer]}>
-        {({ onChange, state }: ConnectionContainer) => <Navigation onChange={onChange} {...state} />}
+        {({ fetchConnections, onChange, state }: ConnectionContainer) => <Navigation fetchConnections={fetchConnections} onChange={onChange} {...state} />}
       </Subscribe>
     )
   }
