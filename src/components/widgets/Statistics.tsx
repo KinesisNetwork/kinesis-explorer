@@ -1,16 +1,8 @@
-import {
-  AccountRecord,
-  CallFunctionTemplateOptions,
-  CollectionPage,
-  Keypair,
-  LedgerRecord,
-  Network,
-  OperationRecord,
-  TransactionRecord,
-} from 'js-kinesis-sdk'
+import { LedgerRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
 import { Subscribe } from 'unstated'
-import { ConnectionContainer, ConnectionContext, ConnectionContextHandlers } from '../../services/connections'
+
+import { ConnectionContainer, ConnectionContext } from '../../services/connections'
 import { getLedgers } from '../../services/kinesis'
 import { getUnbackedBalances, getUnbackedFees } from '../../services/statistics'
 import { Connection } from '../../types'

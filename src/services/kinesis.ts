@@ -4,7 +4,6 @@ import {
   LedgerCallBuilder,
   LedgerRecord,
   Network,
-  OperationRecord,
   Server,
   TransactionCallBuilder,
   TransactionRecord,

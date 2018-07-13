@@ -1,11 +1,9 @@
-import { CollectionPage, OperationRecord, TransactionRecord, xdr } from 'js-kinesis-sdk'
-import { startCase } from 'lodash'
+import { CollectionPage, OperationRecord, TransactionRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
 import { Link } from 'react-router-dom'
 import { convertStroopsToKinesis } from '../../services/kinesis'
 import { renderAmount } from '../../utils'
 import { HorizontalLabelledField } from '../shared'
-import { OperationInfo } from './OperationInfo'
 import { OperationList } from './OperationList'
 
 interface Props {

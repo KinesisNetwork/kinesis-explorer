@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Link } from 'react-router-dom'
 import { Subscribe } from 'unstated'
+
 import icon from '../../../icon.png'
 import { ConnectionContainer, ConnectionContext, ConnectionContextHandlers } from '../../services/connections'
 import { Connection } from '../../types'
@@ -16,6 +17,10 @@ class Navigation extends React.Component<NavigationProps, State> {
   state = {
     isExpanded: false,
     isLoading: false,
+  }
+
+  public async componentDidMount(): Promise<void> {
+    await this.props.fetchConnections()
   }
 
   public toggleExpansion = () => {
@@ -100,10 +105,14 @@ class Navigation extends React.Component<NavigationProps, State> {
 }
 
 class ConnectedNavigation extends React.Component {
+  renderChildren = ({ fetchConnections, onChange, state }: ConnectionContainer) => (
+    <Navigation fetchConnections={fetchConnections} onChange={onChange} {...state} />
+  )
+
   render() {
     return (
       <Subscribe to={[ConnectionContainer]}>
-        {({ onChange, state }: ConnectionContainer) => <Navigation onChange={onChange} {...state} />}
+        {this.renderChildren}
       </Subscribe>
     )
   }

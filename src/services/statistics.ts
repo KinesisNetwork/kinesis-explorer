@@ -2,7 +2,6 @@ import { createHash } from 'crypto'
 import {
   AccountRecord,
   CallFunctionTemplateOptions,
-  CollectionPage,
   Keypair,
   OperationRecord,
   TransactionRecord,
