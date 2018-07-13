@@ -1,6 +1,7 @@
+import { LedgerRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
 import { Subscribe } from 'unstated'
-import { LedgerRecord } from 'js-kinesis-sdk'
+
 import { ConnectionContainer, ConnectionContext } from '../../services/connections'
 import { getLedgers } from '../../services/kinesis'
 import { getUnbackedBalances, getUnbackedFees } from '../../services/statistics'
