@@ -2,23 +2,28 @@ import { LedgerRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
 import { Subscribe } from 'unstated'
 
-import { ConnectionContainer, ConnectionContext } from '../../services/connections'
+import {
+  ConnectionContainer,
+  ConnectionContext,
+} from '../../services/connections'
 import { getLedgers } from '../../services/kinesis'
-import { getUnbackedBalances, getUnbackedFees } from '../../services/statistics'
+import { getBackedFees, getUnbackedBalances } from '../../services/statistics'
 import { Connection } from '../../types'
 import { renderAmount } from '../../utils'
 import { HorizontalLabelledField } from '../shared/LabelledField'
 
 type StatisticsWidgetProps = ConnectionContext
 interface State {
-  totalFeePool: number,
-  totalInCirculation: number,
+  totalFeePool: number
+  totalInCirculation: number
+  isLoading: boolean
 }
 
 class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
-  state = {
+  state: State = {
     totalFeePool: 0,
     totalInCirculation: 0,
+    isLoading: false,
   }
 
   componentDidMount() {
@@ -32,20 +37,20 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
   }
 
   loadStatisticsData = async (connection: Connection): Promise<void> => {
-    const { totalCoins, feePool } = await this.fetchLatestLedger(connection)
+    this.setState({ isLoading: true })
+    const { totalCoins } = await this.fetchLatestLedger(connection)
 
     const unbackedBalances = await getUnbackedBalances(connection)
     const totalInCirculation = totalCoins - unbackedBalances
 
-    const unbackedFees = await getUnbackedFees(connection)
-    const totalFeePool = feePool - unbackedFees
+    const totalFeePool = await getBackedFees(connection)
 
-    this.setState({ totalInCirculation, totalFeePool })
+    this.setState({ totalInCirculation, totalFeePool, isLoading: false })
   }
 
   fetchLatestLedger = async (
     connection: Connection,
-  ): Promise<LedgerRecord & { totalCoins: number, feePool: number }> => {
+  ): Promise<LedgerRecord & { totalCoins: number; feePool: number }> => {
     const ledgers = await getLedgers(connection)
     const latest = ledgers[0]
     return {
@@ -56,20 +61,27 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
   }
 
   render() {
-    const { totalFeePool, totalInCirculation } = this.state
+    const { totalFeePool, totalInCirculation, isLoading } = this.state
+    const {
+      selectedConnection: { currency },
+    } = this.props
     return (
       <article className='tile is-child box'>
         <p className='title'>Statistics</p>
-        <HorizontalLabelledField
-          label={'Kinesis in Circulation'}
-          wideLabel={true}
-          value={`KAU ${renderAmount(totalInCirculation)}`}
-        />
-        <HorizontalLabelledField
-          label={'Total Fee Pool'}
-          wideLabel={true}
-          value={`KAU ${renderAmount(totalFeePool)}`}
-        />
+        <div>
+          <HorizontalLabelledField
+            label={'Kinesis in Circulation'}
+            wideLabel={true}
+            value={`${currency} ${renderAmount(totalInCirculation)}`}
+            isLoading={isLoading}
+          />
+          <HorizontalLabelledField
+            label={'Total Fee Pool'}
+            wideLabel={true}
+            value={`${currency} ${renderAmount(totalFeePool)}`}
+            isLoading={isLoading}
+          />
+        </div>
       </article>
     )
   }
