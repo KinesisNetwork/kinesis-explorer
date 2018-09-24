@@ -1,4 +1,4 @@
-@import "bulma";
+@import 'bulma';
 
 // colours from promo stylesheet
 // @import url('https://fonts.googleapis.com/css?family=Lato:300,400,400i,600,700,900');
@@ -19,3 +19,7 @@
 // $blue: #00a5e7;
 // $dark-blue: #273655;
 // $white: #fff;
+
+.is-loading-blur {
+  filter: blur(2px);
+}

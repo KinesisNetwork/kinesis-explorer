@@ -3,14 +3,20 @@ import { Link } from 'react-router-dom'
 import { Subscribe } from 'unstated'
 
 import icon from '../../../icon.png'
-import { ConnectionContainer, ConnectionContext, ConnectionContextHandlers } from '../../services/connections'
+import {
+  ConnectionContainer,
+  ConnectionContext,
+  ConnectionContextHandlers,
+} from '../../services/connections'
 import { Connection } from '../../types'
 import { SearchBar } from '../widgets/SearchBar'
 
-interface NavigationProps extends ConnectionContext, ConnectionContextHandlers { }
+interface NavigationProps
+  extends ConnectionContext,
+    ConnectionContextHandlers {}
 interface State {
-  isExpanded: boolean,
-  isLoading: boolean,
+  isExpanded: boolean
+  isLoading: boolean
 }
 
 class Navigation extends React.Component<NavigationProps, State> {
@@ -19,30 +25,21 @@ class Navigation extends React.Component<NavigationProps, State> {
     isLoading: false,
   }
 
-  public async componentDidMount(): Promise<void> {
-    await this.props.fetchConnections()
-  }
-
   public toggleExpansion = () => {
     this.setState(({ isExpanded }) => ({ isExpanded: !isExpanded }))
   }
 
-  public get expandedClass() { return this.state.isExpanded ? 'is-active' : '' }
-
-  public handleConnectionChange = (handler: (c: Connection) => void, connection: Connection) => () => {
-    this.setState({ isLoading: true })
-    setTimeout(() => {
-      handler(connection)
-      this.setState({ isLoading: false })
-    }, 500)
+  public get expandedClass() {
+    return this.state.isExpanded ? 'is-active' : ''
   }
 
   connectionSelector = (connection: Connection) => (
     <Link
       key={connection.name}
       to={'/'}
-      className={`navbar-item ${connection === this.props.selectedConnection && 'is-active'}`}
-      onClick={this.handleConnectionChange(this.props.onChange, connection)}
+      className={`navbar-item ${connection === this.props.selectedConnection &&
+        'is-active'}`}
+      onClick={() => this.props.onChange(connection)}
     >
       {connection.name}
     </Link>
@@ -76,7 +73,10 @@ class Navigation extends React.Component<NavigationProps, State> {
             <Link to={'/'} className='navbar-item'>
               <img src={icon} alt='Logo' style={{ filter: 'invert(100%)' }} />
             </Link>
-            <span className={`navbar-burger burger ${this.expandedClass}`} onClick={this.toggleExpansion}>
+            <span
+              className={`navbar-burger burger ${this.expandedClass}`}
+              onClick={this.toggleExpansion}
+            >
               <span />
               <span />
               <span />
@@ -89,9 +89,7 @@ class Navigation extends React.Component<NavigationProps, State> {
               </Link>
             </div>
             <div className='navbar-end'>
-              <a className='navbar-item'>
-                {selectedConnection.name}
-              </a>
+              <a className='navbar-item'>{selectedConnection.name}</a>
               {this.renderNetworkSelect()}
               <div className='navbar-item'>
                 <SearchBar />
@@ -105,15 +103,21 @@ class Navigation extends React.Component<NavigationProps, State> {
 }
 
 class ConnectedNavigation extends React.Component {
-  renderChildren = ({ fetchConnections, onChange, state }: ConnectionContainer) => (
-    <Navigation fetchConnections={fetchConnections} onChange={onChange} {...state} />
+  renderChildren = ({
+    fetchConnections,
+    onChange,
+    state,
+  }: ConnectionContainer) => (
+    <Navigation
+      fetchConnections={fetchConnections}
+      onChange={onChange}
+      {...state}
+    />
   )
 
   render() {
     return (
-      <Subscribe to={[ConnectionContainer]}>
-        {this.renderChildren}
-      </Subscribe>
+      <Subscribe to={[ConnectionContainer]}>{this.renderChildren}</Subscribe>
     )
   }
 }
