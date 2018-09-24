@@ -54,7 +54,10 @@ export async function getTransactionStream(
   cursor = 'now',
 ): Promise<TransactionCallBuilder> {
   const server = getServer(connection)
-  return await server.transactions().cursor(cursor)
+  return await server
+    .transactions()
+    .cursor(cursor)
+    .limit(1)
 }
 
 export async function getLedger(
@@ -85,7 +88,10 @@ export async function getLedgerStream(
   cursor = 'now',
 ): Promise<LedgerCallBuilder> {
   const server = getServer(connection)
-  return server.ledgers().cursor(cursor)
+  return server
+    .ledgers()
+    .cursor(cursor)
+    .limit(1)
 }
 
 export async function getAccount(

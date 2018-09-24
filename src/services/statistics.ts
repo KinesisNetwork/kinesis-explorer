@@ -54,7 +54,7 @@ async function getBackedFeesFromTransactions(
     : getBackedFeesFromTransactions(
         await ts.next(),
         connection,
-        transactionFees + accumulatedFee,
+        currentTotalFees,
       )
 }
 
