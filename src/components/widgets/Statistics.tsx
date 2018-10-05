@@ -6,7 +6,7 @@ import {
   ConnectionContainer,
   ConnectionContext,
 } from '../../services/connections'
-import { getLedgers } from '../../services/kinesis'
+import { convertStroopsToKinesis, getLedgers } from '../../services/kinesis'
 import { getBackedFees, getUnbackedBalances } from '../../services/statistics'
 import { Connection } from '../../types'
 import { renderAmount } from '../../utils'
@@ -38,14 +38,16 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
 
   loadStatisticsData = async (connection: Connection): Promise<void> => {
     this.setState({ isLoading: true })
-    const { totalCoins } = await this.fetchLatestLedger(connection)
+    const { totalCoins, feePool } = await this.fetchLatestLedger(connection)
 
     const unbackedBalances = await getUnbackedBalances(connection)
-    const totalInCirculation = totalCoins - unbackedBalances
+    const backedFeesInPool = await getBackedFees(connection)
+    const ledgerFeePool = Number(feePool)
+    const unbackedFeesInPool = ledgerFeePool - backedFeesInPool
 
-    const totalFeePool = await getBackedFees(connection)
+    const totalInCirculation = totalCoins - unbackedBalances - unbackedFeesInPool
 
-    this.setState({ totalInCirculation, totalFeePool, isLoading: false })
+    this.setState({ totalInCirculation, totalFeePool: backedFeesInPool, isLoading: false })
   }
 
   fetchLatestLedger = async (
@@ -53,6 +55,7 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
   ): Promise<LedgerRecord & { totalCoins: number; feePool: number }> => {
     const ledgers = await getLedgers(connection)
     const latest = ledgers[0]
+
     return {
       ...latest,
       totalCoins: Number(latest.total_coins),
