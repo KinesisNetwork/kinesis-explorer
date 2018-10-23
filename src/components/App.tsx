@@ -5,6 +5,7 @@ import AccountPage from './layout/Account'
 import AppLayout from './layout/AppLayout'
 import Dashboard from './layout/Dashboard'
 import LedgerPage from './layout/Ledger'
+import NodeInfo from './layout/NodeInfo'
 import NotFound from './layout/NotFound'
 import TransactionPage from './layout/Transaction'
 import ConnectionGate from './widgets/ConnectionGate'
@@ -23,6 +24,7 @@ export default class App extends React.Component {
                 <Route path='/ledger/:sequence' component={LedgerPage} />
                 <Route path='/search/:search' component={SearchRedirect} />
                 <Route path='/transaction/:id' component={TransactionPage} />
+                <Route path='/nodes' component={NodeInfo} />
                 <Route path='/404' component={NotFound} />
                 <Redirect to='/404' />
               </Switch>
