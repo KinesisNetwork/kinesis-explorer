@@ -120,7 +120,9 @@ export default class NodeInfo extends React.Component<
 
       const { info } = currentNode
       const { quorum, ledger, state } = info
-      const { agree } = Object.values(quorum || {})[0] as any
+      const { agree } = quorum
+        ? (Object.values(quorum)[0] as any)
+        : { agree: 0 }
       return (
         <React.Fragment key={node}>
           <h2 className='title is-4' style={{ paddingTop: '15px' }}>
