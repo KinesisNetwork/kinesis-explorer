@@ -12,16 +12,16 @@ const REGION_ERROR = { error: 'Region Offline' }
 
 const MONITOR_ENDPOINTS = {
   [Environments.kauTestnet]: [
-    'https://kau-testnet-oceania.kinesisgroup.io:4000',
-    'https://kau-testnet-asia.kinesisgroup.io:4000',
-    'https://kau-testnet-america.kinesisgroup.io:4000',
-    'https://kau-testnet-europe.kinesisgroup.io:4000',
+    'https://kau-testnet-oceania.kinesisgroup.io:3000',
+    'https://kau-testnet-asia.kinesisgroup.io:3000',
+    'https://kau-testnet-america.kinesisgroup.io:3000',
+    'https://kau-testnet-europe.kinesisgroup.io:3000',
   ],
   [Environments.kagTestnet]: [
-    'https://kag-testnet-oceania.kinesisgroup.io:4000',
-    'https://kag-testnet-asia.kinesisgroup.io:4000',
-    'https://kag-testnet-america.kinesisgroup.io:4000',
-    'https://kag-testnet-europe.kinesisgroup.io:4000',
+    'https://kag-testnet-oceania.kinesisgroup.io:3000',
+    'https://kag-testnet-asia.kinesisgroup.io:3000',
+    'https://kag-testnet-america.kinesisgroup.io:3000',
+    'https://kag-testnet-europe.kinesisgroup.io:3000',
   ],
 }
 
