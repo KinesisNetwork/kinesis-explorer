@@ -66,7 +66,7 @@ export class AccountInfo extends React.Component<Props, State> {
       return (
         <div key={i}>
           <HorizontalLabelledField
-            label="Public Key"
+            label='Public Key'
             value={signer.public_key}
             tag={`Weight: ${signer.weight}`}
           />
@@ -79,34 +79,34 @@ export class AccountInfo extends React.Component<Props, State> {
   render() {
     const { account } = this.props
     return (
-      <div className="tile is-ancestor">
-        <div className="tile is-vertical">
-          <div className="tile">
-            <div className="tile is-parent">
-              <div className="tile is-child box">
-                <p className="subtitle">Info</p>
+      <div className='tile is-ancestor'>
+        <div className='tile is-vertical'>
+          <div className='tile'>
+            <div className='tile is-parent'>
+              <div className='tile is-child box'>
+                <p className='subtitle'>Info</p>
                 <HorizontalLabelledField
-                  label="Sequence"
+                  label='Sequence'
                   value={account.sequence}
                   wideLabel={true}
                 />
                 {this.renderThresholds()}
               </div>
             </div>
-            <div className="tile is-parent">
-              <div className="tile is-child box">
-                <p className="subtitle">Balances</p>
+            <div className='tile is-parent'>
+              <div className='tile is-child box'>
+                <p className='subtitle'>Balances</p>
                 {this.renderBalances()}
               </div>
             </div>
           </div>
-          <div className="tile is-parent">
-            <div className="tile is-child box">
-              <p className="subtitle">Signers</p>
+          <div className='tile is-parent'>
+            <div className='tile is-child box'>
+              <p className='subtitle'>Signers</p>
               {this.renderSigners()}
             </div>
           </div>
-          <div className="tile is-parent is-vertical">
+          <div className='tile is-parent is-vertical'>
             <OperationList operations={this.state.operations} />
           </div>
         </div>
