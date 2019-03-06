@@ -7,8 +7,8 @@ import { HorizontalLabelledField } from '../shared'
 import { OperationList } from './OperationList'
 
 interface Props {
-  account: AccountRecord
-  selectedConnection: Connection
+  account: AccountRecord,
+  selectedConnection: Connection,
 }
 
 interface State {
@@ -38,7 +38,6 @@ export class AccountInfo extends React.Component<Props, State> {
     }
   }
 
-  // TODO: This will need to be abstracted with the multi network change
   renderBalances = () => {
     const balances = this.props.account.balances
       .map((balance) =>
