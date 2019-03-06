@@ -4,7 +4,6 @@ import { Redirect, RouteComponentProps } from 'react-router'
 import { Subscribe } from 'unstated'
 import { ConnectionContainer, ConnectionContext } from '../../services/connections'
 import { getAccount } from '../../services/kinesis'
-import { Connection } from '../../types'
 import { AccountInfo } from '../widgets/AccountInfo'
 
 interface ConnectedAccountProps extends RouteComponentProps<{ id: string }> {}
@@ -51,7 +50,14 @@ class AccountPage extends React.Component<Props, State> {
       <section className='section'>
         <h1 className='title'>Account</h1>
         <h2 className='subtitle'>{this.props.match.params.id}</h2>
-        {!this.state.account ? <div /> : <AccountInfo account={this.state.account} />}
+        {!this.state.account ? (
+          <div />
+        ) : (
+          <AccountInfo
+            account={this.state.account}
+            selectedConnection={this.props.selectedConnection}
+          />
+        )}
       </section>
     )
   }
@@ -60,7 +66,7 @@ class AccountPage extends React.Component<Props, State> {
 class ConnectedAccount extends React.Component<ConnectedAccountProps> {
   render() {
     return (
-      <Subscribe to={[ ConnectionContainer ]}>
+      <Subscribe to={[ConnectionContainer]}>
         {({ state }: ConnectionContainer) => <AccountPage {...this.props} {...state} />}
       </Subscribe>
     )
