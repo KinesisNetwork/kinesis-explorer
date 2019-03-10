@@ -39,7 +39,6 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
   loadStatisticsData = async (connection: Connection): Promise<void> => {
     this.setState({ isLoading: true })
     const { totalCoins, feePool } = await this.fetchLatestLedger(connection)
-
     const unbackedBalances = await getUnbackedBalances(connection)
     const backedFeesInPool = await getBackedFees(connection)
     const ledgerFeePool = Number(feePool)

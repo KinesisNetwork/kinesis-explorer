@@ -9,24 +9,15 @@ import {
   TransactionRecord,
 } from 'js-kinesis-sdk'
 import { Connection } from '../types'
-import { flatten, sum } from '../utils'
-import {
-  convertStroopsToKinesis,
-  getAccount,
-  getNetwork,
-  getServer,
-} from './kinesis'
+import { flatten, promiseTimeout, promiseTimout2, sum } from '../utils'
+import { convertStroopsToKinesis, getAccount, getNetwork, getServer } from './kinesis'
 
-export async function getUnbackedBalances(
-  connection: Connection,
-): Promise<number> {
+export async function getUnbackedBalances(connection: Connection): Promise<number> {
   const accounts = await fetchUnbackedAccounts(connection)
   return sumNativeBalances(...accounts)
 }
 
-function getUnbackedKeysCheck(
-  connection: Connection,
-): (account: string) => boolean {
+function getUnbackedKeysCheck(connection: Connection): (account: string) => boolean {
   const unbackedKeys = Object.values(getUnbackedAccountKeys(connection))
   return (account: string) => unbackedKeys.includes(account)
 }
@@ -42,8 +33,7 @@ async function getBackedFeesFromTransactions(
 
   const isUnbackedTransaction = getUnbackedKeysCheck(connection)
   const transactionFees = ts.records.reduce(
-    (acc, curr) =>
-      isUnbackedTransaction(curr.source_account) ? acc : acc + curr.fee_paid,
+    (acc, curr) => (isUnbackedTransaction(curr.source_account) ? acc : acc + curr.fee_paid),
     0,
   )
 
@@ -51,47 +41,37 @@ async function getBackedFeesFromTransactions(
   // Transactions is
   return ts.records.length < 200
     ? currentTotalFees
-    : getBackedFeesFromTransactions(
-        await ts.next(),
-        connection,
-        currentTotalFees,
-      )
+    : getBackedFeesFromTransactions(await ts.next(), connection, currentTotalFees)
 }
 
 export async function getBackedFees(connection: Connection): Promise<number> {
   const server = getServer(connection)
-
-  const inflationOperation = await getInflationOperation(
-    await server
+  try {
+    const first200OperationPage = await server
       .operations()
       .limit(200)
       .order('desc')
-      .call(),
-  )
-  const { paging_token } = await inflationOperation.transaction()
+      .call()
+    const inflationOperation = await getInflationOperation(first200OperationPage, 1000)
+    const { paging_token } = await inflationOperation!.transaction()
+    const transactions = await server
+      .transactions()
+      .cursor(paging_token)
+      .order('asc')
+      .limit(200)
+      .call()
 
-  const transactions = await server
-    .transactions()
-    .cursor(paging_token)
-    .order('asc')
-    .limit(200)
-    .call()
-
-  const totalFeesInStroops = await getBackedFeesFromTransactions(
-    transactions,
-    connection,
-  )
-  return convertStroopsToKinesis(totalFeesInStroops)
+    const totalFeesInStroops = await getBackedFeesFromTransactions(transactions, connection)
+    return convertStroopsToKinesis(totalFeesInStroops)
+  } catch (error) {
+    console.warn(error)
+    return convertStroopsToKinesis(0)
+  }
 }
 
-async function fetchUnbackedAccounts(
-  connection: Connection,
-): Promise<AccountRecord[]> {
+async function fetchUnbackedAccounts(connection: Connection): Promise<AccountRecord[]> {
   const { rootId, emissionId } = getUnbackedAccountKeys(connection)
-  return Promise.all([
-    getAccount(connection, rootId),
-    getAccount(connection, emissionId),
-  ])
+  return Promise.all([getAccount(connection, rootId), getAccount(connection, emissionId)])
 }
 
 function getUnbackedAccountKeys(connection: Connection) {
@@ -121,25 +101,36 @@ function isInflation(op: OperationRecord): op is InflationOperationRecord {
   return op.type === 'inflation'
 }
 
+function findInflationOperation(operations: CollectionPage<OperationRecord>) {
+  return operations.records.find(isInflation)
+}
+
 async function getInflationOperation(
-  operations: CollectionPage<OperationRecord>,
-): Promise<InflationOperationRecord> {
-  return (
-    operations.records.find(isInflation) ||
-    getInflationOperation(await operations.next())
-  )
+  operationsPage: CollectionPage<OperationRecord>,
+  ms: number = 5000,
+) {
+  let result
+  let op = operationsPage
+  let timeout = false
+  setTimeout(() => {
+    timeout = true
+    throw new Error(`getInflationOperation timed out in ${ms} ms.`)
+  }, ms)
+
+  result = findInflationOperation(op)
+  while (!timeout || result !== undefined) {
+    op = await op.next()
+    result = findInflationOperation(op)
+  }
+  return result
 }
 
 function sumNativeBalances(...accounts: AccountRecord[]): number {
-  const balances = flatten(
-    ...accounts.map((acc) => acc.balances.filter(hasNativeAssetType)),
-  )
+  const balances = flatten(...accounts.map((acc) => acc.balances.filter(hasNativeAssetType)))
 
   return balances.reduce((memo, { balance }) => sum(memo, Number(balance)), 0)
 }
 
-function hasNativeAssetType<T extends { asset_type: string }>(
-  balance: T,
-): boolean {
+function hasNativeAssetType<T extends { asset_type: string }>(balance: T): boolean {
   return balance.asset_type === 'native'
 }
