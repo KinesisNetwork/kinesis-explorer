@@ -9,7 +9,7 @@ import {
   TransactionRecord,
 } from 'js-kinesis-sdk'
 import { Connection } from '../types'
-import { flatten, promiseTimeout, promiseTimout2, sum } from '../utils'
+import { flatten, sum } from '../utils'
 import { convertStroopsToKinesis, getAccount, getNetwork, getServer } from './kinesis'
 
 export async function getUnbackedBalances(connection: Connection): Promise<number> {
@@ -52,19 +52,24 @@ export async function getBackedFees(connection: Connection): Promise<number> {
       .limit(200)
       .order('desc')
       .call()
-    const inflationOperation = await getInflationOperation(first200OperationPage, 1000)
-    const { paging_token } = await inflationOperation!.transaction()
-    const transactions = await server
-      .transactions()
-      .cursor(paging_token)
-      .order('asc')
-      .limit(200)
-      .call()
 
-    const totalFeesInStroops = await getBackedFeesFromTransactions(transactions, connection)
-    return convertStroopsToKinesis(totalFeesInStroops)
+    const inflationOperation = await getInflationOperation(first200OperationPage, 1000)
+
+    if (inflationOperation && inflationOperation.transaction) {
+      const { paging_token } = await inflationOperation.transaction()
+      const transactions = await server
+        .transactions()
+        .cursor(paging_token)
+        .order('asc')
+        .limit(200)
+        .call()
+
+      const totalFeesInStroops = await getBackedFeesFromTransactions(transactions, connection)
+      return convertStroopsToKinesis(totalFeesInStroops)
+    } else {
+      return convertStroopsToKinesis(0)
+    }
   } catch (error) {
-    console.warn(error)
     return convertStroopsToKinesis(0)
   }
 }
@@ -108,7 +113,7 @@ function findInflationOperation(operations: CollectionPage<OperationRecord>) {
 async function getInflationOperation(
   operationsPage: CollectionPage<OperationRecord>,
   ms: number = 5000,
-) {
+): Promise<OperationRecord | void> {
   let result
   let op = operationsPage
   let timeout = false
