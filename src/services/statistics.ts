@@ -53,7 +53,7 @@ export async function getBackedFees(connection: Connection): Promise<number> {
       .order('desc')
       .call()
 
-    const inflationOperation = await getInflationOperation(first200OperationPage, 1000)
+    const inflationOperation = await getInflationOperation(first200OperationPage, 5000)
 
     if (inflationOperation && inflationOperation.transaction) {
       const { paging_token } = await inflationOperation.transaction()

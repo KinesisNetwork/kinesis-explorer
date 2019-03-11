@@ -28,19 +28,3 @@ export function log<T>(x: T, tag?: string | number): T {
 export function sum(a: number, b: number): number {
   return a + b
 }
-
-/**
- * Helper to set a timout for promise
- * @param ms - Number of time to wait
- * @param promise - The main task
- * @param timeoutMsg - The message shows if it's timeout. Default applied
- */
-export function promiseTimeout(ms: number, promise: Promise<any>, timeoutMsg?: any) {
-  const timeout = new Promise((resolve, reject) => {
-    const id = setTimeout(() => {
-      clearTimeout(id)
-      reject(timeoutMsg || `Timed out in ${ms} ms.`)
-    }, ms)
-  })
-  return Promise.race([promise, timeout])
-}
