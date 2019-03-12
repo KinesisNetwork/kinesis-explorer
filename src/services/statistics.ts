@@ -116,17 +116,19 @@ async function getInflationOperation(
   let result: OperationRecord | undefined
   let op = operationsPage
   let timeout = false
-  setTimeout(() => {
-    if (result === undefined) {
-      timeout = true
-      throw new Error(`getInflationOperation timed out in ${ms} ms.`)
-    }
+
+  const timer = setTimeout(() => {
+    timeout = true
   }, ms)
 
   result = findInflationOperation(op)
-  while (result === undefined && !timeout) {
+  while (!result && !timeout) {
     op = await op.next()
     result = findInflationOperation(op)
+  }
+  clearTimeout(timer)
+  if (timeout) {
+    throw new Error(`getInflationOperation timed out in ${ms} ms.`)
   }
   return result
 }
