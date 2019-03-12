@@ -65,6 +65,7 @@ export async function getBackedFees(connection: Connection): Promise<number> {
         .call()
 
       const totalFeesInStroops = await getBackedFeesFromTransactions(transactions, connection)
+
       return convertStroopsToKinesis(totalFeesInStroops)
     } else {
       return convertStroopsToKinesis(0)
@@ -82,7 +83,6 @@ async function fetchUnbackedAccounts(connection: Connection): Promise<AccountRec
 function getUnbackedAccountKeys(connection: Connection) {
   const emissionKeypair = getEmissionKeypair(connection)
   const masterKeypair = getMasterKeypair()
-
   return {
     emissionId: emissionKeypair.publicKey(),
     rootId: masterKeypair.publicKey(),
@@ -94,7 +94,6 @@ export function getEmissionKeypair(connection: Connection): Keypair {
   const emissionSeedString = `${currentNetwork.networkPassphrase()}emission`
   const hash = createHash('sha256')
   hash.update(emissionSeedString)
-
   return Keypair.fromRawEd25519Seed(hash.digest())
 }
 
@@ -114,18 +113,22 @@ async function getInflationOperation(
   operationsPage: CollectionPage<OperationRecord>,
   ms: number = 5000,
 ): Promise<OperationRecord | void> {
-  let result
+  let result: OperationRecord | undefined
   let op = operationsPage
   let timeout = false
-  setTimeout(() => {
+
+  const timer = setTimeout(() => {
     timeout = true
-    throw new Error(`getInflationOperation timed out in ${ms} ms.`)
   }, ms)
 
   result = findInflationOperation(op)
-  while (!timeout || result !== undefined) {
+  while (!result && !timeout) {
     op = await op.next()
     result = findInflationOperation(op)
+  }
+  clearTimeout(timer)
+  if (timeout) {
+    throw new Error(`getInflationOperation timed out in ${ms} ms.`)
   }
   return result
 }
