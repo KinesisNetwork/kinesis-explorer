@@ -44,9 +44,14 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
     const ledgerFeePool = Number(feePool)
     const unbackedFeesInPool = ledgerFeePool - backedFeesInPool
 
-    const totalInCirculation = totalCoins - unbackedBalances - unbackedFeesInPool
+    const totalInCirculation =
+      totalCoins - unbackedBalances - unbackedFeesInPool
 
-    this.setState({ totalInCirculation, totalFeePool: backedFeesInPool, isLoading: false })
+    this.setState({
+      totalInCirculation,
+      totalFeePool: backedFeesInPool,
+      isLoading: false,
+    })
   }
 
   fetchLatestLedger = async (
