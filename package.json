@@ -8,8 +8,7 @@
     "lint": "tslint -p .",
     "test": "npm run lint && npm run compile",
     "start": "parcel index.html",
-    "build": "parcel build index.html",
-    "ye": "tslint --fix src/services/statistics.ts && tslint --fix src/services/kinesis.ts"
+    "build": "parcel build index.html"
   },
   "repository": {
     "type": "git",
