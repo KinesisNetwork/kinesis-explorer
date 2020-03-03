@@ -7,7 +7,7 @@ import {
   ConnectionContext,
 } from '../../services/connections'
 import { getLedgers } from '../../services/kinesis'
-import { getBackedFees, getUnbackedBalances } from '../../services/statistics'
+import { getBackedFees, getUnbackedBalances, getKMSCurrencyFees, } from '../../services/statistics'
 import { Connection } from '../../types'
 import { renderAmount } from '../../utils'
 import { HorizontalLabelledField } from '../shared/LabelledField'
@@ -41,15 +41,17 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
     const { totalCoins, feePool } = await this.fetchLatestLedger(connection)
     const unbackedBalances = await getUnbackedBalances(connection)
     const backedFeesInPool = await getBackedFees(connection)
+    const kmsFees = await getKMSCurrencyFees(connection)
     const ledgerFeePool = Number(feePool)
     const unbackedFeesInPool = ledgerFeePool - backedFeesInPool
+    const totalFeePool = kmsFees + backedFeesInPool
 
     const totalInCirculation =
       totalCoins - unbackedBalances - unbackedFeesInPool
 
     this.setState({
       totalInCirculation,
-      totalFeePool: backedFeesInPool,
+      totalFeePool,
       isLoading: false,
     })
   }
