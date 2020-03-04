@@ -44,7 +44,7 @@ export async function getKMSCurrencyFees({ currency, stage }: Connection) {
     return response.data.pool || 0
   } catch (e) {
     // TODO
-    throw e
+    return 0
   }
 }
 
