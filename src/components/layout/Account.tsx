@@ -6,8 +6,8 @@ import { ConnectionContainer, ConnectionContext } from '../../services/connectio
 import { getAccount } from '../../services/kinesis'
 import { AccountInfo } from '../widgets/AccountInfo'
 
-interface ConnectedAccountProps extends RouteComponentProps<{ id: string }> {}
-interface Props extends ConnectedAccountProps, ConnectionContext {}
+interface ConnectedAccountProps extends RouteComponentProps<{ id: string }> { }
+interface Props extends ConnectedAccountProps, ConnectionContext { }
 
 interface State {
   account: AccountRecord | null
@@ -24,6 +24,7 @@ class AccountPage extends React.Component<Props, State> {
   }
 
   loadAccount = async () => {
+    // In the scenario required, should add /transactions to URI to access deactivated account
     try {
       const account = await getAccount(this.props.selectedConnection, this.props.match.params.id)
       this.setState({ account })
@@ -53,11 +54,11 @@ class AccountPage extends React.Component<Props, State> {
         {!this.state.account ? (
           <div />
         ) : (
-          <AccountInfo
-            account={this.state.account}
-            selectedConnection={this.props.selectedConnection}
-          />
-        )}
+            <AccountInfo
+              account={this.state.account}
+              selectedConnection={this.props.selectedConnection}
+            />
+          )}
       </section>
     )
   }
