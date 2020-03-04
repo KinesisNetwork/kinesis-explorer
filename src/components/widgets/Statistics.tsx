@@ -7,7 +7,7 @@ import {
   ConnectionContext,
 } from '../../services/connections'
 import { getLedgers } from '../../services/kinesis'
-import { getBackedFees, getUnbackedBalances, getKMSCurrencyFees, } from '../../services/statistics'
+import { getBackedFees, getKMSCurrencyFees, getUnbackedBalances } from '../../services/statistics'
 import { Connection } from '../../types'
 import { renderAmount } from '../../utils'
 import { HorizontalLabelledField } from '../shared/LabelledField'
