@@ -1,4 +1,4 @@
-import { AccountRecord } from 'js-kinesis-sdk'
+import { AccountRecord, CollectionPage, EffectRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
 import { Redirect, RouteComponentProps } from 'react-router'
 import { Subscribe } from 'unstated'
@@ -24,9 +24,11 @@ class AccountPage extends React.Component<Props, State> {
   }
 
   loadAccount = async () => {
+    const accountId = this.props.match.params.id
+
     // In the scenario required, should add /transactions to URI to access deactivated account
     try {
-      const account = await getAccount(this.props.selectedConnection, this.props.match.params.id)
+      const account = await getAccount(this.props.selectedConnection, accountId)
       this.setState({ account })
     } catch (e) {
       this.setState({ invalidAccount: true })
@@ -44,19 +46,25 @@ class AccountPage extends React.Component<Props, State> {
   }
 
   render() {
+    const { match, selectedConnection } = this.props
+    const { account } = this.state
+
+    const accountId = match.params.id
+
     if (this.state.invalidAccount) {
-      return <Redirect to='/404' />
+      return <Redirect to={`/merged-account/${accountId}`} />
     }
+
     return (
       <section className='section'>
         <h1 className='title'>Account</h1>
-        <h2 className='subtitle'>{this.props.match.params.id}</h2>
-        {!this.state.account ? (
+        <h2 className='subtitle'>{accountId}</h2>
+        {!account ? (
           <div />
         ) : (
             <AccountInfo
-              account={this.state.account}
-              selectedConnection={this.props.selectedConnection}
+              account={account}
+              selectedConnection={selectedConnection}
             />
           )}
       </section>
