@@ -1,12 +1,10 @@
-import { AccountRecord, CollectionPage, EffectRecord, TransactionRecord } from 'js-kinesis-sdk'
+import { TransactionRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
 import { Redirect, RouteComponentProps } from 'react-router'
 import { Subscribe } from 'unstated'
 import { ConnectionContainer, ConnectionContext } from '../../services/connections'
-import { getAccount, getTransactions } from '../../services/kinesis'
-import { AccountInfo } from '../widgets/AccountInfo'
+import { getTransactions } from '../../services/kinesis'
 import { Transactions } from '../widgets'
-import { TransactionInfo } from '../widgets/TransactionInfo'
 
 interface ConnectedAccountProps extends RouteComponentProps<{ id: string }> { }
 interface Props extends ConnectedAccountProps, ConnectionContext { }
