@@ -5,19 +5,28 @@ import {
   InflationOperationRecord,
   Keypair,
   OperationRecord,
-  Server,
+  PaymentOperationRecord,
   TransactionRecord,
 } from 'js-kinesis-sdk'
 import { Connection } from '../types'
 import { flatten, sum } from '../utils'
-import { convertStroopsToKinesis, getAccount, getNetwork, getServer } from './kinesis'
+import {
+  convertStroopsToKinesis,
+  getAccount,
+  getNetwork,
+  getServer,
+} from './kinesis'
 
-export async function getUnbackedBalances(connection: Connection): Promise<number> {
+export async function getUnbackedBalances(
+  connection: Connection,
+): Promise<number> {
   const accounts = await fetchUnbackedAccounts(connection)
   return sumNativeBalances(...accounts)
 }
 
-function getUnbackedKeysCheck(connection: Connection): (account: string) => boolean {
+function getUnbackedKeysCheck(
+  connection: Connection,
+): (account: string) => boolean {
   const unbackedKeys = Object.values(getUnbackedAccountKeys(connection))
   return (account: string) => unbackedKeys.includes(account)
 }
@@ -32,16 +41,31 @@ async function getBackedFeesFromTransactions(
   }
 
   const isUnbackedTransaction = getUnbackedKeysCheck(connection)
-  const transactionFees = ts.records.reduce(
-    (acc, curr) => (isUnbackedTransaction(curr.source_account) ? acc : acc + curr.fee_paid),
-    0,
-  )
+  const transactionFees = await ts.records.reduce(async (acc, curr) => {
+    const operations = await curr.operations()
+    const payments = operations.records.reduce(
+      (ops, nextOp) => (nextOp.type === 'payment' ? ops.concat(nextOp) : ops),
+      [] as PaymentOperationRecord[],
+    )
+    return payments[0]
+      ? isUnbackedTransaction(curr.source_account) ||
+        isUnbackedTransaction(payments[0].to)
+        ? acc
+        : (await acc) + curr.fee_paid
+      : isUnbackedTransaction(curr.source_account)
+      ? acc
+      : (await acc) + curr.fee_paid
+  }, Promise.resolve(0))
 
   const currentTotalFees = transactionFees + accumulatedFee
   // Transactions is
   return ts.records.length < 200
     ? currentTotalFees
-    : getBackedFeesFromTransactions(await ts.next(), connection, currentTotalFees)
+    : getBackedFeesFromTransactions(
+        await ts.next(),
+        connection,
+        currentTotalFees,
+      )
 }
 
 export async function getBackedFees(connection: Connection): Promise<number> {
@@ -53,7 +77,10 @@ export async function getBackedFees(connection: Connection): Promise<number> {
       .order('desc')
       .call()
 
-    const inflationOperation = await getInflationOperation(first200OperationPage, 5000)
+    const inflationOperation = await getInflationOperation(
+      first200OperationPage,
+      5000,
+    )
 
     if (inflationOperation && inflationOperation.transaction) {
       const { paging_token } = await inflationOperation.transaction()
@@ -64,7 +91,10 @@ export async function getBackedFees(connection: Connection): Promise<number> {
         .limit(200)
         .call()
 
-      const totalFeesInStroops = await getBackedFeesFromTransactions(transactions, connection)
+      const totalFeesInStroops = await getBackedFeesFromTransactions(
+        transactions,
+        connection,
+      )
 
       return convertStroopsToKinesis(totalFeesInStroops)
     } else {
@@ -75,17 +105,32 @@ export async function getBackedFees(connection: Connection): Promise<number> {
   }
 }
 
-async function fetchUnbackedAccounts(connection: Connection): Promise<AccountRecord[]> {
-  const { rootId, emissionId } = getUnbackedAccountKeys(connection)
-  return Promise.all([getAccount(connection, rootId), getAccount(connection, emissionId)])
+async function fetchUnbackedAccounts(
+  connection: Connection,
+): Promise<AccountRecord[]> {
+  const { rootId, emissionId, coldWalletId } = getUnbackedAccountKeys(
+    connection,
+  )
+  const rootAndEmission = await Promise.all([
+    getAccount(connection, rootId),
+    getAccount(connection, emissionId),
+  ])
+  try {
+    const coldWallet = await getAccount(connection, coldWalletId)
+    return rootAndEmission.concat(coldWallet)
+  } catch (e) {
+    return rootAndEmission
+  }
 }
 
 function getUnbackedAccountKeys(connection: Connection) {
   const emissionKeypair = getEmissionKeypair(connection)
   const masterKeypair = getMasterKeypair()
+  const coldWallet = getColdWalletPublicKey()
   return {
     emissionId: emissionKeypair.publicKey(),
     rootId: masterKeypair.publicKey(),
+    coldWalletId: coldWallet,
   }
 }
 
@@ -95,6 +140,10 @@ export function getEmissionKeypair(connection: Connection): Keypair {
   const hash = createHash('sha256')
   hash.update(emissionSeedString)
   return Keypair.fromRawEd25519Seed(hash.digest())
+}
+
+export function getColdWalletPublicKey(): string {
+  return 'GAPS3KZ4YVEL4UYFAGTE6L6H6GRZ3KYBWGY2UTGTAJBXGUJLBCYQIXXA'
 }
 
 export function getMasterKeypair(): Keypair {
@@ -134,11 +183,15 @@ async function getInflationOperation(
 }
 
 function sumNativeBalances(...accounts: AccountRecord[]): number {
-  const balances = flatten(...accounts.map((acc) => acc.balances.filter(hasNativeAssetType)))
+  const balances = flatten(
+    ...accounts.map((acc) => acc.balances.filter(hasNativeAssetType)),
+  )
 
   return balances.reduce((memo, { balance }) => sum(memo, Number(balance)), 0)
 }
 
-function hasNativeAssetType<T extends { asset_type: string }>(balance: T): boolean {
+function hasNativeAssetType<T extends { asset_type: string }>(
+  balance: T,
+): boolean {
   return balance.asset_type === 'native'
 }
