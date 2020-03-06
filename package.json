@@ -47,7 +47,7 @@
     "@types/react-router-dom": "4.2.6",
     "bulma": "0.7.1",
     "node-sass": "4.9.0",
-    "parcel-bundler": "1.8.1",
+    "parcel-bundler": "1.10.0",
     "tslint": "5.10.0",
     "tslint-react": "3.6.0",
     "typescript": "2.9.1"
