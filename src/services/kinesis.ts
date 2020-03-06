@@ -39,13 +39,27 @@ export async function getTransaction(
 
 export async function getTransactions(
   connection: Connection,
+  accountId?: string,
+  limit: number = 10,
+  cursor?: string,
 ): Promise<TransactionRecord[]> {
   const server = getServer(connection)
-  const { records }: CollectionPage<TransactionRecord> = await server
+  const transactionsPromise = server
     .transactions()
-    .limit(10)
+
+  if (accountId) {
+    transactionsPromise.forAccount(accountId)
+  }
+
+  if (cursor) {
+    transactionsPromise.cursor(cursor)
+  }
+
+  const { records }: CollectionPage<TransactionRecord> = await transactionsPromise
+    .limit(limit)
     .order('desc')
     .call()
+
   return records
 }
 
