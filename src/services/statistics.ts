@@ -111,11 +111,16 @@ async function fetchUnbackedAccounts(
   const { rootId, emissionId, coldWalletId } = getUnbackedAccountKeys(
     connection,
   )
-  return Promise.all([
+  const rootAndEmission = await Promise.all([
     getAccount(connection, rootId),
     getAccount(connection, emissionId),
-    getAccount(connection, coldWalletId),
   ])
+  try {
+    const coldWallet = await getAccount(connection, coldWalletId)
+    return rootAndEmission.concat(coldWallet)
+  } catch (e) {
+    return rootAndEmission
+  }
 }
 
 function getUnbackedAccountKeys(connection: Connection) {
