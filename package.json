@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/KinesisNetwork/kinesis-explorer#readme",
   "dependencies": {
-    "axios": "0.18.0",
+    "axios": "0.18.1",
     "event-source-polyfill": "0.0.12",
     "js-kinesis-sdk": "0.9.10",
     "lodash": "4.17.13",
