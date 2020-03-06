@@ -39,7 +39,7 @@ export async function getKMSCurrencyFees({ currency, stage }: Connection) {
     }
 
     const response = await axios
-      .get(`http://localhost:3000/api/fee-pools/${currency}`)
+      .get(`https://api.kinesis.money/api/fee-pools/${currency}`)
 
     return response.data.pool || 0
   } catch (e) {
