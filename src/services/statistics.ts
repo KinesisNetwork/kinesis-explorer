@@ -38,8 +38,25 @@ export async function getKMSCurrencyFees({ currency, stage }: Connection) {
       return 0
     }
 
+    let urlRoot
+
+    switch (process.env.BUCKET) {
+      case 'integration-explorer.kinesisgroup.io':
+        urlRoot = 'https://integration-api.kinesis.money'
+        break
+      case 'uat-explorer.kinesisgroup.io':
+        urlRoot = 'https://uat-api.kinesis.money'
+        break
+      case 'explorer.kinesisgroup.io':
+        urlRoot = 'https://api.kinesis.money'
+        break
+      default:
+        urlRoot = 'http://localhost:3000'
+        break
+    }
+
     const response = await axios
-      .get(`https://api.kinesis.money/api/fee-pools/${currency}`)
+      .get(`${urlRoot}/api/fee-pools/${currency}`)
 
     return response.data.pool || 0
   } catch (e) {
