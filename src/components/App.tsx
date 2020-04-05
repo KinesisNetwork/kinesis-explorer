@@ -5,6 +5,7 @@ import AccountPage from './layout/Account'
 import AppLayout from './layout/AppLayout'
 import Dashboard from './layout/Dashboard'
 import LedgerPage from './layout/Ledger'
+import MergedAccountPage from './layout/MergedAccount'
 import NodeInfo from './layout/NodeInfo'
 import NotFound from './layout/NotFound'
 import TransactionPage from './layout/Transaction'
@@ -21,6 +22,7 @@ export default class App extends React.Component {
               <Switch>
                 <Route exact={true} path='/' component={Dashboard} />
                 <Route path='/account/:id' component={AccountPage} />
+                <Route path='/merged-account/:id' component={MergedAccountPage} />
                 <Route path='/ledger/:sequence' component={LedgerPage} />
                 <Route path='/search/:search' component={SearchRedirect} />
                 <Route path='/transaction/:id' component={TransactionPage} />

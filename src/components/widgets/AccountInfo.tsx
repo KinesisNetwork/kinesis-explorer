@@ -12,23 +12,53 @@ interface Props {
 }
 
 interface State {
-  operations: CollectionPage<OperationRecord> | null
+  operations: CollectionPage<OperationRecord> | null,
+  lastPagingToken: string | undefined,
+  showLoadMore: boolean,
 }
 
 export class AccountInfo extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
+
     this.state = {
       operations: null,
+      lastPagingToken: undefined,
+      showLoadMore: true,
     }
+
+    this.onClickLoadMore = this.onClickLoadMore.bind(this)
   }
 
-  loadOperations = async () => {
-    const operations = await this.props.account.operations({ limit: 10, order: 'desc' })
-    this.setState({ operations })
+  loadOperations = async (cursor?: string, limit: number = 10) => {
+    const operations = await this.props.account.operations({ limit, cursor, order: 'desc' })
+
+    const lastPagingToken = operations.records.length
+      ? operations.records[operations.records.length - 1].paging_token
+      : undefined
+
+    const showLoadMore = operations.records.length === limit || !cursor
+    const originalRecordSet = this.state.operations ? this.state.operations.records : []
+
+    // Simple de-duping
+    operations.records = originalRecordSet.concat(
+      ...operations.records.filter((v) => {
+        return originalRecordSet.findIndex((ov) => ov.id === v.id) === -1
+      }),
+    )
+
+    this.setState({
+      operations,
+      lastPagingToken,
+      showLoadMore,
+    })
   }
 
   componentDidMount() {
+    this.setState({
+      lastPagingToken: undefined,
+    })
+
     this.loadOperations()
   }
 
@@ -36,6 +66,11 @@ export class AccountInfo extends React.Component<Props, State> {
     if (prevProps.account.account_id !== this.props.account.account_id) {
       this.loadOperations()
     }
+  }
+
+  onClickLoadMore() {
+    // 200 is the limit as defined on the horizon server
+    this.loadOperations(this.state.lastPagingToken, 200)
   }
 
   renderBalances = () => {
@@ -77,6 +112,8 @@ export class AccountInfo extends React.Component<Props, State> {
 
   render() {
     const { account } = this.props
+    const { showLoadMore, operations } = this.state
+
     return (
       <div className='tile is-ancestor'>
         <div className='tile is-vertical'>
@@ -106,7 +143,8 @@ export class AccountInfo extends React.Component<Props, State> {
             </div>
           </div>
           <div className='tile is-parent is-vertical'>
-            <OperationList operations={this.state.operations} />
+            <OperationList operations={operations} />
+            {showLoadMore && <button className='button' onClick={this.onClickLoadMore}>Load more</button>}
           </div>
         </div>
       </div>

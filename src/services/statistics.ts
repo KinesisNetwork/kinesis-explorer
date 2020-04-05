@@ -1,3 +1,4 @@
+import axios from 'axios'
 import { createHash } from 'crypto'
 import {
   AccountRecord,
@@ -31,6 +32,39 @@ function getUnbackedKeysCheck(
   return (account: string) => unbackedKeys.includes(account)
 }
 
+export async function getKMSCurrencyFees({ currency, stage }: Connection) {
+  try {
+    if (stage === 'testnet') {
+      return 0
+    }
+
+    let urlRoot
+
+    switch (process.env.BUCKET) {
+      case 'integration-explorer.kinesisgroup.io':
+        urlRoot = 'https://integration-api.kinesis.money'
+        break
+      case 'uat-explorer.kinesisgroup.io':
+        urlRoot = 'https://uat-api.kinesis.money'
+        break
+      case 'explorer.kinesisgroup.io':
+        urlRoot = 'https://api.kinesis.money'
+        break
+      default:
+        urlRoot = 'http://localhost:3000'
+        break
+    }
+
+    const response = await axios
+      .get(`${urlRoot}/api/fee-pools/${currency}`)
+
+    return response.data.pool || 0
+  } catch (e) {
+    // TODO
+    return 0
+  }
+}
+
 async function getBackedFeesFromTransactions(
   ts: CollectionPage<TransactionRecord>,
   connection: Connection,
@@ -53,19 +87,19 @@ async function getBackedFeesFromTransactions(
         ? acc
         : (await acc) + curr.fee_paid
       : isUnbackedTransaction(curr.source_account)
-      ? acc
-      : (await acc) + curr.fee_paid
+        ? acc
+        : (await acc) + curr.fee_paid
   }, Promise.resolve(0))
 
   const currentTotalFees = transactionFees + accumulatedFee
-  // Transactions is
+
   return ts.records.length < 200
     ? currentTotalFees
     : getBackedFeesFromTransactions(
-        await ts.next(),
-        connection,
-        currentTotalFees,
-      )
+      await ts.next(),
+      connection,
+      currentTotalFees,
+    )
 }
 
 export async function getBackedFees(connection: Connection): Promise<number> {
