@@ -37,9 +37,11 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
   loadStatisticsData = async (connection: Connection): Promise<void> => {
     this.setState({ isLoading: true })
     const { totalCoins, feePool } = await this.fetchLatestLedger(connection)
-    const unbackedBalances = await getUnbackedBalances(connection)
-    const backedFeesInPool = await getBackedFees(connection)
-    const kmsFees = await getKMSCurrencyFees(connection)
+    const [unbackedBalances, backedFeesInPool, kmsFees] = await Promise.all([
+      getUnbackedBalances(connection),
+      getBackedFees(connection),
+      getKMSCurrencyFees(connection),
+    ])
     const ledgerFeePool = Number(feePool)
     const unbackedFeesInPool = ledgerFeePool - backedFeesInPool
     const totalFeePool = new Decimal(kmsFees).add(backedFeesInPool).toNumber()
@@ -72,8 +74,8 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
       selectedConnection: { currency },
     } = this.props
     return (
-      <article className='tile is-child box'>
-        <p className='title'>Statistics</p>
+      <article className="tile is-child box">
+        <p className="title">Statistics</p>
         <div>
           <HorizontalLabelledField
             label={'Kinesis in Circulation'}
