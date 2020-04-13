@@ -1,7 +1,7 @@
+import Decimal from 'decimal.js'
 import { LedgerRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
 import { Subscribe } from 'unstated'
-import Decimal from 'decimal.js'
 
 import { ConnectionContainer, ConnectionContext } from '../../services/connections'
 import { getLedgers } from '../../services/kinesis'
@@ -53,7 +53,9 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
     })
   }
 
-  fetchLatestLedger = async (connection: Connection): Promise<LedgerRecord & { totalCoins: number; feePool: number }> => {
+  fetchLatestLedger = async (
+    connection: Connection,
+  ): Promise<LedgerRecord & { totalCoins: number; feePool: number }> => {
     const ledgers = await getLedgers(connection)
     const latest = ledgers[0]
 
@@ -93,6 +95,10 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
 
 export default class ConnectedStatistics extends React.Component {
   render() {
-    return <Subscribe to={[ConnectionContainer]}>{({ state }: ConnectionContainer) => <StatisticsWidget {...state} />}</Subscribe>
+    return (
+      <Subscribe to={[ConnectionContainer]}>
+        {({ state }: ConnectionContainer) => <StatisticsWidget {...state} />}
+      </Subscribe>
+    )
   }
 }

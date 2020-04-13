@@ -6,6 +6,7 @@
   "scripts": {
     "compile": "tsc",
     "lint": "tslint -p .",
+    "lint-fix": "tslint -p . --fix ",
     "test": "npm run lint && npm run compile",
     "start": "parcel index.html",
     "build": "parcel build index.html"

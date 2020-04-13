@@ -51,7 +51,11 @@ export async function getKMSCurrencyFees({ currency, stage }: Connection) {
   }
 }
 
-async function getBackedFeesFromTransactions(ts: CollectionPage<TransactionRecord>, connection: Connection, accumulatedFee = 0): Promise<number> {
+async function getBackedFeesFromTransactions(
+  ts: CollectionPage<TransactionRecord>,
+  connection: Connection,
+  accumulatedFee = 0,
+): Promise<number> {
   if (ts.records.length === 0) {
     return accumulatedFee
   }
@@ -74,7 +78,9 @@ async function getBackedFeesFromTransactions(ts: CollectionPage<TransactionRecor
 
   const currentTotalFees = transactionFees + accumulatedFee
 
-  return ts.records.length < 200 ? currentTotalFees : getBackedFeesFromTransactions(await ts.next(), connection, currentTotalFees)
+  return ts.records.length < 200
+    ? currentTotalFees
+    : getBackedFeesFromTransactions(await ts.next(), connection, currentTotalFees)
 }
 
 export async function getBackedFees(connection: Connection): Promise<number> {
@@ -145,7 +151,10 @@ function findInflationOperation(operations: CollectionPage<OperationRecord>) {
   return operations.records.find(isInflation)
 }
 
-async function getInflationOperation(operationsPage: CollectionPage<OperationRecord>, ms: number = 5000): Promise<OperationRecord | void> {
+async function getInflationOperation(
+  operationsPage: CollectionPage<OperationRecord>,
+  ms: number = 5000,
+): Promise<OperationRecord | void> {
   let result: OperationRecord | undefined
   let op = operationsPage
   let timeout = false
