@@ -46,7 +46,6 @@ export async function getKMSCurrencyFees({ currency, stage }: Connection) {
 
     return response.data.pool || 0
   } catch (e) {
-    console.log(`Error: ${JSON.stringify(e)}`)
     return 0
   }
 }

@@ -72,8 +72,8 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
       selectedConnection: { currency },
     } = this.props
     return (
-      <article className="tile is-child box">
-        <p className="title">Statistics</p>
+      <article className='tile is-child box'>
+        <p className='title'>Statistics</p>
         <div>
           <HorizontalLabelledField
             label={'Kinesis in Circulation'}
