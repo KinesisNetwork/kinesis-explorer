@@ -44,7 +44,7 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
     const kmsFees = await getKMSCurrencyFees(connection)
     const ledgerFeePool = Number(feePool)
     const unbackedFeesInPool = ledgerFeePool - backedFeesInPool
-    const totalFeePool = kmsFees + backedFeesInPool
+    const totalFeePool = kmsFees + unbackedFeesInPool
 
     const totalInCirculation =
       totalCoins - unbackedBalances - unbackedFeesInPool
