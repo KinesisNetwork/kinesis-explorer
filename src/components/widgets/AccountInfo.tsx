@@ -31,6 +31,18 @@ export class AccountInfo extends React.Component<Props, State> {
   }
 
   loadOperations = async (cursor?: string, limit: number = 10) => {
+    if (!this.props.account) {
+      this.setState({
+        showLoadMore: false,
+      })
+      return
+    }
+    if (!this.props.account.operations) {
+      this.setState({
+        showLoadMore: false,
+      })
+      return
+    }
     const operations = await this.props.account.operations({ limit, cursor, order: 'desc' })
 
     const lastPagingToken = operations.records.length

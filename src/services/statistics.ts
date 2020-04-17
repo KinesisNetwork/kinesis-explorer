@@ -34,10 +34,6 @@ function getUnbackedKeysCheck(
 
 export async function getKMSCurrencyFees({ currency, stage }: Connection) {
   try {
-    if (stage === 'testnet') {
-      return 0
-    }
-
     let urlRoot
 
     switch (process.env.BUCKET) {

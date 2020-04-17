@@ -7,6 +7,7 @@ import {
   Server,
   TransactionCallBuilder,
   TransactionRecord,
+  StrKey,
 } from 'js-kinesis-sdk'
 import { Connection } from '../types'
 
@@ -115,4 +116,10 @@ export async function getAccount(
   const server = getServer(connection)
   const account: AccountRecord = await server.loadAccount(accountId)
   return account
+}
+
+export async function validateAccount(
+  address: string,
+): Promise<boolean> {
+  return StrKey.isValidEd25519PublicKey(address)
 }
