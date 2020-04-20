@@ -5,9 +5,9 @@ import {
   LedgerRecord,
   Network,
   Server,
+  StrKey,
   TransactionCallBuilder,
   TransactionRecord,
-  StrKey,
 } from 'js-kinesis-sdk'
 import { Connection } from '../types'
 

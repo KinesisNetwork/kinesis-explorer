@@ -4,6 +4,7 @@ import { Redirect, RouteComponentProps } from 'react-router'
 import { Subscribe } from 'unstated'
 import { ConnectionContainer, ConnectionContext } from '../../services/connections'
 import { getAccount, validateAccount } from '../../services/kinesis'
+import { createEmptyBalanceAccountRecord } from '../../utils'
 import { AccountInfo } from '../widgets/AccountInfo'
 
 interface ConnectedAccountProps extends RouteComponentProps<{ id: string }> { }
@@ -26,65 +27,30 @@ class AccountPage extends React.Component<Props, State> {
   loadAccount = async () => {
     const accountId = this.props.match.params.id
 
-    // Validate invalid account
     try {
-      const status: boolean = await validateAccount(accountId)
-      if (!status) {
-        throw new Error()
+      const isAccountAddressValid: boolean = await validateAccount(accountId)
+      if (!isAccountAddressValid) {
+        return this.setState({ invalidAccount: true })
       } else {
         // In the scenario required, should add /transactions to URI to access deactivated account
-        try {
-          const account = await getAccount(this.props.selectedConnection, accountId)
-          this.setState({ account })
-        } catch (e) {
-          // Valid account with 0 balance
-          this.setState({
-            account: {
-              id: accountId,
-              paging_token: '',
-              account_id: accountId,
-              sequence: 0,
-              subentry_count: 0,
-              thresholds: {
-                low_threshold: 0,
-                med_threshold: 0,
-                high_threshold: 0,
-              },
-              flags: {
-                auth_required: false,
-                auth_revocable: false,
-              },
-              balances: [
-                {
-                  balance: '0.0',
-                  asset_type: 'native',
-                },
-              ],
-              _links: {},
-              signers: [],
-              data: {},
-              effects: () => {
-                return new Promise(() => { return })
-              },
-              offers: () => {
-                return new Promise(() => { return })
-              },
-              operations: () => {
-                return new Promise(() => { return })
-              },
-              payments: () => {
-                return new Promise(() => { return })
-              },
-              trades: () => {
-                return new Promise(() => { return })
-              },
-            },
-          })
-        }
+        await this.getAccountDetailsOrUseEmptyBalanceAccount(accountId)
       }
     } catch (e) {
       this.setState({ invalidAccount: true })
       return
+    }
+  }
+
+  getAccountDetailsOrUseEmptyBalanceAccount = async (accountId: string) => {
+    try {
+      const account = await getAccount(this.props.selectedConnection, accountId)
+      this.setState({ account })
+    } catch (e) {
+      // A 404 response code will be returned when the address has been merged (during a deposit) and can't be found,
+      // We want to display a balance of 0 in this case
+      this.setState({
+        account: createEmptyBalanceAccountRecord(accountId),
+      })
     }
   }
 
