@@ -1,3 +1,4 @@
+import { AccountRecord } from 'js-kinesis-sdk'
 import moment from 'moment'
 
 export function flatten<T>(...items: Array<T | T[]>): T[] {
@@ -28,3 +29,37 @@ export function log<T>(x: T, tag?: string | number): T {
 export function sum(a: number, b: number): number {
   return a + b
 }
+
+export const createEmptyBalanceAccountRecord = (accountId: string) => ({
+  id: accountId,
+  paging_token: '',
+  account_id: accountId,
+  sequence: 0,
+  subentry_count: 0,
+  thresholds: {
+    low_threshold: 0,
+    med_threshold: 0,
+    high_threshold: 0,
+  },
+  flags: {
+    auth_required: false,
+    auth_revocable: false,
+  },
+  balances: [
+    {
+      balance: '0.0',
+      asset_type: 'native',
+    },
+  ],
+  _links: {},
+  signers: [],
+  data: {},
+  effects: () =>
+    Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
+  offers: () => Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
+  operations: () =>
+    Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
+  payments: () =>
+    Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
+  trades: () => Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
+} as AccountRecord)
