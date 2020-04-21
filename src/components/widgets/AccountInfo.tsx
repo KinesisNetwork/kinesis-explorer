@@ -1,5 +1,6 @@
 import { AccountRecord, CollectionPage, OperationRecord } from 'js-kinesis-sdk'
 import { startCase } from 'lodash'
+import { isEmpty } from 'lodash'
 import * as React from 'react'
 import { Connection } from '../../types'
 import { renderAmount } from '../../utils'
@@ -31,17 +32,10 @@ export class AccountInfo extends React.Component<Props, State> {
   }
 
   loadOperations = async (cursor?: string, limit: number = 10) => {
-    if (!this.props.account) {
-      this.setState({
+    if (!this.props.account || isEmpty(this.props.account.operations)) {
+      return this.setState({
         showLoadMore: false,
       })
-      return
-    }
-    if (!this.props.account.operations) {
-      this.setState({
-        showLoadMore: false,
-      })
-      return
     }
     const operations = await this.props.account.operations({ limit, cursor, order: 'desc' })
 
