@@ -5,6 +5,7 @@ import {
   LedgerRecord,
   Network,
   Server,
+  StrKey,
   TransactionCallBuilder,
   TransactionRecord,
 } from 'js-kinesis-sdk'
@@ -115,4 +116,10 @@ export async function getAccount(
   const server = getServer(connection)
   const account: AccountRecord = await server.loadAccount(accountId)
   return account
+}
+
+export async function validateAccount(
+  address: string,
+): Promise<boolean> {
+  return StrKey.isValidEd25519PublicKey(address)
 }

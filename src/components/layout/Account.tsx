@@ -1,9 +1,10 @@
-import { AccountRecord, CollectionPage, EffectRecord } from 'js-kinesis-sdk'
+import { AccountRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
 import { Redirect, RouteComponentProps } from 'react-router'
 import { Subscribe } from 'unstated'
 import { ConnectionContainer, ConnectionContext } from '../../services/connections'
-import { getAccount } from '../../services/kinesis'
+import { getAccount, validateAccount } from '../../services/kinesis'
+import { createEmptyBalanceAccountRecord } from '../../utils'
 import { AccountInfo } from '../widgets/AccountInfo'
 
 interface ConnectedAccountProps extends RouteComponentProps<{ id: string }> { }
@@ -26,12 +27,30 @@ class AccountPage extends React.Component<Props, State> {
   loadAccount = async () => {
     const accountId = this.props.match.params.id
 
-    // In the scenario required, should add /transactions to URI to access deactivated account
+    try {
+      const isAccountAddressValid: boolean = await validateAccount(accountId)
+      if (!isAccountAddressValid) {
+        return this.setState({ invalidAccount: true })
+      } else {
+        // In the scenario required, should add /transactions to URI to access deactivated account
+        await this.getAccountDetailsOrUseEmptyBalanceAccount(accountId)
+      }
+    } catch (e) {
+      this.setState({ invalidAccount: true })
+      return
+    }
+  }
+
+  getAccountDetailsOrUseEmptyBalanceAccount = async (accountId: string) => {
     try {
       const account = await getAccount(this.props.selectedConnection, accountId)
       this.setState({ account })
     } catch (e) {
-      this.setState({ invalidAccount: true })
+      // A 404 response code will be returned when the address has been merged (during a deposit) and can't be found,
+      // We want to display a balance of 0 in this case
+      this.setState({
+        account: createEmptyBalanceAccountRecord(accountId),
+      })
     }
   }
 
