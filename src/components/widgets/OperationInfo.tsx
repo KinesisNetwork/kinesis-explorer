@@ -16,6 +16,10 @@ const BASE_OPERATION_KEYS = [
   'transaction',
   'type',
   'type_i',
+  'envelope_xdr',
+  'result_xdr',
+  'result_meta_xdr',
+  'fee_meta_xdr',
 ]
 
 const FORMAT_VALUE: { [key: string]: (value: string) => string | number | React.ReactNode } = {

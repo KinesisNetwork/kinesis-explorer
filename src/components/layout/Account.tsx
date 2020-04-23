@@ -1,6 +1,6 @@
 import { AccountRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
-import { RouteComponentProps } from 'react-router'
+import { Redirect, RouteComponentProps } from 'react-router'
 import { Subscribe } from 'unstated'
 import { ConnectionContainer, ConnectionContext } from '../../services/connections'
 import { getAccount, validateAccount } from '../../services/kinesis'
@@ -70,9 +70,9 @@ class AccountPage extends React.Component<Props, State> {
 
     const accountId = match.params.id
 
-    /*if (this.state.invalidAccount) {
-      return <Redirect to={`/merged-account/${accountId}`} />
-    }*/
+    if (this.state.invalidAccount) {
+      return <Redirect to={`/404`} />
+    }
 
     return (
       <section className='section'>
