@@ -52,7 +52,12 @@ export const createEmptyBalanceAccountRecord = (accountId: string) => ({
     },
   ],
   _links: {},
-  signers: [],
+  signers: [
+    {
+      public_key: accountId,
+      weight: 0,
+    },
+  ],
   data: {},
   effects: () =>
     Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),

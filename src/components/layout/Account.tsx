@@ -11,6 +11,7 @@ interface ConnectedAccountProps extends RouteComponentProps<{ id: string }> { }
 interface Props extends ConnectedAccountProps, ConnectionContext { }
 
 interface State {
+  accountId: string | null
   account: AccountRecord | null
   invalidAccount: boolean
 }
@@ -19,6 +20,7 @@ class AccountPage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
     this.state = {
+      accountId: null,
       account: null,
       invalidAccount: false,
     }
@@ -26,6 +28,7 @@ class AccountPage extends React.Component<Props, State> {
 
   loadAccount = async () => {
     const accountId = this.props.match.params.id
+    this.setState({ accountId })
     try {
       const isAccountAddressValid: boolean = await validateAccount(accountId)
       if (!isAccountAddressValid) {
@@ -45,7 +48,10 @@ class AccountPage extends React.Component<Props, State> {
       const account = await getAccount(this.props.selectedConnection, accountId)
       this.setState({ account })
     } catch (e) {
-      try {
+      this.setState({
+        account: createEmptyBalanceAccountRecord(accountId),
+      })
+      /*try {
         // Search for merge account with 0 balance
         const transactions = await getTransactions(this.props.selectedConnection, accountId, 200, '')
         return this.setState({ invalidAccount: true })
@@ -55,7 +61,7 @@ class AccountPage extends React.Component<Props, State> {
         this.setState({
           account: createEmptyBalanceAccountRecord(accountId),
         })
-      }
+      }*/
     }
   }
 
@@ -75,9 +81,9 @@ class AccountPage extends React.Component<Props, State> {
 
     const accountId = match.params.id
 
-    if (this.state.invalidAccount) {
+    /*if (this.state.invalidAccount) {
       return <Redirect to={`/merged-account/${accountId}`} />
-    }
+    }*/
 
     return (
       <section className='section'>
@@ -87,6 +93,7 @@ class AccountPage extends React.Component<Props, State> {
           <div />
         ) : (
             <AccountInfo
+              accountId={accountId}
               account={account}
               selectedConnection={selectedConnection}
             />
