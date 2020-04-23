@@ -45,9 +45,8 @@ export class AccountInfo extends React.Component<Props, State> {
       ? operations.records[operations.records.length - 1].paging_token
       : undefined
 
-    const showLoadMore = operations.records.length === limit || !cursor
+    const showLoadMore = operations.records.length ?  operations.records.length === limit : !cursor
     const originalRecordSet = this.state.operations ? this.state.operations.records : []
-
     // Simple de-duping
     operations.records = originalRecordSet.concat(
       ...operations.records.filter((v) => {

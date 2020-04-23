@@ -1,11 +1,9 @@
+import Decimal from 'decimal.js'
 import { LedgerRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
 import { Subscribe } from 'unstated'
 
-import {
-  ConnectionContainer,
-  ConnectionContext,
-} from '../../services/connections'
+import { ConnectionContainer, ConnectionContext } from '../../services/connections'
 import { getLedgers } from '../../services/kinesis'
 import { getBackedFees, getKMSCurrencyFees, getUnbackedBalances } from '../../services/statistics'
 import { Connection } from '../../types'
@@ -39,15 +37,16 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
   loadStatisticsData = async (connection: Connection): Promise<void> => {
     this.setState({ isLoading: true })
     const { totalCoins, feePool } = await this.fetchLatestLedger(connection)
-    const unbackedBalances = await getUnbackedBalances(connection)
-    const backedFeesInPool = await getBackedFees(connection)
-    const kmsFees = await getKMSCurrencyFees(connection)
+    const [unbackedBalances, backedFeesInPool, kmsFees] = await Promise.all([
+      getUnbackedBalances(connection),
+      getBackedFees(connection),
+      getKMSCurrencyFees(connection),
+    ])
     const ledgerFeePool = Number(feePool)
     const unbackedFeesInPool = ledgerFeePool - backedFeesInPool
-    const totalFeePool = kmsFees + backedFeesInPool
+    const totalFeePool = new Decimal(kmsFees).add(backedFeesInPool).toNumber()
 
-    const totalInCirculation =
-      totalCoins - unbackedBalances - unbackedFeesInPool
+    const totalInCirculation = totalCoins - unbackedBalances - unbackedFeesInPool
 
     this.setState({
       totalInCirculation,

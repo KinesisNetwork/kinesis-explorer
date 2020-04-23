@@ -1,9 +1,9 @@
 import { AccountRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
-import { Redirect, RouteComponentProps } from 'react-router'
+import { RouteComponentProps } from 'react-router'
 import { Subscribe } from 'unstated'
 import { ConnectionContainer, ConnectionContext } from '../../services/connections'
-import { getAccount, getTransactions, validateAccount } from '../../services/kinesis'
+import { getAccount, validateAccount } from '../../services/kinesis'
 import { createEmptyBalanceAccountRecord } from '../../utils'
 import { AccountInfo } from '../widgets/AccountInfo'
 
@@ -51,17 +51,6 @@ class AccountPage extends React.Component<Props, State> {
       this.setState({
         account: createEmptyBalanceAccountRecord(accountId),
       })
-      /*try {
-        // Search for merge account with 0 balance
-        const transactions = await getTransactions(this.props.selectedConnection, accountId, 200, '')
-        return this.setState({ invalidAccount: true })
-      } catch (e) {
-        // A 404 response code will be returned when the address has been merged (during a deposit) and can't be found,
-        // We want to display a balance of 0 in this case
-        this.setState({
-          account: createEmptyBalanceAccountRecord(accountId),
-        })
-      }*/
     }
   }
 
