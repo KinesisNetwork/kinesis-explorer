@@ -11,6 +11,7 @@ interface ConnectedAccountProps extends RouteComponentProps<{ id: string }> { }
 interface Props extends ConnectedAccountProps, ConnectionContext { }
 
 interface State {
+  accountId: string | null
   account: AccountRecord | null
   invalidAccount: boolean
 }
@@ -19,6 +20,7 @@ class AccountPage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
     this.state = {
+      accountId: null,
       account: null,
       invalidAccount: false,
     }
@@ -26,7 +28,7 @@ class AccountPage extends React.Component<Props, State> {
 
   loadAccount = async () => {
     const accountId = this.props.match.params.id
-
+    this.setState({ accountId })
     try {
       const isAccountAddressValid: boolean = await validateAccount(accountId)
       if (!isAccountAddressValid) {
@@ -46,8 +48,6 @@ class AccountPage extends React.Component<Props, State> {
       const account = await getAccount(this.props.selectedConnection, accountId)
       this.setState({ account })
     } catch (e) {
-      // A 404 response code will be returned when the address has been merged (during a deposit) and can't be found,
-      // We want to display a balance of 0 in this case
       this.setState({
         account: createEmptyBalanceAccountRecord(accountId),
       })
@@ -71,7 +71,7 @@ class AccountPage extends React.Component<Props, State> {
     const accountId = match.params.id
 
     if (this.state.invalidAccount) {
-      return <Redirect to={`/merged-account/${accountId}`} />
+      return <Redirect to={`/404`} />
     }
 
     return (
@@ -82,6 +82,7 @@ class AccountPage extends React.Component<Props, State> {
           <div />
         ) : (
             <AccountInfo
+              accountId={accountId}
               account={account}
               selectedConnection={selectedConnection}
             />

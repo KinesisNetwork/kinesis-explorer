@@ -1,4 +1,4 @@
-import { OperationRecord } from 'js-kinesis-sdk'
+import { OperationRecord, TransactionRecord } from 'js-kinesis-sdk'
 import { startCase } from 'lodash'
 import * as React from 'react'
 import { Link } from 'react-router-dom'
@@ -16,6 +16,10 @@ const BASE_OPERATION_KEYS = [
   'transaction',
   'type',
   'type_i',
+  'envelope_xdr',
+  'result_xdr',
+  'result_meta_xdr',
+  'fee_meta_xdr',
 ]
 
 const FORMAT_VALUE: { [key: string]: (value: string) => string | number | React.ReactNode } = {
@@ -30,8 +34,11 @@ const FORMAT_VALUE: { [key: string]: (value: string) => string | number | React.
   amount: (value) => renderAmount(value),
 }
 
-export const OperationInfo: React.SFC<{ operation: OperationRecord }> = ({ operation }) => {
-  const fields = Object.entries(operation)
+export const OperationInfo: React.SFC<{
+  operation: OperationRecord | null,
+  transaction: TransactionRecord | null,
+}> = ({ operation, transaction }) => {
+  const operationFields = operation ? Object.entries(operation)
     .filter(([, val]) => typeof val === 'string')
     .filter(([key]) => !BASE_OPERATION_KEYS.includes(key))
     .map(([key, value]) => FORMAT_VALUE[key] ? [key, FORMAT_VALUE[key](value)] : [key, value])
@@ -41,11 +48,25 @@ export const OperationInfo: React.SFC<{ operation: OperationRecord }> = ({ opera
         label={startCase(key)}
         value={value}
       />
-    ))
+    )) : []
+
+  const transactionFields = transaction ? Object.entries(transaction)
+    .filter(([, val]) => typeof val === 'string')
+    .filter(([key]) => !BASE_OPERATION_KEYS.includes(key))
+    .map(([key, value]) => FORMAT_VALUE[key] ? [key, FORMAT_VALUE[key](value)] : [key, value])
+    .map(([key, value]) => (
+      <HorizontalLabelledField
+        key={key}
+        label={startCase(key)}
+        value={value}
+      />
+    )) : []
+
+  const fields = operationFields.concat(transactionFields)
 
   return (
     <div className='tile is-child box'>
-      <p className='subtitle is-marginless'>{startCase(operation.type)}</p>
+      <p className='subtitle is-marginless'>{operation ? startCase(operation.type) : ''}</p>
       {fields}
     </div>
   )

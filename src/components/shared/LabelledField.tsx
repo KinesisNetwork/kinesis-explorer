@@ -34,7 +34,7 @@ export const HorizontalLabelledField: React.SFC<Props> = (props) => (
     <div className={`field-body ${props.isLoading ? 'is-loading-blur' : ''}`}>
       <div className='field'>
         <div className={`control is-expanded`}>
-          <p className='input is-static'>{props.value}</p>
+          <p className='input is-static custom-p'>{props.value}</p>
         </div>
       </div>
       {props.tag && (
