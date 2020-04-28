@@ -36,9 +36,8 @@ const FORMAT_VALUE: { [key: string]: (value: string) => string | number | React.
 
 export const OperationInfo: React.SFC<{
   operation: OperationRecord | null,
-  transaction: TransactionRecord | null,
-}> = ({ operation, transaction }) => {
-  const operationFields = operation ? Object.entries(operation)
+}> = ({ operation }) => {
+  const fields = operation ? Object.entries(operation)
     .filter(([, val]) => typeof val === 'string')
     .filter(([key]) => !BASE_OPERATION_KEYS.includes(key))
     .map(([key, value]) => FORMAT_VALUE[key] ? [key, FORMAT_VALUE[key](value)] : [key, value])
@@ -49,20 +48,6 @@ export const OperationInfo: React.SFC<{
         value={value}
       />
     )) : []
-
-  const transactionFields = transaction ? Object.entries(transaction)
-    .filter(([, val]) => typeof val === 'string')
-    .filter(([key]) => !BASE_OPERATION_KEYS.includes(key))
-    .map(([key, value]) => FORMAT_VALUE[key] ? [key, FORMAT_VALUE[key](value)] : [key, value])
-    .map(([key, value]) => (
-      <HorizontalLabelledField
-        key={key}
-        label={startCase(key)}
-        value={value}
-      />
-    )) : []
-
-  const fields = operationFields.concat(transactionFields)
 
   return (
     <div className='tile is-child box'>
