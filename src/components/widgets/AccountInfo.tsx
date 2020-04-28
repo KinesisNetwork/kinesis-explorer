@@ -77,7 +77,9 @@ export class AccountInfo extends React.Component<Props, State> {
       ),
     )
     const operations = {
-      records: records.map((entry) => entry.records).flat(),
+      records: records
+        .map((entry) => entry.records)
+        .reduce((total, amount) => total.concat(amount), []),
       next: () =>
         Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
       prev: () =>
