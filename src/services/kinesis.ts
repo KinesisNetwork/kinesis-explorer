@@ -67,12 +67,13 @@ export async function getTransactions(
 export async function getTransactionStream(
   connection: Connection,
   cursor = 'now',
+  limit = 1,
 ): Promise<TransactionCallBuilder> {
   const server = getServer(connection)
   return await server
     .transactions()
     .cursor(cursor)
-    .limit(1)
+    .limit(limit)
 }
 
 export async function getLedger(

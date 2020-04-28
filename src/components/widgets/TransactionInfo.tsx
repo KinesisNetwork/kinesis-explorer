@@ -56,7 +56,7 @@ export class TransactionInfo extends React.Component<Props, State> {
             />
           </div>
           <div className='tile is-child'>
-            <OperationList transactions={null} operations={this.state.operations} />
+            <OperationList operations={this.state.operations} />
           </div>
           <div className='tile is-child box'>
             <p className='subtitle'>Signatures</p>

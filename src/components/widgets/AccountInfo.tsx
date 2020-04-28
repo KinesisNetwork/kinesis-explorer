@@ -2,7 +2,7 @@ import { AccountRecord, CollectionPage, OperationRecord, TransactionRecord } fro
 import { startCase } from 'lodash'
 import { isEmpty } from 'lodash'
 import * as React from 'react'
-import { getTransactions } from '../../services/kinesis'
+import { getTransactions, getTransactionStream } from '../../services/kinesis'
 import { Connection } from '../../types'
 import { renderAmount } from '../../utils'
 import { HorizontalLabelledField } from '../shared'
@@ -16,7 +16,6 @@ interface Props {
 
 interface State {
   operations: CollectionPage<OperationRecord> | null,
-  transactions: TransactionRecord[] | null,
   lastPagingToken: string | undefined,
   showLoadMore: boolean,
 }
@@ -27,7 +26,6 @@ export class AccountInfo extends React.Component<Props, State> {
 
     this.state = {
       operations: null,
-      transactions: null,
       lastPagingToken: undefined,
       showLoadMore: true,
     }
@@ -36,9 +34,6 @@ export class AccountInfo extends React.Component<Props, State> {
   }
 
   loadOperations = async (cursor?: string, limit: number = 10) => {
-    if (!this.props.account || isEmpty(this.props.account.operations)) {
-      return await this.loadMergedOperations()
-    }
     const operations = await this.props.account.operations({ limit, cursor, order: 'desc' })
 
     const lastPagingToken = operations.records.length
@@ -61,52 +56,48 @@ export class AccountInfo extends React.Component<Props, State> {
     })
   }
 
-  loadMergedOperations = async (cursor?: string, limit: number = 10) => {
-    let transactions = await this.fetchTransactions()
+  loadMergedTransactions = async (cursor: string = 'now', limit: number = 10) => {
+    const transactions = await getTransactions(this.props.selectedConnection, this.props.accountId, limit, cursor)
 
     const lastPagingToken = transactions.length
       ? transactions[transactions.length - 1].paging_token
       : undefined
 
-    const showLoadMore = transactions.length === limit || !cursor
-    const originalRecordSet = this.state.transactions ? this.state.transactions : []
+    const showLoadMore = transactions.length ?  transactions.length === limit : !cursor
+    const originalRecordSet = this.state.operations ? this.state.operations.records : []
 
     // Simple de-duping
-    transactions = originalRecordSet.concat(
-      ...transactions.filter((v) => {
+    const records = await Promise.all(
+      transactions.map(
+        (transaction) => transaction.operations({
+          limit: transaction.operation_count,
+          cursor: undefined,
+          order: 'desc',
+        }),
+      ),
+    )
+    const operations = {
+      records: records
+        .map((entry) => entry.records)
+        .reduce((total, amount) => total.concat(amount), []),
+      next: () =>
+        Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
+      prev: () =>
+        Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
+    }
+
+    // Simple de-duping
+    operations.records = originalRecordSet.concat(
+      ...operations.records.filter((v) => {
         return originalRecordSet.findIndex((ov) => ov.id === v.id) === -1
       }),
     )
 
     this.setState({
-      transactions,
+      operations,
       lastPagingToken,
       showLoadMore,
     })
-  }
-
-  async fetchTransactions(transactions: TransactionRecord[] = [], cursor?: string): Promise<TransactionRecord[]> {
-    const accountId = this.props.accountId
-
-    const fetchedTransactions = await getTransactions(this.props.selectedConnection, accountId, 200, cursor)
-    const combinedTransactions = transactions.concat(fetchedTransactions)
-
-    if (fetchedTransactions.length === 200) {
-      return await this.fetchTransactions(
-        combinedTransactions,
-        fetchedTransactions[fetchedTransactions.length - 1].paging_token,
-      )
-    } else {
-      return combinedTransactions
-    }
-  }
-
-  componentDidMount() {
-    this.setState({
-      lastPagingToken: undefined,
-    })
-
-    this.loadOperations()
   }
 
   componentDidUpdate(prevProps: Props) {
@@ -115,12 +106,24 @@ export class AccountInfo extends React.Component<Props, State> {
     }
   }
 
+  componentDidMount() {
+    this.setState({
+      lastPagingToken: undefined,
+    })
+
+    if (this.props.account.balances[0].balance === '0.0') {
+      this.loadMergedTransactions()
+    } else {
+      this.loadOperations()
+    }
+  }
+
   onClickLoadMore() {
     // 200 is the limit as defined on the horizon server
-    if (this.state.operations) {
-      this.loadOperations(this.state.lastPagingToken, 200)
-    } else if (this.state.transactions) {
-      this.loadMergedOperations(this.state.lastPagingToken, 200)
+    if (this.props.account.balances[0].balance === '0.0') {
+      this.loadMergedTransactions(this.state.lastPagingToken, 10)
+    } else {
+      this.loadOperations(this.state.lastPagingToken, 10)
     }
   }
 
@@ -163,7 +166,7 @@ export class AccountInfo extends React.Component<Props, State> {
 
   render() {
     const { account } = this.props
-    const { showLoadMore, operations, transactions } = this.state
+    const { showLoadMore, operations } = this.state
 
     return (
       <div className='tile is-ancestor'>
@@ -194,7 +197,7 @@ export class AccountInfo extends React.Component<Props, State> {
             </div>
           </div>
           <div className='tile is-parent is-vertical'>
-            <OperationList operations={operations} transactions={transactions}/>
+            <OperationList operations={operations}/>
             {showLoadMore && <button className='button' onClick={this.onClickLoadMore}>Load more</button>}
           </div>
         </div>
