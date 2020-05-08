@@ -107,10 +107,9 @@ export async function getBackedFees(connection: Connection): Promise<number> {
 async function fetchUnbackedAccounts(connection: Connection): Promise<AccountRecord[]> {
   const { rootId, emissionId, coldWalletId } = getUnbackedAccountKeys(connection)
   return Promise.all([
-      getAccount(connection, rootId), 
-      getAccount(connection, emissionId), 
-      getAccount(connection, coldWalletId)
-  ])
+    getAccount(connection, rootId),
+    getAccount(connection, emissionId),
+    getAccount(connection, coldWalletId)])
 }
 
 function getUnbackedAccountKeys(connection: Connection) {
