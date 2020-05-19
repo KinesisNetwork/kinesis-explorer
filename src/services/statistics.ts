@@ -23,33 +23,6 @@ function getUnbackedKeysCheck(connection: Connection): (account: string) => bool
   return (account: string) => unbackedKeys.includes(account)
 }
 
-export async function getKMSCurrencyFees({ currency, stage }: Connection) {
-  try {
-    let urlRoot
-
-    switch (process.env.BUCKET) {
-      case 'integration-explorer.kinesisgroup.io':
-        urlRoot = 'https://integration-api.kinesis.money'
-        break
-      case 'uat-explorer.kinesisgroup.io':
-        urlRoot = 'https://uat-api.kinesis.money'
-        break
-      case 'explorer.kinesisgroup.io':
-        urlRoot = 'https://api.kinesis.money'
-        break
-      default:
-        urlRoot = 'http://localhost:3000'
-        break
-    }
-
-    const response = await axios.get(`${urlRoot}/api/fee-pools/${currency}`)
-
-    return response.data.pool || 0
-  } catch (e) {
-    return 0
-  }
-}
-
 async function getBackedFeesFromTransactions(
   ts: CollectionPage<TransactionRecord>,
   connection: Connection,
@@ -60,20 +33,10 @@ async function getBackedFeesFromTransactions(
   }
 
   const isUnbackedTransaction = getUnbackedKeysCheck(connection)
-  const transactionFees = await ts.records.reduce(async (acc, curr) => {
-    const operations = await curr.operations()
-    const payments = operations.records.reduce(
-      (ops, nextOp) => (nextOp.type === 'payment' ? ops.concat(nextOp) : ops),
-      [] as PaymentOperationRecord[],
-    )
-    return payments[0]
-      ? isUnbackedTransaction(curr.source_account) || isUnbackedTransaction(payments[0].to)
-        ? acc
-        : (await acc) + curr.fee_paid
-      : isUnbackedTransaction(curr.source_account)
-      ? acc
-      : (await acc) + curr.fee_paid
-  }, Promise.resolve(0))
+  const transactionFees =  ts.records.reduce(
+    (acc, curr) => (isUnbackedTransaction(curr.source_account) ? acc : acc + curr.fee_paid),
+    0,
+  )
 
   const currentTotalFees = transactionFees + accumulatedFee
 
@@ -105,21 +68,16 @@ export async function getBackedFees(connection: Connection): Promise<number> {
 }
 
 async function fetchUnbackedAccounts(connection: Connection): Promise<AccountRecord[]> {
-  const { rootId, emissionId, coldWalletId } = getUnbackedAccountKeys(connection)
-  return Promise.all([
-    getAccount(connection, rootId),
-    getAccount(connection, emissionId),
-    getAccount(connection, coldWalletId)])
+  const { rootId, emissionId } = getUnbackedAccountKeys(connection)
+  return Promise.all([getAccount(connection, rootId), getAccount(connection, emissionId)])
 }
 
 function getUnbackedAccountKeys(connection: Connection) {
   const emissionKeypair = getEmissionKeypair(connection)
   const masterKeypair = getMasterKeypair()
-  const coldWallet = getColdWalletPublicKey()
   return {
     emissionId: emissionKeypair.publicKey(),
     rootId: masterKeypair.publicKey(),
-    coldWalletId: coldWallet,
   }
 }
 
@@ -129,10 +87,6 @@ export function getEmissionKeypair(connection: Connection): Keypair {
   const hash = createHash('sha256')
   hash.update(emissionSeedString)
   return Keypair.fromRawEd25519Seed(hash.digest())
-}
-
-export function getColdWalletPublicKey(): string {
-  return 'GAPS3KZ4YVEL4UYFAGTE6L6H6GRZ3KYBWGY2UTGTAJBXGUJLBCYQIXXA'
 }
 
 export function getMasterKeypair(): Keypair {
