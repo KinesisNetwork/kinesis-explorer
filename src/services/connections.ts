@@ -3,14 +3,14 @@ import { Connection } from "../types";
 const networkConnections: Connection[] = [
   {
     name: "Kinesis KAU Mainnet",
-    horizonURL: "https://kau-mainnet-europe.kinesisgroup.io",
+    horizonURL: "https://kau-mainnet-oceania.kinesisgroup.io",
     networkPassphrase: "Kinesis Live",
     stage: "mainnet",
     currency: "KAU",
   },
   {
     name: "Kinesis KAG Mainnet",
-    horizonURL: "https://kag-mainnet-europe.kinesisgroup.io",
+    horizonURL: "https://kag-mainnet-oceania.kinesisgroup.io",
     networkPassphrase: "Kinesis KAG Live",
     stage: "mainnet",
     currency: "KAG",
