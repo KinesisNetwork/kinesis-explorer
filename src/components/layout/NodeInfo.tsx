@@ -10,19 +10,18 @@ const enum Environments {
 
 const REGION_ERROR = { error: 'Region Offline' }
 
-const MONITOR_ENDPOINTS = {
-  [Environments.kauTestnet]: [
-    'https://kau-testnet-oceania.kinesisgroup.io:3000',
-    'https://kau-testnet-asia.kinesisgroup.io:3000',
-    'https://kau-testnet-america.kinesisgroup.io:3000',
-    'https://kau-testnet-europe.kinesisgroup.io:3000',
-  ],
-  [Environments.kagTestnet]: [
-    'https://kag-testnet-oceania.kinesisgroup.io:3000',
-    'https://kag-testnet-asia.kinesisgroup.io:3000',
-    'https://kag-testnet-america.kinesisgroup.io:3000',
-    'https://kag-testnet-europe.kinesisgroup.io:3000',
-  ],
+const REGIONS = ['oceania', 'asia', 'america', 'europe']
+
+const generateMonitoringEndpointsForRegion = (environment: Environments) =>
+  REGIONS.map((region) => `https://${environment}-${region}.kinesisgroup.io:3000`)
+
+const MONITOR_ENDPOINTS = () => {
+  return {
+    [Environments.kauMainnet]: generateMonitoringEndpointsForRegion(Environments.kauMainnet),
+    [Environments.kagMainnet]: generateMonitoringEndpointsForRegion(Environments.kagMainnet),
+    [Environments.kauTestnet]: generateMonitoringEndpointsForRegion(Environments.kauTestnet),
+    [Environments.kagTestnet]: generateMonitoringEndpointsForRegion(Environments.kagTestnet),
+  }
 }
 
 function getInfo(ep: string) {
@@ -34,7 +33,7 @@ function getInfo(ep: string) {
 
 async function loadData() {
   const data = await Promise.all(
-    Object.entries(MONITOR_ENDPOINTS).map(async ([environment, endpoints]) => {
+    Object.entries(MONITOR_ENDPOINTS()).map(async ([environment, endpoints]) => {
       const envInfo = await Promise.all(
         endpoints.map(async (ep) => {
           const info = await getInfo(ep)
@@ -56,7 +55,7 @@ async function loadData() {
 export default class NodeInfo extends React.Component<
   any,
   { nodeInfo: any; interval?: any }
-> {
+  > {
   state = { nodeInfo: {}, interval: undefined }
 
   async componentDidMount() {
@@ -104,8 +103,8 @@ export default class NodeInfo extends React.Component<
             {regionNodeInfo === REGION_ERROR ? (
               <h3 className='title is-5 has-text-danger'>Region Offline</h3>
             ) : (
-              this.generateNodeView(regionNodeInfo)
-            )}
+                this.generateNodeView(regionNodeInfo)
+              )}
           </div>
         </React.Fragment>
       )
