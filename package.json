@@ -34,7 +34,7 @@
     "axios": "0.18.1",
     "event-source-polyfill": "0.0.12",
     "js-kinesis-sdk": "0.9.10",
-    "lodash": "4.17.13",
+    "lodash": "4.17.19",
     "moment": "2.22.1",
     "react": "16.3.2",
     "bulma": "0.7.1",
