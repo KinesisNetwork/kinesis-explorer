@@ -38,7 +38,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     transactions: [],
     isLoading: false,
     ledgerLimit: 10,
-    transLimit: 10
+    transLimit: 10,
   }
 
   closeLedgerStream!: () => void
@@ -51,11 +51,12 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
   componentDidUpdate(prevProps: DashboardProps, prevState: DashboardState) {
     if (prevProps.selectedConnection !== this.props.selectedConnection) {
       this.handleConnectionChange()
-    } else if (prevState.transLimit !== this.state.transLimit) {
+    }
+    if (prevState.transLimit !== this.state.transLimit) {
       this.closeTransactionStream()
       this.updateTransaction()
     }
-    else if (prevState.ledgerLimit !== this.state.ledgerLimit) {
+    if (prevState.ledgerLimit !== this.state.ledgerLimit) {
       this.closeLedgerStream()
       this.updateLedger()
     }
@@ -112,7 +113,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     }))
   }
 
-  handleStreamData = (dataType: EntityType) => (nextData: LedgerRecord | TransactionRecord,): void => {
+  handleStreamData = (dataType: EntityType) => (nextData: LedgerRecord | TransactionRecord): void => {
     this.setState((state: DashboardState) => {
       let updatedData: any[] = []
       if (dataType === 'ledgers') {
@@ -134,15 +135,15 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     this.fetchData()
   }
 
-  loadMoreLedgers() {
+  moreLedgers() {
     this.setState((prev: DashboardState) => ({
-      ...prev, ledgerLimit: prev.ledgerLimit + 10
+      ...prev, ledgerLimit: prev.ledgerLimit + 10,
     }))
   }
 
-  loadMoreTransactions() {
+  moreTxs() {
     this.setState((prev: DashboardState) => ({
-      ...prev, transLimit: prev.transLimit + 10
+      ...prev, transLimit: prev.transLimit + 10,
     }))
   }
 
@@ -194,14 +195,18 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
               <div className={this.state.isLoading ? 'is-loading-blur' : ''}>
                 <Ledgers ledgers={this.state.ledgers} />
               </div>
-              <button className='button' onClick={() => this.loadMoreLedgers()} style={{ width: '100%', marginTop: '3px' }}>Load More...</button>
+              <button className='button' onClick={() => this.moreLedgers()} style={{ width: '100%', marginTop: '3px' }}>
+                Load More...
+              </button>
             </article>
             <article className='tile is-child'>
               <p className='title'>Transactions</p>
               <div className={this.state.isLoading ? 'is-loading-blur' : ''}>
                 <Transactions transactions={this.state.transactions} />
               </div>
-              <button className='button' onClick={() => this.loadMoreTransactions()} style={{ width: '100%', marginTop: '3px' }}>Load More...</button>
+              <button className='button' onClick={() => this.moreTxs()} style={{ width: '100%', marginTop: '3px' }}>
+                Load More...
+              </button>
             </article>
           </div>
         </div>

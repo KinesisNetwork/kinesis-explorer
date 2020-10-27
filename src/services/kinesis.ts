@@ -41,7 +41,7 @@ export async function getTransaction(
 export async function getTransactions(
   connection: Connection,
   accountId?: string,
-  limit: number = 10,
+  limit = 10,
   cursor?: string,
 ): Promise<TransactionRecord[]> {
   const server = getServer(connection)
@@ -88,7 +88,7 @@ export async function getLedger(
 
 export async function getLedgers(
   connection: Connection,
-  limitVal: number
+  limitVal: number,
 ): Promise<LedgerRecord[]> {
   const server = getServer(connection)
   const { records }: CollectionPage<LedgerRecord> = await server
