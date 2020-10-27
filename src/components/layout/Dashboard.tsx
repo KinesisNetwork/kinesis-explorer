@@ -14,13 +14,15 @@ import {
 } from '../../services/kinesis'
 import { Converter, Ledgers, Statistics, Transactions } from '../widgets'
 
-interface ConnectedDashboardProps extends RouteComponentProps<undefined> {}
-interface DashboardProps extends ConnectedDashboardProps, ConnectionContext {}
+interface ConnectedDashboardProps extends RouteComponentProps<undefined> { }
+interface DashboardProps extends ConnectedDashboardProps, ConnectionContext { }
 
 interface DashboardState {
   ledgers: LedgerRecord[]
   transactions: TransactionRecord[]
   isLoading: boolean
+  ledgerLimit: number
+  transLimit: number
 }
 
 enum Entity {
@@ -35,6 +37,8 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     ledgers: [],
     transactions: [],
     isLoading: false,
+    ledgerLimit: 10,
+    transLimit: 10
   }
 
   closeLedgerStream!: () => void
@@ -44,9 +48,16 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     this.fetchData()
   }
 
-  componentDidUpdate(prevProps: DashboardProps) {
+  componentDidUpdate(prevProps: DashboardProps, prevState: DashboardState) {
     if (prevProps.selectedConnection !== this.props.selectedConnection) {
       this.handleConnectionChange()
+    } else if (prevState.transLimit !== this.state.transLimit) {
+      this.closeTransactionStream()
+      this.updateTransaction()
+    }
+    else if (prevState.ledgerLimit !== this.state.ledgerLimit) {
+      this.closeLedgerStream()
+      this.updateLedger()
     }
   }
 
@@ -57,8 +68,8 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
   fetchData = async (): Promise<void> => {
     this.setState({ isLoading: true })
     const [ledgers, transactions] = await Promise.all([
-      getLedgers(this.props.selectedConnection),
-      getTransactions(this.props.selectedConnection),
+      getLedgers(this.props.selectedConnection, this.state.ledgerLimit),
+      getTransactions(this.props.selectedConnection, undefined, this.state.transLimit),
     ])
 
     this.setState({ ledgers, transactions, isLoading: false })
@@ -101,11 +112,14 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     }))
   }
 
-  handleStreamData = (dataType: EntityType) => (
-    nextData: LedgerRecord | TransactionRecord,
-  ): void => {
+  handleStreamData = (dataType: EntityType) => (nextData: LedgerRecord | TransactionRecord,): void => {
     this.setState((state: DashboardState) => {
-      const updatedData = [nextData, ...state[dataType].slice(0, 9)]
+      let updatedData: any[] = []
+      if (dataType === 'ledgers') {
+        updatedData = [nextData, ...state[dataType].slice(0, this.state.ledgerLimit - 1)]
+      } else {
+        updatedData = [nextData, ...state[dataType].slice(0, this.state.transLimit - 1)]
+      }
       return {
         ...state,
         [dataType]: updatedData,
@@ -114,8 +128,56 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
   }
 
   handleConnectionChange = (): void => {
+    this.state.transLimit = 10
+    this.state.ledgerLimit = 10
     this.closeDataStreams()
     this.fetchData()
+  }
+
+  loadMoreLedgers() {
+    this.setState((prev: DashboardState) => ({
+      ...prev, ledgerLimit: prev.ledgerLimit + 10
+    }))
+  }
+
+  loadMoreTransactions() {
+    this.setState((prev: DashboardState) => ({
+      ...prev, transLimit: prev.transLimit + 10
+    }))
+  }
+
+  updateTransaction = async (): Promise<void> => {
+    const transactions = await getTransactions(this.props.selectedConnection, undefined, this.state.transLimit)
+
+    this.setState({ transactions })
+
+    const transactionCursor: string = (transactions[0] || {}).paging_token
+
+    const transactionResponse = await getTransactionStream(
+      this.props.selectedConnection,
+      transactionCursor,
+    )
+
+    this.closeTransactionStream = transactionResponse.stream({
+      onmessage: this.handleStreamData(Entity.transactions),
+    })
+  }
+
+  updateLedger = async (): Promise<void> => {
+    const ledgers = await getLedgers(this.props.selectedConnection, this.state.ledgerLimit)
+
+    this.setState({ ledgers })
+
+    const ledgerCursor: string = (ledgers[0] || {}).paging_token
+
+    const ledgerResponse = await getLedgerStream(
+      this.props.selectedConnection,
+      ledgerCursor,
+    )
+
+    this.closeLedgerStream = ledgerResponse.stream({
+      onmessage: this.handleStreamData(Entity.ledgers),
+    })
   }
 
   render() {
@@ -132,12 +194,14 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
               <div className={this.state.isLoading ? 'is-loading-blur' : ''}>
                 <Ledgers ledgers={this.state.ledgers} />
               </div>
+              <button className='button' onClick={() => this.loadMoreLedgers()} style={{ width: '100%', marginTop: '3px' }}>Load More...</button>
             </article>
             <article className='tile is-child'>
               <p className='title'>Transactions</p>
               <div className={this.state.isLoading ? 'is-loading-blur' : ''}>
                 <Transactions transactions={this.state.transactions} />
               </div>
+              <button className='button' onClick={() => this.loadMoreTransactions()} style={{ width: '100%', marginTop: '3px' }}>Load More...</button>
             </article>
           </div>
         </div>

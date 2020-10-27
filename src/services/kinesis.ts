@@ -89,11 +89,12 @@ export async function getLedger(
 
 export async function getLedgers(
   connection: Connection,
+  limitVal: number
 ): Promise<LedgerRecord[]> {
   const server = getServer(connection)
   const { records }: CollectionPage<LedgerRecord> = await server
     .ledgers()
-    .limit(10)
+    .limit(limitVal)
     .order('desc')
     .call()
   return records
