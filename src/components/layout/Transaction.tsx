@@ -16,12 +16,6 @@ interface State {
   conn: string | undefined
 }
 
-enum ConnType {
-  KAU,
-  KAG,
-  KAU_Test,
-  KAG_Test,
-}
 
 class TransactionPage extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -59,9 +53,7 @@ class TransactionPage extends React.Component<Props, State> {
       this.loadTransaction()
     }
   }
-  // connectionSelector = (connection: Connection) => {
-  //   this.props.
-  // }
+
 
 
   render() {
@@ -73,7 +65,7 @@ class TransactionPage extends React.Component<Props, State> {
         <div className='container'>
           <h1 className='title'>Transaction</h1>
           <h2 className='subtitle'>{this.props.match.params.id}</h2>
-          {!this.state.transaction ? <div /> : <TransactionInfo transaction={this.state.transaction} conn={this.state.conn} />}
+          {!this.state.transaction ? <div /> : <TransactionInfo transaction={this.state.transaction} />}
         </div>
       </section>
     )
