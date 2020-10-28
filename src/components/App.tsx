@@ -25,10 +25,10 @@ export default class App extends React.Component {
                 <Route path='/merged-account/:id' component={MergedAccountPage} />
                 <Route path='/ledger/:sequence' component={LedgerPage} />
                 <Route path='/search/:search' component={SearchRedirect} />
-                <Route path='/transaction/:id' component={TransactionPage} />
+                <Route path='/transaction/:connection/:id' component={TransactionPage} />
                 <Route path='/nodes' component={NodeInfo} />
                 <Route path='/404' component={NotFound} />
-                <Redirect to='/404' />
+                {/* <Redirect to='/404' /> */}
               </Switch>
             </AppLayout>
           </ConnectionGate>
