@@ -32,11 +32,8 @@ class TransactionPage extends React.Component<Props, State> {
 
   loadTransaction = async () => {
     try {
-
       let activeConn = this.getId(this.props.match.params.connection)!
       this.setState({ conn: this.props.match.params.connection })
-      // this.props.selectedConnection
-      // this.props.connections[1]
       const transaction = await getTransaction(this.props.connections[activeConn], this.props.match.params.id)
       this.setState({ transaction })
     } catch (e) {
@@ -53,7 +50,6 @@ class TransactionPage extends React.Component<Props, State> {
       this.loadTransaction()
     }
   }
-
 
 
   render() {
@@ -73,10 +69,6 @@ class TransactionPage extends React.Component<Props, State> {
 }
 
 class ConnectedTransaction extends React.Component<ConnectedTransactionProps> {
-  // connectionSelector = (connection: Connection) => {
-  //   console.log(this.props)
-  //   console.log(connection)
-  // }
 
   render() {
 

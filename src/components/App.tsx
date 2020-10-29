@@ -28,7 +28,7 @@ export default class App extends React.Component {
                 <Route path='/transaction/:connection/:id' component={TransactionPage} />
                 <Route path='/nodes' component={NodeInfo} />
                 <Route path='/404' component={NotFound} />
-                {/* <Redirect to='/404' /> */}
+                <Redirect to='/404' />
               </Switch>
             </AppLayout>
           </ConnectionGate>
