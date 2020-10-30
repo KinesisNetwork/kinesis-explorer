@@ -88,7 +88,7 @@ export async function getLedger(
 
 export async function getLedgers(
   connection: Connection,
-  limitVal: number,
+  limitVal: number = 10,
 ): Promise<LedgerRecord[]> {
   const server = getServer(connection)
   const { records }: CollectionPage<LedgerRecord> = await server
