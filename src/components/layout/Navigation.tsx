@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Link } from 'react-router-dom'
 import { Subscribe } from 'unstated'
 
-import icon from '../../../icon.png'
+import icon from '../../../icon.svg'
 import {
   ConnectionContainer,
   ConnectionContext,
@@ -13,7 +13,7 @@ import { SearchBar } from '../widgets/SearchBar'
 
 interface NavigationProps
   extends ConnectionContext,
-    ConnectionContextHandlers {}
+  ConnectionContextHandlers { }
 interface State {
   isExpanded: boolean
   isLoading: boolean
@@ -71,7 +71,7 @@ class Navigation extends React.Component<NavigationProps, State> {
         <div className='container'>
           <div className='navbar-brand'>
             <Link to={'/'} className='navbar-item'>
-              <img src={icon} alt='Logo' style={{ filter: 'invert(100%)' }} />
+              <img src={icon} alt='Logo' style={{ marginTop: '4px' }} />
             </Link>
             <span
               className={`navbar-burger burger ${this.expandedClass}`}
@@ -83,11 +83,11 @@ class Navigation extends React.Component<NavigationProps, State> {
             </span>
           </div>
           <div className={`navbar-menu ${this.expandedClass}`}>
-            <div className='navbar-start'>
+            {/* <div className='navbar-start'>
               <Link to={'/'} className='navbar-item'>
                 <span className=''>Kinesis Explorer</span>
               </Link>
-            </div>
+            </div> */}
             <div className='navbar-end'>
               <a className='navbar-item'>{selectedConnection.name}</a>
               {this.renderNetworkSelect()}
@@ -108,12 +108,12 @@ class ConnectedNavigation extends React.Component {
     onChange,
     state,
   }: ConnectionContainer) => (
-    <Navigation
-      fetchConnections={fetchConnections}
-      onChange={onChange}
-      {...state}
-    />
-  )
+      <Navigation
+        fetchConnections={fetchConnections}
+        onChange={onChange}
+        {...state}
+      />
+    )
 
   render() {
     return (
