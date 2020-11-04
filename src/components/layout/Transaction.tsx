@@ -61,7 +61,7 @@ class TransactionPage extends React.Component<Props, State> {
         <div className='container'>
           <h1 className='title'>Transaction</h1>
           <h2 className='subtitle'>{this.props.match.params.id}</h2>
-          {!this.state.transaction ? <div /> : <TransactionInfo transaction={this.state.transaction} />}
+          {!this.state.transaction ? <div /> : <TransactionInfo transaction={this.state.transaction} conn={this.props.match.params.connection} />}
         </div>
       </section>
     )
