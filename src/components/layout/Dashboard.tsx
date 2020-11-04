@@ -52,13 +52,9 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     if (prevProps.selectedConnection !== this.props.selectedConnection) {
       this.handleConnectionChange()
     }
-    if (prevState.transLimit !== this.state.transLimit) {
+    if (prevState.transLimit !== this.state.transLimit || prevState.ledgerLimit !== this.state.ledgerLimit) {
       this.closeTransactionStream()
       this.updateTransaction()
-    }
-    if (prevState.ledgerLimit !== this.state.ledgerLimit) {
-      this.closeLedgerStream()
-      this.updateLedger()
     }
   }
 
@@ -203,9 +199,6 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
               <div className={this.state.isLoading ? 'is-loading-blur' : ''}>
                 <Ledgers ledgers={this.state.ledgers} />
               </div>
-              {/* <button className='button' onClick={() => this.moreLedgers()} style={{ width: '100%', marginTop: '3px' }}>
-                Load More...
-              </button> */}
             </article>
             <article className='tile is-child'>
               <p className='title'>Transactions</p>

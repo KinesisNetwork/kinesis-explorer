@@ -81,12 +81,6 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
             value={`${currency} ${renderAmount(totalInCirculation)}`}
             isLoading={isLoading}
           />
-          <HorizontalLabelledField
-            label={'Total Fee Pool'}
-            wideLabel={true}
-            value={`${currency} ${renderAmount(totalFeePool)}`}
-            isLoading={isLoading}
-          />
         </div>
       </article>
     )
