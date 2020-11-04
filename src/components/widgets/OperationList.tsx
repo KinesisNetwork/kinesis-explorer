@@ -4,7 +4,8 @@ import { CollectionPage, OperationRecord, TransactionRecord } from 'js-kinesis-s
 import { OperationInfo } from './OperationInfo'
 
 interface Props {
-  operations: CollectionPage<OperationRecord> | null
+  operations: CollectionPage<OperationRecord> | null,
+  conn?: string,
 }
 export class OperationList extends React.Component<Props> {
   constructor(props: Props) {
@@ -13,11 +14,13 @@ export class OperationList extends React.Component<Props> {
 
   render() {
     const operations = this.props.operations
+    const conn = (this.props.conn == undefined ? "KAU" : this.props.conn)
+
     return (
       <React.Fragment>
         { operations ?
           operations.records.map(
-            (operation, i) => <OperationInfo key={i} operation={operation}/>) : null }
+            (operation, i) => <OperationInfo key={i} operation={operation} conn={conn} />) : null}
       </React.Fragment>
     )
   }

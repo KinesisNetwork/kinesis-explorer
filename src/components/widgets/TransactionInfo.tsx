@@ -8,6 +8,7 @@ import { OperationList } from './OperationList'
 
 interface Props {
   transaction: TransactionRecord,
+  conn?: string
 }
 interface State {
   operations: CollectionPage<OperationRecord> | null
@@ -36,7 +37,7 @@ export class TransactionInfo extends React.Component<Props, State> {
   }
 
   render() {
-    const { transaction } = this.props
+    const { transaction, conn } = this.props
     return (
       <div className='tile is-ancestor'>
         <div className='tile is-vertical is-parent'>
@@ -56,7 +57,7 @@ export class TransactionInfo extends React.Component<Props, State> {
             />
           </div>
           <div className='tile is-child'>
-            <OperationList operations={this.state.operations} />
+            <OperationList operations={this.state.operations} conn={conn} />
           </div>
           <div className='tile is-child box'>
             <p className='subtitle'>Signatures</p>

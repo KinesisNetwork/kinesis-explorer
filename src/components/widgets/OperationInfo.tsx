@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom'
 import { renderAmount, renderRelativeDate } from '../../utils'
 import { HorizontalLabelledField } from '../shared'
 
+var currConn: string = "KAU"
+
 const BASE_OPERATION_KEYS = [
   'id',
   '_links',
@@ -29,14 +31,16 @@ const FORMAT_VALUE: { [key: string]: (value: string) => string | number | React.
   account: (value) => <Link to={`/account/${value}`}>{value}</Link>,
   from: (value) => <Link to={`/account/${value}`}>{value}</Link>,
   to: (value) => <Link to={`/account/${value}`}>{value}</Link>,
-  transaction_hash: (value) => <Link to={`/transaction/${value}`}>{value}</Link>,
+  transaction_hash: (value) => <Link to={`/transaction/${currConn}/${value}`}>{value}</Link>,
   starting_balance: (value) => renderAmount(value),
   amount: (value) => renderAmount(value),
 }
 
 export const OperationInfo: React.SFC<{
   operation: OperationRecord | null,
-}> = ({ operation }) => {
+  conn: string
+}> = ({ operation, conn }) => {
+  conn == undefined ? currConn : currConn = conn
   const fields = operation ? Object.entries(operation)
     .filter(([, val]) => typeof val === 'string')
     .filter(([key]) => !BASE_OPERATION_KEYS.includes(key))
