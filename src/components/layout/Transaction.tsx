@@ -7,23 +7,34 @@ import { getTransaction } from '../../services/kinesis'
 import { Connection } from '../../types'
 import { TransactionInfo } from '../widgets/TransactionInfo'
 
-interface ConnectedTransactionProps extends RouteComponentProps<{ id: string }> {}
-interface Props extends ConnectedTransactionProps, ConnectionContext {}
+interface ConnectedTransactionProps extends RouteComponentProps<{ id: string, connection: string }> { }
+interface Props extends ConnectedTransactionProps, ConnectionContext { }
 
 interface State {
   transaction: TransactionRecord | null
   invalidTransaction: boolean
+  conn: string | undefined
 }
+
 
 class TransactionPage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
-    this.state = { transaction: null, invalidTransaction: false }
+    this.state = { transaction: null, invalidTransaction: false, conn: undefined }
+  }
+
+  getId = (val: string) => {
+    if (val == "KAU") return 0
+    else if (val == "KAG") return 1
+    else if (val == "KAU_test") return 2
+    else if (val == "KAG_test") return 3
   }
 
   loadTransaction = async () => {
     try {
-      const transaction = await getTransaction(this.props.selectedConnection, this.props.match.params.id)
+      let activeConn = this.getId(this.props.match.params.connection)!
+      this.setState({ conn: this.props.match.params.connection })
+      const transaction = await getTransaction(this.props.connections[activeConn], this.props.match.params.id)
       this.setState({ transaction })
     } catch (e) {
       this.setState({ invalidTransaction: true })
@@ -39,6 +50,7 @@ class TransactionPage extends React.Component<Props, State> {
       this.loadTransaction()
     }
   }
+
 
   render() {
     if (this.state.invalidTransaction) {
@@ -57,10 +69,13 @@ class TransactionPage extends React.Component<Props, State> {
 }
 
 class ConnectedTransaction extends React.Component<ConnectedTransactionProps> {
+
   render() {
+
     return (
-      <Subscribe to={[ ConnectionContainer ]}>
-        {({ state }: ConnectionContainer) => <TransactionPage {...this.props} {...state} />}
+      <Subscribe to={[ConnectionContainer]}>
+        {({ state, }: ConnectionContainer) => (
+          <TransactionPage {...this.props} {...state} />)}
       </Subscribe>
     )
   }

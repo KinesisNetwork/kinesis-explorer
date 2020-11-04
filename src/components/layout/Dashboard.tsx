@@ -52,13 +52,9 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     if (prevProps.selectedConnection !== this.props.selectedConnection) {
       this.handleConnectionChange()
     }
-    if (prevState.transLimit !== this.state.transLimit) {
+    if (prevState.transLimit !== this.state.transLimit || prevState.ledgerLimit !== this.state.ledgerLimit) {
       this.closeTransactionStream()
       this.updateTransaction()
-    }
-    if (prevState.ledgerLimit !== this.state.ledgerLimit) {
-      this.closeLedgerStream()
-      this.updateLedger()
     }
   }
 
@@ -181,6 +177,14 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     })
   }
 
+  connectionSelector(): string {
+    if (this.props.selectedConnection.name === "Kinesis KAU Mainnet") return "KAU"
+    else if (this.props.selectedConnection.name === "Kinesis KAG Mainnet") return "KAG"
+    else if (this.props.selectedConnection.name === "Kinesis KAU Testnet") return "KAU_test"
+    else if (this.props.selectedConnection.name === "Kinesis KAG Testnet") return "KAG_test"
+    else return "KAU"
+  }
+
   render() {
     return (
       <section className='section'>
@@ -199,7 +203,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
             <article className='tile is-child'>
               <p className='title'>Transactions</p>
               <div className={this.state.isLoading ? 'is-loading-blur' : ''}>
-                <Transactions transactions={this.state.transactions} />
+                <Transactions transactions={this.state.transactions} conn={this.connectionSelector()} />
               </div>
               <button className='button' onClick={() => this.moreTxs()} style={{ width: '100%', marginTop: '3px' }}>
                 Load More...
