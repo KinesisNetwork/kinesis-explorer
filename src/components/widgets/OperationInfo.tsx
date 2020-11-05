@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { renderAmount, renderRelativeDate } from '../../utils'
 import { HorizontalLabelledField } from '../shared'
 
-var currConn: string = "KAU"
+var currConn: string
 
 const BASE_OPERATION_KEYS = [
   'id',
@@ -40,7 +40,7 @@ export const OperationInfo: React.SFC<{
   operation: OperationRecord | null,
   conn: string
 }> = ({ operation, conn }) => {
-  conn == undefined ? currConn : currConn = conn
+  currConn = conn
   const fields = operation ? Object.entries(operation)
     .filter(([, val]) => typeof val === 'string')
     .filter(([key]) => !BASE_OPERATION_KEYS.includes(key))
