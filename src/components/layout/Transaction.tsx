@@ -16,7 +16,6 @@ interface State {
   conn: string | undefined
 }
 
-
 class TransactionPage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
@@ -24,10 +23,15 @@ class TransactionPage extends React.Component<Props, State> {
   }
 
   getId = (val: string) => {
-    if (val == "KAU") return 0
-    else if (val == "KAG") return 1
-    else if (val == "KAU_test") return 2
-    else if (val == "KAG_test") return 3
+    if (val === 'KAU') {
+      return 0
+    } else if (val === 'KAG') {
+      return 1
+    } else if (val === 'KAU_test') {
+      return 2
+    } else if (val === 'KAG_test') {
+      return 3
+    }
   }
 
   loadTransaction = async () => {
@@ -51,7 +55,6 @@ class TransactionPage extends React.Component<Props, State> {
     }
   }
 
-
   render() {
     if (this.state.invalidTransaction) {
       return <Redirect to='/404' />
@@ -61,7 +64,9 @@ class TransactionPage extends React.Component<Props, State> {
         <div className='container'>
           <h1 className='title'>Transaction</h1>
           <h2 className='subtitle'>{this.props.match.params.id}</h2>
-          {!this.state.transaction ? <div /> : <TransactionInfo transaction={this.state.transaction} conn={this.props.match.params.connection} />}
+          {!this.state.transaction ?
+            <div /> :
+            <TransactionInfo transaction={this.state.transaction} conn={this.props.match.params.connection} />}
         </div>
       </section>
     )
@@ -74,7 +79,7 @@ class ConnectedTransaction extends React.Component<ConnectedTransactionProps> {
 
     return (
       <Subscribe to={[ConnectionContainer]}>
-        {({ state, }: ConnectionContainer) => (
+        {({ state }: ConnectionContainer) => (
           <TransactionPage {...this.props} {...state} />)}
       </Subscribe>
     )

@@ -14,7 +14,7 @@ export class OperationList extends React.Component<Props> {
 
   render() {
     const operations = this.props.operations
-    const conn = (this.props.conn == undefined ? "KAU" : this.props.conn)
+    const conn = (this.props.conn === undefined ? 'KAU' : this.props.conn)
 
     return (
       <React.Fragment>

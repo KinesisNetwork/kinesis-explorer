@@ -182,11 +182,15 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
   }
 
   connectionSelector(): string {
-    if (this.props.selectedConnection.name === "Kinesis KAU Mainnet") return "KAU"
-    else if (this.props.selectedConnection.name === "Kinesis KAG Mainnet") return "KAG"
-    else if (this.props.selectedConnection.name === "Kinesis KAU Testnet") return "KAU_test"
-    else if (this.props.selectedConnection.name === "Kinesis KAG Testnet") return "KAG_test"
-    else return "KAU"
+    if (this.props.selectedConnection.name === 'Kinesis KAU Mainnet') {
+      return 'KAU'
+    } else if (this.props.selectedConnection.name === 'Kinesis KAG Mainnet') {
+      return 'KAG'
+    } else if (this.props.selectedConnection.name === 'Kinesis KAU Testnet') {
+      return 'KAU_test'
+    } else if (this.props.selectedConnection.name === 'Kinesis KAG Testnet') {
+      return 'KAG_test'
+    } else { return 'KAU' }
   }
 
   render() {
@@ -203,9 +207,6 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
               <div className={this.state.isLoading ? 'is-loading-blur' : ''}>
                 <Ledgers ledgers={this.state.ledgers} />
               </div>
-              {/* <button className='button' onClick={() => this.moreLedgers()} style={{ width: '100%', marginTop: '3px' }}>
-                Load More...
-              </button> */}
             </article>
             <article className='tile is-child'>
               <p className='title'>Transactions</p>
