@@ -36,7 +36,7 @@ class TransactionPage extends React.Component<Props, State> {
 
   loadTransaction = async () => {
     try {
-      let activeConn = this.getId(this.props.match.params.connection)!
+      const activeConn = this.getId(this.props.match.params.connection)!
       this.setState({ conn: this.props.match.params.connection })
       const transaction = await getTransaction(this.props.connections[activeConn], this.props.match.params.id)
       this.setState({ transaction })
