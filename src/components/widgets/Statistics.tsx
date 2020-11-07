@@ -78,7 +78,9 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
           <HorizontalLabelledField
             label={'Kinesis in Circulation'}
             wideLabel={true}
-            value={`${currency} ${renderAmount(totalInCirculation)}`}
+            value={(currency === 'KEM') ?
+              `${currency} ${renderAmount(totalInCirculation), 7}` :
+              `${currency} ${renderAmount(totalInCirculation)}`}
             isLoading={isLoading}
           />
         </div>
