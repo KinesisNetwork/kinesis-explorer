@@ -54,7 +54,7 @@ export class LedgerInfo extends React.Component<Props, State> {
               <div className='tile is-child box'>
                 <p className='subtitle'>Info</p>
                 <HorizontalLabelledField label='Percent Fee' value={ledger.base_percentage_fee} wideLabel={true} />
-                <HorizontalLabelledField label='Fee Pool' value={ledger.fee_pool} wideLabel={true} />
+                {/* <HorizontalLabelledField label='Fee Pool' value={ledger.fee_pool} wideLabel={true} /> */}
               </div>
             </div>
             <div className='tile is-parent'>
