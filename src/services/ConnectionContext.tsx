@@ -17,7 +17,7 @@ export class ConnectionContainer extends Container<ConnectionContext> {
   state = {
     connections: [],
     selectedConnection: {} as Connection,
-    connectionId: 0
+    connectionId: 0,
   }
 
   public fetchConnections = async (): Promise<void> => {

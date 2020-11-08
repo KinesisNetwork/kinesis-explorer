@@ -27,26 +27,19 @@ export function getServer(connection: Connection): Server {
   return new Server(connection.horizonURL)
 }
 
-export async function getTransaction(
-  connection: Connection,
-  transactionId: string,
-) {
+export async function getTransaction(connection: Connection, transactionId: string) {
   const server = getServer(connection)
-  return await server
-    .transactions()
-    .transaction(transactionId)
-    .call()
+  return await server.transactions().transaction(transactionId).call()
 }
 
 export async function getTransactions(
   connection: Connection,
   accountId?: string,
-  limit: number = 10,
+  limit = 10,
   cursor?: string,
 ): Promise<TransactionRecord[]> {
   const server = getServer(connection)
-  const transactionsPromise = server
-    .transactions()
+  const transactionsPromise = server.transactions()
 
   if (accountId) {
     transactionsPromise.forAccount(accountId)
@@ -56,10 +49,7 @@ export async function getTransactions(
     transactionsPromise.cursor(cursor)
   }
 
-  const { records }: CollectionPage<TransactionRecord> = await transactionsPromise
-    .limit(limit)
-    .order('desc')
-    .call()
+  const { records }: CollectionPage<TransactionRecord> = await transactionsPromise.limit(limit).order('desc').call()
 
   return records
 }
@@ -67,61 +57,35 @@ export async function getTransactions(
 export async function getTransactionStream(
   connection: Connection,
   cursor = 'now',
-  limit = 1
+  limit = 1,
 ): Promise<TransactionCallBuilder> {
   const server = getServer(connection)
-  return await server
-    .transactions()
-    .cursor(cursor)
-    .limit(limit)
+  return await server.transactions().cursor(cursor).limit(limit)
 }
 
-export async function getLedger(
-  connection: Connection,
-  sequence: number | string,
-): Promise<LedgerRecord> {
+export async function getLedger(connection: Connection, sequence: number | string): Promise<LedgerRecord> {
   const server = getServer(connection)
-  const ledger = (await (server.ledgers() as any)
-    .ledger(sequence)
-    .call()) as LedgerRecord
+  const ledger = (await (server.ledgers() as any).ledger(sequence).call()) as LedgerRecord
   return ledger
 }
 
-export async function getLedgers(
-  connection: Connection,
-  limitVal: number = 10,
-): Promise<LedgerRecord[]> {
+export async function getLedgers(connection: Connection, limitVal: number = 10): Promise<LedgerRecord[]> {
   const server = getServer(connection)
-  const { records }: CollectionPage<LedgerRecord> = await server
-    .ledgers()
-    .limit(limitVal)
-    .order('desc')
-    .call()
+  const { records }: CollectionPage<LedgerRecord> = await server.ledgers().limit(limitVal).order('desc').call()
   return records
 }
 
-export async function getLedgerStream(
-  connection: Connection,
-  cursor = 'now',
-): Promise<LedgerCallBuilder> {
+export async function getLedgerStream(connection: Connection, cursor = 'now'): Promise<LedgerCallBuilder> {
   const server = getServer(connection)
-  return server
-    .ledgers()
-    .cursor(cursor)
-    .limit(1)
+  return server.ledgers().cursor(cursor).limit(1)
 }
 
-export async function getAccount(
-  connection: Connection,
-  accountId: string,
-): Promise<AccountRecord> {
+export async function getAccount(connection: Connection, accountId: string): Promise<AccountRecord> {
   const server = getServer(connection)
   const account: AccountRecord = await server.loadAccount(accountId)
   return account
 }
 
-export async function validateAccount(
-  address: string,
-): Promise<boolean> {
+export async function validateAccount(address: string): Promise<boolean> {
   return StrKey.isValidEd25519PublicKey(address)
 }

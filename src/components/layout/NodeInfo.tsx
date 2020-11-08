@@ -11,6 +11,18 @@ const enum Environments {
 const REGION_ERROR = { error: 'Region Offline' }
 
 const MONITOR_ENDPOINTS = {
+  [Environments.kauMainnet]: [
+    'https://kau-mainnet-oceania.kinesisgroup.io:3000',
+    'https://kau-mainnet-asia.kinesisgroup.io:3000',
+    'https://kau-mainnet-america.kinesisgroup.io:3000',
+    'https://kau-mainnet-europe.kinesisgroup.io:3000',
+  ],
+  [Environments.kagMainnet]: [
+    'https://kag-mainnet-oceania.kinesisgroup.io:3000',
+    'https://kag-mainnet-asia.kinesisgroup.io:3000',
+    'https://kag-mainnet-america.kinesisgroup.io:3000',
+    'https://kag-mainnet-europe.kinesisgroup.io:3000',
+  ],
   [Environments.kauTestnet]: [
     'https://kau-testnet-oceania.kinesisgroup.io:3000',
     'https://kau-testnet-asia.kinesisgroup.io:3000',
@@ -56,7 +68,7 @@ async function loadData() {
 export default class NodeInfo extends React.Component<
   any,
   { nodeInfo: any; interval?: any }
-> {
+  > {
   state = { nodeInfo: {}, interval: undefined }
 
   async componentDidMount() {
@@ -104,8 +116,8 @@ export default class NodeInfo extends React.Component<
             {regionNodeInfo === REGION_ERROR ? (
               <h3 className='title is-5 has-text-danger'>Region Offline</h3>
             ) : (
-              this.generateNodeView(regionNodeInfo)
-            )}
+                this.generateNodeView(regionNodeInfo)
+              )}
           </div>
         </React.Fragment>
       )

@@ -40,7 +40,7 @@ export class AccountInfo extends React.Component<Props, State> {
       ? operations.records[operations.records.length - 1].paging_token
       : undefined
 
-    const showLoadMore = operations.records.length ?  operations.records.length === limit : !cursor
+    const showLoadMore = operations.records.length ? operations.records.length === limit : !cursor
     const originalRecordSet = this.state.operations ? this.state.operations.records : []
     // Simple de-duping
     operations.records = originalRecordSet.concat(
@@ -63,7 +63,7 @@ export class AccountInfo extends React.Component<Props, State> {
       ? transactions[transactions.length - 1].paging_token
       : undefined
 
-    const showLoadMore = transactions.length ?  transactions.length === limit : !cursor
+    const showLoadMore = transactions.length ? transactions.length === limit : !cursor
     const originalRecordSet = this.state.operations ? this.state.operations.records : []
 
     // Simple de-duping
@@ -164,6 +164,20 @@ export class AccountInfo extends React.Component<Props, State> {
     return <React.Fragment>{signers}</React.Fragment>
   }
 
+  connectionSelector(): string {
+    if (this.props.selectedConnection.name === 'Kinesis KAU Mainnet') {
+      return 'KAU'
+    } else if (this.props.selectedConnection.name === 'Kinesis KAG Mainnet') {
+      return 'KAG'
+    } else if (this.props.selectedConnection.name === 'Kinesis KAU Testnet') {
+      return 'KAU_test'
+    } else if (this.props.selectedConnection.name === 'Kinesis KAG Testnet') {
+      return 'KAG_test'
+    } else {
+      return 'KAU'
+    }
+  }
+
   render() {
     const { account } = this.props
     const { showLoadMore, operations } = this.state
@@ -197,7 +211,7 @@ export class AccountInfo extends React.Component<Props, State> {
             </div>
           </div>
           <div className='tile is-parent is-vertical'>
-            <OperationList operations={operations}/>
+            <OperationList operations={operations} conn={this.connectionSelector()} />
             {showLoadMore && <button className='button' onClick={this.onClickLoadMore}>Load more</button>}
           </div>
         </div>
