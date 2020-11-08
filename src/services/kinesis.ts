@@ -32,7 +32,12 @@ export async function getTransaction(connection: Connection, transactionId: stri
   return await server.transactions().transaction(transactionId).call()
 }
 
-export async function getTransactions(connection: Connection, accountId?: string, limit = 10, cursor?: string): Promise<TransactionRecord[]> {
+export async function getTransactions(
+  connection: Connection,
+  accountId?: string,
+  limit = 10,
+  cursor?: string,
+): Promise<TransactionRecord[]> {
   const server = getServer(connection)
   const transactionsPromise = server.transactions()
 
@@ -49,7 +54,11 @@ export async function getTransactions(connection: Connection, accountId?: string
   return records
 }
 
-export async function getTransactionStream(connection: Connection, cursor = 'now', limit = 1): Promise<TransactionCallBuilder> {
+export async function getTransactionStream(
+  connection: Connection,
+  cursor = 'now',
+  limit = 1,
+): Promise<TransactionCallBuilder> {
   const server = getServer(connection)
   return await server.transactions().cursor(cursor).limit(limit)
 }
