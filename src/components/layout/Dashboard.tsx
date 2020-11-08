@@ -52,13 +52,9 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     if (prevProps.selectedConnection !== this.props.selectedConnection) {
       this.handleConnectionChange()
     }
-    if (prevState.transLimit !== this.state.transLimit) {
+    if (prevState.transLimit !== this.state.transLimit || prevState.ledgerLimit !== this.state.ledgerLimit) {
       this.closeTransactionStream()
       this.updateTransaction()
-    }
-    if (prevState.ledgerLimit !== this.state.ledgerLimit) {
-      this.closeLedgerStream()
-      this.updateLedger()
     }
   }
 

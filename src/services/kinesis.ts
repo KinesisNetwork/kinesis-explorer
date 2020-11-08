@@ -49,9 +49,9 @@ export async function getTransactions(connection: Connection, accountId?: string
   return records
 }
 
-export async function getTransactionStream(connection: Connection, cursor = 'now'): Promise<TransactionCallBuilder> {
+export async function getTransactionStream(connection: Connection, cursor = 'now', limit = 1): Promise<TransactionCallBuilder> {
   const server = getServer(connection)
-  return await server.transactions().cursor(cursor).limit(1)
+  return await server.transactions().cursor(cursor).limit(limit)
 }
 
 export async function getLedger(connection: Connection, sequence: number | string): Promise<LedgerRecord> {
