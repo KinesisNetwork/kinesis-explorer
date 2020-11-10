@@ -32,8 +32,8 @@ const FORMAT_VALUE: { [key: string]: (value: string) => string | number | React.
   from: (value) => <Link to={`/account/${value}`}>{value}</Link>,
   to: (value) => <Link to={`/account/${value}`}>{value}</Link>,
   transaction_hash: (value) => <Link to={`/transaction/${currConn}/${value}`}>{value}</Link>,
-  starting_balance: (value) => renderAmount(value),
-  amount: (value) => renderAmount(value),
+  starting_balance: (value) => `${renderAmount(value)} ${currConn}`,
+  amount: (value) => `${renderAmount(value)} ${currConn}`,
 }
 
 export const OperationInfo: React.SFC<{
