@@ -178,11 +178,15 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
   }
 
   connectionSelector(): string {
-    if (this.props.selectedConnection.name === "Kinesis KAU Mainnet") return "KAU"
-    else if (this.props.selectedConnection.name === "Kinesis KAG Mainnet") return "KAG"
-    else if (this.props.selectedConnection.name === "Kinesis KAU Testnet") return "KAU_test"
-    else if (this.props.selectedConnection.name === "Kinesis KAG Testnet") return "KAG_test"
-    else return "KAU"
+    if (this.props.selectedConnection.name === 'Kinesis KAU Mainnet') {
+      return 'KAU'
+    } else if (this.props.selectedConnection.name === 'Kinesis KAG Mainnet') {
+      return 'KAG'
+    } else if (this.props.selectedConnection.name === 'Kinesis KAU Testnet') {
+      return 'KAU_test'
+    } else if (this.props.selectedConnection.name === 'Kinesis KAG Testnet') {
+      return 'KAG_test'
+    } else { return 'KAU' }
   }
 
   render() {
