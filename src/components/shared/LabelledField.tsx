@@ -8,7 +8,7 @@ export interface Props {
   isCompact?: boolean
   wideLabel?: boolean
   tag?: string
-  append?: string | number
+  appendCurr?: string | number
 }
 
 export const LabelledField: React.SFC<Props> = (props) => (
@@ -34,7 +34,7 @@ export const HorizontalLabelledField: React.SFC<Props> = (props) => (
     <div className={`field-body ${props.isLoading ? 'is-loading-blur' : ''}`}>
       <div className='field'>
         <div className={`control is-expanded`}>
-          <p className='input is-static custom-p'>{props.value} {props.append}</p>
+          <p className='input is-static custom-p'>{props.value} {props.appendCurr}</p>
         </div>
       </div>
       {props.tag && (
