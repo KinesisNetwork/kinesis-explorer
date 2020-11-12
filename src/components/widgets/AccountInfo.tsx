@@ -170,9 +170,9 @@ export class AccountInfo extends React.Component<Props, State> {
     } else if (this.props.selectedConnection.name === 'Kinesis KAG Mainnet') {
       return 'KAG'
     } else if (this.props.selectedConnection.name === 'Kinesis KAU Testnet') {
-      return 'KAU_test'
+      return 'TKAU'
     } else if (this.props.selectedConnection.name === 'Kinesis KAG Testnet') {
-      return 'KAG_test'
+      return 'TKAG'
     } else {
       return 'KAU'
     }
