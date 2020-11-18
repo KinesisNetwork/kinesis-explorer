@@ -209,7 +209,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
               <div className={this.state.isLoading ? 'is-loading-blur' : ''}>
                 <Transactions transactions={this.state.transactions} conn={this.connectionSelector()} />
               </div>
-              <button className='button' onClick={() => this.moreTxs()} style={{ width: '100%', marginTop: '3px' }}>
+              <button className='button' onClick={() => this.moreTxs()} style={{ width: '100%', marginTop: '3px', overflowAnchor: 'none' }}>
                 Load More...
               </button>
             </article>
