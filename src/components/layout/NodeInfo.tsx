@@ -24,10 +24,10 @@ const MONITOR_ENDPOINTS = {
     'https://kag-mainnet-europe.kinesisgroup.io:3000',
   ],
   [Environments.kauTestnet]: [
-    'https://kau-testnet-oceania.kinesisgroup.io:3000',
-    'https://kau-testnet-asia.kinesisgroup.io:3000',
-    'https://kau-testnet-america.kinesisgroup.io:3000',
-    'https://kau-testnet-europe.kinesisgroup.io:3000',
+    'https://kau-testnet-london-node0.kinesisgroup.io:3000',
+    'https://kau-testnet-london-node1.kinesisgroup.io:3000',
+    'https://kau-testnet-oceania-node0.kinesisgroup.io:3000',
+    'https://kau-testnet-oceania-node1.kinesisgroup.io:3000',
   ],
   [Environments.kagTestnet]: [
     'https://kag-testnet-oceania-node0.kinesisgroup.io:3000',
