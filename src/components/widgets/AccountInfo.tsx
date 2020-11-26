@@ -169,13 +169,15 @@ export class AccountInfo extends React.Component<Props, State> {
       return 'KAU'
     } else if (this.props.selectedConnection.name === 'Kinesis KAG Mainnet') {
       return 'KAG'
+    } else if (this.props.selectedConnection.name === 'Kinesis KEM Mainnet') {
+      return 'KEM'
     } else if (this.props.selectedConnection.name === 'Kinesis KAU Testnet') {
       return 'TKAU'
     } else if (this.props.selectedConnection.name === 'Kinesis KAG Testnet') {
       return 'TKAG'
-    } else {
-      return 'KAU'
-    }
+    } else if (this.props.selectedConnection.name === 'Kinesis KEM Testnet') {
+      return 'TKEM'
+    } else { return 'KAU' }
   }
 
   render() {

@@ -79,7 +79,7 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
             label={'Kinesis in Circulation'}
             wideLabel={true}
             value={(currency === 'KEM') ?
-              `${currency} ${renderAmount(totalInCirculation), 7}` :
+              `${currency} ${renderAmount(totalInCirculation, 7)}` :
               `${currency} ${renderAmount(totalInCirculation)}`}
             isLoading={isLoading}
           />
