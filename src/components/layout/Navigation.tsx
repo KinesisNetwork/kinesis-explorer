@@ -48,6 +48,7 @@ class Navigation extends React.Component<NavigationProps, State> {
   public renderNetworkSelect = () => {
     const { connections } = this.props
     const { isLoading } = this.state
+
     return (
       <div className='navbar-item has-dropdown is-hoverable'>
         <div className='navbar-link'>
@@ -65,7 +66,6 @@ class Navigation extends React.Component<NavigationProps, State> {
 
   render() {
     const { selectedConnection } = this.props
-
     return (
       <nav className='navbar' role='navigation' aria-label='navigation'>
         <div className='container'>
@@ -108,12 +108,12 @@ class ConnectedNavigation extends React.Component {
     onChange,
     state,
   }: ConnectionContainer) => (
-      <Navigation
-        fetchConnections={fetchConnections}
-        onChange={onChange}
-        {...state}
-      />
-    )
+    <Navigation
+      fetchConnections={fetchConnections}
+      onChange={onChange}
+      {...state}
+    />
+  )
 
   render() {
     return (
