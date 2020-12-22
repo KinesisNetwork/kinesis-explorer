@@ -44,11 +44,11 @@ export class TransactionInfo extends React.Component<Props, State> {
           <div className='tile is-child box'>
             <p className='subtitle'>Summary</p>
             <HorizontalLabelledField label='Created At' value={transaction.created_at} />
-            <HorizontalLabelledField
+            {!isNaN(convertStroopsToKinesis(transaction.fee_paid)) && <HorizontalLabelledField
               label='Fee'
               value={renderAmount(convertStroopsToKinesis(transaction.fee_paid))}
               appendCurr={conn}
-            />
+            />}
             <HorizontalLabelledField
               label='Ledger'
               value={<Link to={`/ledger/${transaction.ledger_attr}`}>{transaction.ledger_attr}</Link>}

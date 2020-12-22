@@ -71,6 +71,8 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
     const {
       selectedConnection: { currency },
     } = this.props
+    let curr_abbr: string = currency;
+    (localStorage.getItem('selectedConnection') || 0) > 2 ? curr_abbr = 'T' + curr_abbr : curr_abbr
     return (
       <article className='tile is-child box'>
         <p className='title'>Statistics</p>
@@ -79,8 +81,8 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
             label={'Kinesis in Circulation'}
             wideLabel={true}
             value={(currency === 'KEM') ?
-              `${currency} ${renderAmount(totalInCirculation, 7)}` :
-              `${currency} ${renderAmount(totalInCirculation)}`}
+              `${curr_abbr} ${renderAmount(totalInCirculation, 7)}` :
+              `${curr_abbr} ${renderAmount(totalInCirculation)}`}
             isLoading={isLoading}
           />
         </div>

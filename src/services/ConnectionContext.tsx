@@ -15,17 +15,24 @@ export interface ConnectionContextHandlers {
 
 export class ConnectionContainer extends Container<ConnectionContext> {
   state = {
-    connections: [],
+    connections: [] as Connection[],
     selectedConnection: {} as Connection,
     connectionId: 0,
   }
 
   public fetchConnections = async (): Promise<void> => {
     const connections = await fetchConnections()
-    this.setState({ connections, selectedConnection: connections[this.state.connectionId] })
+    this.setState({
+      connections,
+      selectedConnection: connections[Number(localStorage.getItem('selectedConnection')) || this.state.connectionId]
+    })
   }
 
-  public onChange = (connection: Connection, connectionId?: number): void => {
-    this.setState({ selectedConnection: connection, connectionId })
+  public onChange = (connection: Connection): void => {
+    this.setState({ selectedConnection: connection }, () => {
+      this.setState({ connectionId: this.state.connections.indexOf(this.state.selectedConnection) || 0 }, () =>
+        localStorage.setItem('selectedConnection', this.state.connectionId.toString())
+      )
+    })
   }
 }

@@ -27,12 +27,14 @@ class TransactionPage extends React.Component<Props, State> {
       return 0
     } else if (val === 'KAG') {
       return 1
-    } else if (val === 'TKAU') {
+    } else if (val === 'KEG') {
       return 2
-    } else if (val === 'TKAG') {
+    } else if (val === 'TKAU') {
       return 3
-    } else if (val === 'TKEG') {
+    } else if (val === 'TKAG') {
       return 4
+    } else if (val === 'TKEM') {
+      return 5
     }
   }
 
