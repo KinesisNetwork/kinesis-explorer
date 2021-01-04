@@ -47,50 +47,6 @@ class Navigation extends React.Component<NavigationProps, State> {
 
   public renderNetworkSelect = () => {
     const { connections } = this.props
-    // const connections: Connection[] = [
-    //   {
-    //     name: 'Kinesis KAU Mainnet',
-    //     horizonURL: 'https://kau-mainnet.kinesisgroup.io',
-    //     networkPassphrase: "Kinesis Live",
-    //     stage: "mainnet",
-    //     currency: "KAU"
-    //   },
-    //   {
-    //     name: "Kinesis KAG Mainnet",
-    //     horizonURL: "https://kag-mainnet.kinesisgroup.io",
-    //     networkPassphrase: "Kinesis KAG Live",
-    //     stage: "mainnet",
-    //     currency: "KAG"
-    //   },
-    //   {
-    //     name: "Kinesis KEM Mainnet",
-    //     horizonURL: "https://kem-mainnet.kinesisgroup.io",
-    //     networkPassphrase: "Kinesis KEM Live",
-    //     stage: "mainnet",
-    //     currency: "KEM"
-    //   },
-    //   {
-    //     name: "Kinesis KAU Testnet",
-    //     horizonURL: "https://kau-testnet.kinesisgroup.io",
-    //     networkPassphrase: "Kinesis UAT",
-    //     stage: "testnet",
-    //     currency: "KAU"
-    //   },
-    //   {
-    //     name: "Kinesis KAG Testnet",
-    //     horizonURL: "https://kag-testnet.kinesisgroup.io",
-    //     networkPassphrase: "Kinesis KAG UAT",
-    //     stage: "testnet",
-    //     currency: "KAG"
-    //   },
-    //   {
-    //     name: "Kinesis KEM Testnet",
-    //     horizonURL: "https://kem-testnet.kinesisgroup.io",
-    //     networkPassphrase: "Kinesis KEM UAT",
-    //     stage: "testnet",
-    //     currency: "KEM"
-    //   }
-    // ]
     const { isLoading } = this.state
     return (
       <div className='navbar-item has-dropdown is-hoverable'>
@@ -152,12 +108,12 @@ class ConnectedNavigation extends React.Component {
     onChange,
     state,
   }: ConnectionContainer) => (
-      <Navigation
-        fetchConnections={fetchConnections}
-        onChange={onChange}
-        {...state}
-      />
-    )
+    <Navigation
+      fetchConnections={fetchConnections}
+      onChange={onChange}
+      {...state}
+    />
+  )
 
   render() {
     return (
