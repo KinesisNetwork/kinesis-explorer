@@ -8,9 +8,19 @@ import { renderAmount } from '../../utils'
 import { HorizontalLabelledField } from '../shared'
 import { OperationList } from './OperationList'
 
+interface KemRecord extends AccountRecord {
+  signers: Array<
+    {
+      public_key: string
+      weight: number
+      key?: string
+    }
+  >;
+}
+
 interface Props {
   accountId: string,
-  account: AccountRecord,
+  account: KemRecord,
   selectedConnection: Connection,
 }
 
@@ -155,7 +165,7 @@ export class AccountInfo extends React.Component<Props, State> {
         <div key={i}>
           <HorizontalLabelledField
             label='Public Key'
-            value={signer.public_key}
+            value={signer.public_key || signer.key}
             tag={`Weight: ${signer.weight}`}
           />
         </div>
