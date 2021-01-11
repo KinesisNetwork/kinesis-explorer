@@ -43,6 +43,7 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
     ])
     const ledgerFeePool = Number(feePool)
     const unbackedFeesInPool = ledgerFeePool - backedFeesInPool
+console.log("totalInCirculation",backedFeesInPool);
 
     const totalInCirculation = totalCoins - unbackedBalances - unbackedFeesInPool
 
@@ -75,6 +76,8 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
     (localStorage.getItem('selectedConnection') || 0) > 2 ? curr_abbr = 'T' + curr_abbr : curr_abbr
     return (
       <article className='tile is-child box'>
+        {console.log("Tkem Value",totalInCirculation)}
+        
         <p className='title'>Statistics</p>
         <div>
           <HorizontalLabelledField
