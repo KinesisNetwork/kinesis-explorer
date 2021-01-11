@@ -65,7 +65,6 @@ export async function getBackedFees(connection: Connection): Promise<number> {
 
 
       const totalFeesInStroops = await getBackedFeesFromTransactions(transactions, connection)
-      console.log("totalFeesInStroops",totalFeesInStroops);
       return convertStroopsToKinesis(totalFeesInStroops)
       
     } else {
