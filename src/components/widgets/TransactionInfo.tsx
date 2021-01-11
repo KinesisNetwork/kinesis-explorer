@@ -7,7 +7,7 @@ import { HorizontalLabelledField } from '../shared'
 import { OperationList } from './OperationList'
 
 interface KemFee extends TransactionRecord {
-  fee_charged?:0;
+  fee_charged?: 0
 }
 
 interface Props {
@@ -42,8 +42,8 @@ export class TransactionInfo extends React.Component<Props, State> {
 
   render() {
     const { transaction, conn } = this.props
-   
-    let feePaid=transaction.fee_paid || Number(transaction.fee_charged)
+
+    const feePaid = transaction.fee_paid || Number(transaction.fee_charged)
     return (
       <div className='tile is-ancestor'>
         <div className='tile is-vertical is-parent'>

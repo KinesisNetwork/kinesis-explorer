@@ -96,8 +96,8 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
 
       return (
         <React.Fragment key={network}>
-          <h1 className="title is-3">{network}</h1>
-          <div className="columns">{this.generateRegionView(networkRegionInfo)}</div>
+          <h1 className='title is-3'>{network}</h1>
+          <div className='columns'>{this.generateRegionView(networkRegionInfo)}</div>
         </React.Fragment>
       )
     })
@@ -110,10 +110,10 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
 
       return (
         <React.Fragment key={region}>
-          <div className="column">
-            <h2 className="title is-4">{region}</h2>
+          <div className='column'>
+            <h2 className='title is-4'>{region}</h2>
             {regionNodeInfo === REGION_ERROR ? (
-              <h3 className="title is-5 has-text-danger">Region Offline</h3>
+              <h3 className='title is-5 has-text-danger'>Region Offline</h3>
             ) : (
               this.generateNodeView(regionNodeInfo)
             )}
@@ -141,7 +141,7 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
       const { agree } = quorum ? qSet() : { agree: 0 }
       return (
         <React.Fragment key={node}>
-          <h2 className="title is-4" style={{ paddingTop: '15px' }}>
+          <h2 className='title is-4' style={{ paddingTop: '15px' }}>
             {node}
           </h2>
           <p>State: {state}</p>
@@ -159,8 +159,8 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
   }
   render() {
     return (
-      <div className="container">
-        <h1 className="title is-2">Node Infomation</h1>
+      <div className='container'>
+        <h1 className='title is-2'>Node Infomation</h1>
         {this.generateView()}
       </div>
     )

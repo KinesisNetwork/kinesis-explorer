@@ -13,9 +13,9 @@ interface KemRecord extends AccountRecord {
     {
       public_key: string
       weight: number
-      key?: string
+      key?: string,
     }
-  >;
+  >
 }
 
 interface Props {

@@ -25,16 +25,15 @@ export class ConnectionContainer extends Container<ConnectionContext> {
     this.setState({
       connections,
 
-      selectedConnection: connections[Number(localStorage.getItem('selectedConnection')) || this.state.connectionId]
+      selectedConnection: connections[Number(localStorage.getItem('selectedConnection')) || this.state.connectionId],
 
-     
     })
   }
 
   public onChange = (connection: Connection): void => {
     this.setState({ selectedConnection: connection }, () => {
       this.setState({ connectionId: this.state.connections.indexOf(this.state.selectedConnection) || 0 }, () =>
-        localStorage.setItem('selectedConnection', this.state.connectionId.toString())
+        localStorage.setItem('selectedConnection', this.state.connectionId.toString()),
       )
     })
   }
