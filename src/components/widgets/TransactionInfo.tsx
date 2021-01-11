@@ -45,7 +45,6 @@ export class TransactionInfo extends React.Component<Props, State> {
     let feePaid=transaction.fee_paid || transaction.fee_charged
     return (
       <div className='tile is-ancestor'>
-        {console.log("transaction",feePaid)}
         <div className='tile is-vertical is-parent'>
           <div className='tile is-child box'>
             <p className='subtitle'>Summary</p>
