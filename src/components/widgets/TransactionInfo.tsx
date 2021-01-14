@@ -6,8 +6,12 @@ import { renderAmount } from '../../utils'
 import { HorizontalLabelledField } from '../shared'
 import { OperationList } from './OperationList'
 
+interface KemFee extends TransactionRecord {
+  fee_charged?: 0
+}
+
 interface Props {
-  transaction: TransactionRecord,
+  transaction: KemFee,
   conn?: string
 }
 interface State {
@@ -38,13 +42,19 @@ export class TransactionInfo extends React.Component<Props, State> {
 
   render() {
     const { transaction, conn } = this.props
+
+    const feePaid = transaction.fee_paid || Number(transaction.fee_charged)
     return (
       <div className='tile is-ancestor'>
         <div className='tile is-vertical is-parent'>
           <div className='tile is-child box'>
             <p className='subtitle'>Summary</p>
             <HorizontalLabelledField label='Created At' value={transaction.created_at} />
-            <HorizontalLabelledField label='Fee' value={renderAmount(convertStroopsToKinesis(transaction.fee_paid))} />
+            <HorizontalLabelledField
+              label='Fee'
+              value={renderAmount(convertStroopsToKinesis(feePaid))}
+              appendCurr={conn}
+            />
             <HorizontalLabelledField
               label='Ledger'
               value={<Link to={`/ledger/${transaction.ledger_attr}`}>{transaction.ledger_attr}</Link>}

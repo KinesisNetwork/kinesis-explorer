@@ -4,8 +4,11 @@ import { renderRelativeDate } from '../../utils'
 import { HorizontalLabelledField } from '../shared'
 import { Transactions } from '../widgets'
 
+interface NewKem extends LedgerRecord {
+  successful_transaction_count: number
+}
 interface Props {
-  ledger: LedgerRecord,
+  ledger: NewKem,
 }
 
 interface State {
@@ -53,14 +56,23 @@ export class LedgerInfo extends React.Component<Props, State> {
             <div className='tile is-parent'>
               <div className='tile is-child box'>
                 <p className='subtitle'>Info</p>
-                <HorizontalLabelledField label='Percent Fee' value={ledger.base_percentage_fee} wideLabel={true} />
+
+                <HorizontalLabelledField
+                  label='Percent Fee'
+                  value={ledger.base_percentage_fee || 45}
+                  wideLabel={true}
+                />
                 {/* <HorizontalLabelledField label='Fee Pool' value={ledger.fee_pool} wideLabel={true} /> */}
               </div>
             </div>
             <div className='tile is-parent'>
               <div className='tile is-child box'>
                 <p className='subtitle'>Count</p>
-                <HorizontalLabelledField label='Transactions' value={ledger.transaction_count} wideLabel={true} />
+                <HorizontalLabelledField
+                  label='Transactions'
+                  value={ledger.transaction_count || ledger.successful_transaction_count}
+                  wideLabel={true}
+                />
                 <HorizontalLabelledField label='Operations' value={ledger.operation_count} wideLabel={true} />
               </div>
             </div>

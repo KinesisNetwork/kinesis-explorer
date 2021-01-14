@@ -182,10 +182,14 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
       return 'KAU'
     } else if (this.props.selectedConnection.name === 'Kinesis KAG Mainnet') {
       return 'KAG'
+    } else if (this.props.selectedConnection.name === 'Kinesis KEM Mainnet') {
+      return 'KEM'
     } else if (this.props.selectedConnection.name === 'Kinesis KAU Testnet') {
-      return 'KAU_test'
+      return 'TKAU'
     } else if (this.props.selectedConnection.name === 'Kinesis KAG Testnet') {
-      return 'KAG_test'
+      return 'TKAG'
+    } else if (this.props.selectedConnection.name === 'Kinesis KEM Testnet') {
+      return 'TKEM'
     } else { return 'KAU' }
   }
 
@@ -209,7 +213,11 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
               <div className={this.state.isLoading ? 'is-loading-blur' : ''}>
                 <Transactions transactions={this.state.transactions} conn={this.connectionSelector()} />
               </div>
-              <button className='button' onClick={() => this.moreTxs()} style={{ width: '100%', marginTop: '3px' }}>
+              <button
+                className='button'
+                onClick={() => this.moreTxs()}
+                style={{ width: '100%', marginTop: '3px', overflowAnchor: 'none' }}
+              >
                 Load More...
               </button>
             </article>

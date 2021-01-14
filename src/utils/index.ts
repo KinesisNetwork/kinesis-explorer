@@ -10,9 +10,9 @@ export function renderRelativeDate(date: Date | string): string {
   return moment(parsedDate).fromNow()
 }
 
-export function renderAmount(amount: string | number) {
+export function renderAmount(amount: string | number, precision: number = 5) {
   return Number(amount).toLocaleString(undefined, {
-    useGrouping: true,
+    useGrouping: true, maximumFractionDigits: precision, minimumFractionDigits: 0,
   })
 }
 
