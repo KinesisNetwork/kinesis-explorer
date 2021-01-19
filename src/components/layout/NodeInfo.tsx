@@ -7,6 +7,7 @@ const enum Environments {
   kauMainnet = 'kau-mainnet',
   kagMainnet = 'kag-mainnet',
   kemTestnet = 'kem-testnet',
+  kemMainnet = 'kem-mainnet',
 }
 
 const REGION_ERROR = { error: 'Region Offline' }
@@ -23,6 +24,12 @@ const MONITOR_ENDPOINTS = {
     'https://kag-mainnet-asia.kinesisgroup.io:3000',
     'https://kag-mainnet-america.kinesisgroup.io:3000',
     'https://kag-mainnet-europe.kinesisgroup.io:3000',
+  ],
+  [Environments.kemMainnet]: [
+    'https://kem-mainnet-oceania0.kinesisgroup.io:3000',
+    'https://kem-mainnet-asia0.kinesisgroup.io:3000',
+    'https://kem-mainnet-america0.kinesisgroup.io:3000',
+    'https://kem-mainnet-europe0.kinesisgroup.io:3000',
   ],
   [Environments.kauTestnet]: [
     'https://kau-testnet-london0.kinesisgroup.io:3000',
@@ -41,7 +48,7 @@ const MONITOR_ENDPOINTS = {
     'https://kem-testnet-europe1.kinesisgroup.io:3000',
     'https://kem-testnet-europe2.kinesisgroup.io:3000',
     'https://kem-testnet-europe3.kinesisgroup.io:3000',
-  ],
+  ]
 }
 
 function getInfo(ep: string) {
