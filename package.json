@@ -31,7 +31,7 @@
   },
   "homepage": "https://github.com/KinesisNetwork/kinesis-explorer#readme",
   "dependencies": {
-    "axios": "0.18.1",
+    "axios": "0.21.1",
     "bulma": "0.7.1",
     "decimal.js": "10.2.0",
     "event-source-polyfill": "0.0.12",
