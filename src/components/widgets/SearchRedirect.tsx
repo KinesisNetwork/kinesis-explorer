@@ -12,15 +12,11 @@ export class SearchRedirect extends React.Component<Props> {
         return 'KAU'
       } else if (curr === '1') {
         return 'KAG'
-      } else if (curr === '2') {
-        return 'KEM'
-      } else if (curr === '3') {
+      }else if (curr === '2') {
         return 'TKAU'
-      } else if (curr === '4') {
+      } else if (curr === '3') {
         return 'TKAG'
-      } else if (curr === '5') {
-        return 'TKEM'
-      }
+      } 
     }
     if (parseInt(search, 10).toString() === search.toLowerCase()) {
       return <Redirect to={`/ledger/${search}`} />
