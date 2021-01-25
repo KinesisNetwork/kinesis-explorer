@@ -13,9 +13,9 @@ interface KemRecord extends AccountRecord {
     {
       public_key: string
       weight: number
-      key?: string
+      key?: string,
     }
-  >;
+  >
 }
 
 interface Props {
@@ -138,13 +138,14 @@ export class AccountInfo extends React.Component<Props, State> {
   }
 
   renderBalances = () => {
+    const precision =  this.props.selectedConnection.currency === 'KEM' ? 7 : 5
     const balances = this.props.account.balances
       .map((balance) =>
         balance.asset_type === 'native'
           ? { ...balance, asset_type: this.props.selectedConnection.currency }
           : balance,
       )
-      .map((balance) => ({ ...balance, balance: renderAmount(balance.balance) }))
+      .map((balance) => ({ ...balance, balance: renderAmount(balance.balance, precision) }))
       .map((balance, i) => (
         <HorizontalLabelledField key={i} label={balance.asset_type} value={balance.balance} />
       ))

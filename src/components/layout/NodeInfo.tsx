@@ -6,6 +6,8 @@ const enum Environments {
   kagTestnet = 'kag-testnet',
   kauMainnet = 'kau-mainnet',
   kagMainnet = 'kag-mainnet',
+  kemTestnet = 'kem-testnet',
+  kemMainnet = 'kem-mainnet',
 }
 
 const REGION_ERROR = { error: 'Region Offline' }
@@ -23,17 +25,29 @@ const MONITOR_ENDPOINTS = {
     'https://kag-mainnet-america.kinesisgroup.io:3000',
     'https://kag-mainnet-europe.kinesisgroup.io:3000',
   ],
+  [Environments.kemMainnet]: [
+    'https://kem-mainnet-oceania0.kinesisgroup.io:3000',
+    'https://kem-mainnet-asia0.kinesisgroup.io:3000',
+    'https://kem-mainnet-america0.kinesisgroup.io:3000',
+    'https://kem-mainnet-europe0.kinesisgroup.io:3000',
+  ],
   [Environments.kauTestnet]: [
-    'https://kau-testnet-oceania.kinesisgroup.io:3000',
-    'https://kau-testnet-asia.kinesisgroup.io:3000',
-    'https://kau-testnet-america.kinesisgroup.io:3000',
-    'https://kau-testnet-europe.kinesisgroup.io:3000',
+    'https://kau-testnet-london0.kinesisgroup.io:3000',
+    'https://kau-testnet-london1.kinesisgroup.io:3000',
+    'https://kau-testnet-oceania1.kinesisgroup.io:3000',
+    'https://kau-testnet-oceania2.kinesisgroup.io:3000',
   ],
   [Environments.kagTestnet]: [
     'https://kag-testnet-oceania.kinesisgroup.io:3000',
     'https://kag-testnet-asia.kinesisgroup.io:3000',
     'https://kag-testnet-america.kinesisgroup.io:3000',
     'https://kag-testnet-europe.kinesisgroup.io:3000',
+  ],
+  [Environments.kemTestnet]: [
+    'https://kem-testnet-europe0.kinesisgroup.io:3000',
+    'https://kem-testnet-europe1.kinesisgroup.io:3000',
+    'https://kem-testnet-europe2.kinesisgroup.io:3000',
+    'https://kem-testnet-europe3.kinesisgroup.io:3000',
   ],
 }
 
@@ -54,10 +68,7 @@ async function loadData() {
         }),
       )
 
-      const mergedEnvInfo = envInfo.reduce(
-        (acc, val) => ({ ...acc, ...val }),
-        {},
-      )
+      const mergedEnvInfo = envInfo.reduce((acc, val) => ({ ...acc, ...val }), {})
       return { [environment]: mergedEnvInfo }
     }),
   )
@@ -65,10 +76,7 @@ async function loadData() {
   return data.reduce((acc, val) => ({ ...acc, ...val }), {})
 }
 
-export default class NodeInfo extends React.Component<
-  any,
-  { nodeInfo: any; interval?: any }
-  > {
+export default class NodeInfo extends React.Component<any, { nodeInfo: any; interval?: any }> {
   state = { nodeInfo: {}, interval: undefined }
 
   async componentDidMount() {
@@ -96,9 +104,7 @@ export default class NodeInfo extends React.Component<
       return (
         <React.Fragment key={network}>
           <h1 className='title is-3'>{network}</h1>
-          <div className='columns'>
-            {this.generateRegionView(networkRegionInfo)}
-          </div>
+          <div className='columns'>{this.generateRegionView(networkRegionInfo)}</div>
         </React.Fragment>
       )
     })
@@ -116,8 +122,8 @@ export default class NodeInfo extends React.Component<
             {regionNodeInfo === REGION_ERROR ? (
               <h3 className='title is-5 has-text-danger'>Region Offline</h3>
             ) : (
-                this.generateNodeView(regionNodeInfo)
-              )}
+              this.generateNodeView(regionNodeInfo)
+            )}
           </div>
         </React.Fragment>
       )
@@ -129,12 +135,17 @@ export default class NodeInfo extends React.Component<
 
     return nodes.map((node) => {
       const currentNode = regionNodeInfo[node]
-
       const { info } = currentNode
-      const { quorum, ledger, state } = info
-      const { agree } = quorum
-        ? (Object.values(quorum)[0] as any)
-        : { agree: 0 }
+      const { quorum, ledger, state, protocol_version } = info
+      const qSet = () => {
+        if (protocol_version > 9) {
+          return Object.values(quorum)[1] as any
+        } else {
+          return Object.values(quorum)[0] as any
+        }
+      }
+
+      const { agree } = quorum ? qSet() : { agree: 0 }
       return (
         <React.Fragment key={node}>
           <h2 className='title is-4' style={{ paddingTop: '15px' }}>
@@ -153,7 +164,6 @@ export default class NodeInfo extends React.Component<
       )
     })
   }
-
   render() {
     return (
       <div className='container'>

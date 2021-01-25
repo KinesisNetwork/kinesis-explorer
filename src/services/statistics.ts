@@ -1,4 +1,5 @@
 import axios from 'axios'
+import BigNumber from 'bignumber.js'
 import { createHash } from 'crypto'
 import {
   AccountRecord,
@@ -13,7 +14,11 @@ import { Connection } from '../types'
 import { flatten, sum } from '../utils'
 import { convertStroopsToKinesis, getAccount, getNetwork, getServer } from './kinesis'
 
-export async function getUnbackedBalances(connection: Connection): Promise<number> {
+interface KemFee extends TransactionRecord {
+  fee_charged?: string | number
+}
+
+export async function getUnbackedBalances(connection: Connection): Promise<string> {
   const accounts = await fetchUnbackedAccounts(connection)
   return sumNativeBalances(...accounts)
 }
@@ -24,17 +29,18 @@ function getUnbackedKeysCheck(connection: Connection): (account: string) => bool
 }
 
 async function getBackedFeesFromTransactions(
-  ts: CollectionPage<TransactionRecord>,
+  ts: CollectionPage<KemFee>,
   connection: Connection,
   accumulatedFee = 0,
 ): Promise<number> {
   if (ts.records.length === 0) {
     return accumulatedFee
   }
-
   const isUnbackedTransaction = getUnbackedKeysCheck(connection)
-  const transactionFees =  ts.records.reduce(
-    (acc, curr) => (isUnbackedTransaction(curr.source_account) ? acc : acc + curr.fee_paid),
+
+  const transactionFees = ts.records.reduce(
+    (acc, curr) =>
+      isUnbackedTransaction(curr.source_account) ? acc : acc + (curr.fee_paid || Number(curr.fee_charged)),
     0,
   )
 
@@ -46,6 +52,7 @@ async function getBackedFeesFromTransactions(
 }
 
 export async function getBackedFees(connection: Connection): Promise<number> {
+
   const server = getServer(connection)
   try {
     const first200OperationPage = await server.operations().limit(200).order('desc').call()
@@ -57,8 +64,8 @@ export async function getBackedFees(connection: Connection): Promise<number> {
       const transactions = await server.transactions().cursor(paging_token).order('asc').limit(200).call()
 
       const totalFeesInStroops = await getBackedFeesFromTransactions(transactions, connection)
-
       return convertStroopsToKinesis(totalFeesInStroops)
+
     } else {
       return convertStroopsToKinesis(0)
     }
@@ -125,10 +132,13 @@ async function getInflationOperation(
   return result
 }
 
-function sumNativeBalances(...accounts: AccountRecord[]): number {
+function sumNativeBalances(...accounts: AccountRecord[]): string {
+  let balancesArray = []
   const balances = flatten(...accounts.map((acc) => acc.balances.filter(hasNativeAssetType)))
-
-  return balances.reduce((memo, { balance }) => sum(memo, Number(balance)), 0)
+  balancesArray = balances.map((e) => e.balance)
+  const bigNum = new BigNumber(balancesArray[0])
+  return bigNum.plus(balancesArray[1]).toFixed(7)
+  // return balances.reduce((memo, { balance }) => sum(memo, Number(balance)), 0)
 }
 
 function hasNativeAssetType<T extends { asset_type: string }>(balance: T): boolean {

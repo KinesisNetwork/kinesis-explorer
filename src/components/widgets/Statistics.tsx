@@ -3,6 +3,7 @@ import { LedgerRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
 import { Subscribe } from 'unstated'
 
+import BigNumber from 'bignumber.js'
 import { ConnectionContainer, ConnectionContext } from '../../services/connections'
 import { getLedgers } from '../../services/kinesis'
 import { getBackedFees, getUnbackedBalances } from '../../services/statistics'
@@ -41,10 +42,12 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
       getUnbackedBalances(connection),
       getBackedFees(connection),
     ])
+
     const ledgerFeePool = Number(feePool)
     const unbackedFeesInPool = ledgerFeePool - backedFeesInPool
-
-    const totalInCirculation = totalCoins - unbackedBalances - unbackedFeesInPool
+    // const totalInCirculation = totalCoins - Number(unbackedBalances) - unbackedFeesInPool
+    const bigNum = new BigNumber(totalCoins)
+    const totalInCirculation = Number(bigNum.minus(unbackedBalances).minus(unbackedFeesInPool).toFixed(7))
 
     this.setState({
       totalInCirculation,
@@ -71,8 +74,10 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
     const {
       selectedConnection: { currency },
     } = this.props
-    let curr_abbr: string = currency;
-    (localStorage.getItem('selectedConnection') || 0) > 2 ? curr_abbr = 'T' + curr_abbr : curr_abbr
+    let currAbbr: string = currency
+    if ((Number(localStorage.getItem('selectedConnection')) || 0) > 2) {
+      currAbbr = 'T' + currAbbr
+    }
     return (
       <article className='tile is-child box'>
         <p className='title'>Statistics</p>
@@ -80,9 +85,11 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
           <HorizontalLabelledField
             label={'Kinesis in Circulation'}
             wideLabel={true}
-            value={(currency === 'KEM') ?
-              `${curr_abbr} ${renderAmount(totalInCirculation, 7)}` :
-              `${curr_abbr} ${renderAmount(totalInCirculation)}`}
+            value={
+              currency === 'KEM'
+                ? `${currAbbr} ${renderAmount(totalInCirculation, 7)}`
+                : `${currAbbr} ${renderAmount(totalInCirculation)}`
+            }
             isLoading={isLoading}
           />
         </div>

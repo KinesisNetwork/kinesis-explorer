@@ -6,8 +6,8 @@ interface Props extends RouteComponentProps<{ search: string }> { }
 export class SearchRedirect extends React.Component<Props> {
   render() {
     const { search } = this.props.match.params
-    let curr = localStorage.getItem('selectedConnection')
-    let getConn = () => {
+    const curr = localStorage.getItem('selectedConnection')
+    const getConn = () => {
       if (curr === '0') {
         return 'KAU'
       } else if (curr === '1') {
