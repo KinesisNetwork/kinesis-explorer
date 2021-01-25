@@ -3,6 +3,7 @@ import { LedgerRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
 import { Subscribe } from 'unstated'
 
+import BigNumber from 'bignumber.js'
 import { ConnectionContainer, ConnectionContext } from '../../services/connections'
 import { getLedgers } from '../../services/kinesis'
 import { getBackedFees, getUnbackedBalances } from '../../services/statistics'
@@ -41,9 +42,12 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
       getUnbackedBalances(connection),
       getBackedFees(connection),
     ])
+
     const ledgerFeePool = Number(feePool)
     const unbackedFeesInPool = ledgerFeePool - backedFeesInPool
-    const totalInCirculation = totalCoins - unbackedBalances - unbackedFeesInPool
+    // const totalInCirculation = totalCoins - Number(unbackedBalances) - unbackedFeesInPool
+    const bigNum = new BigNumber(totalCoins)
+    const totalInCirculation = Number(bigNum.minus(unbackedBalances).minus(unbackedFeesInPool).toFixed(7))
 
     this.setState({
       totalInCirculation,

@@ -1,4 +1,5 @@
 import axios from 'axios'
+import BigNumber from 'bignumber.js'
 import { createHash } from 'crypto'
 import {
   AccountRecord,
@@ -17,7 +18,7 @@ interface KemFee extends TransactionRecord {
   fee_charged?: string | number
 }
 
-export async function getUnbackedBalances(connection: Connection): Promise<number> {
+export async function getUnbackedBalances(connection: Connection): Promise<string> {
   const accounts = await fetchUnbackedAccounts(connection)
   return sumNativeBalances(...accounts)
 }
@@ -131,10 +132,13 @@ async function getInflationOperation(
   return result
 }
 
-function sumNativeBalances(...accounts: AccountRecord[]): number {
+function sumNativeBalances(...accounts: AccountRecord[]): string {
+  let balancesArray = []
   const balances = flatten(...accounts.map((acc) => acc.balances.filter(hasNativeAssetType)))
-
-  return balances.reduce((memo, { balance }) => sum(memo, Number(balance)), 0)
+  balancesArray = balances.map((e) => e.balance)
+  const bigNum = new BigNumber(balancesArray[0])
+  return bigNum.plus(balancesArray[1]).toFixed(7)
+  // return balances.reduce((memo, { balance }) => sum(memo, Number(balance)), 0)
 }
 
 function hasNativeAssetType<T extends { asset_type: string }>(balance: T): boolean {
