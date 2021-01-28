@@ -138,7 +138,7 @@ export class AccountInfo extends React.Component<Props, State> {
   }
 
   renderBalances = () => {
-    const precision =  this.props.selectedConnection.currency === 'KEM' ? 7 : 5
+    const precision = this.props.selectedConnection.currency === 'KEM' ? 7 : 5
     const balances = this.props.account.balances
       .map((balance) =>
         balance.asset_type === 'native'

@@ -11,9 +11,13 @@ export function renderRelativeDate(date: Date | string): string {
 }
 
 export function renderAmount(amount: string | number, precision: number = 5) {
-  return Number(amount).toLocaleString(undefined, {
-    useGrouping: true, maximumFractionDigits: precision, minimumFractionDigits: 0,
-  })
+  return ((Number(amount) > 999999999) && precision == 7) ?
+    (amount).toLocaleString(undefined, {
+      useGrouping: true, maximumFractionDigits: precision, minimumFractionDigits: 0,
+    }) :
+    Number(amount).toLocaleString(undefined, {
+      useGrouping: true, maximumFractionDigits: precision, minimumFractionDigits: 0,
+    })
 }
 
 export function isEqual(a: any, b: any): boolean {
