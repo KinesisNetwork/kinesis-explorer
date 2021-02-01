@@ -5,7 +5,7 @@ import { HorizontalLabelledField } from '../shared'
 import { Transactions } from '../widgets'
 
 interface NewKem extends LedgerRecord {
-  successful_transaction_count: number
+  successful_transaction_count?: number
 }
 interface Props {
   ledger: NewKem,
