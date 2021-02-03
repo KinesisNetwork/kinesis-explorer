@@ -42,8 +42,8 @@ export class TransactionInfo extends React.Component<Props, State> {
 
   render() {
     const { transaction, conn } = this.props
-
     const feePaid = transaction.fee_paid || Number(transaction.fee_charged)
+    const precision = conn === 'KEM' ? 7 : 5
     return (
       <div className='tile is-ancestor'>
         <div className='tile is-vertical is-parent'>
@@ -52,7 +52,7 @@ export class TransactionInfo extends React.Component<Props, State> {
             <HorizontalLabelledField label='Created At' value={transaction.created_at} />
             <HorizontalLabelledField
               label='Fee'
-              value={renderAmount(convertStroopsToKinesis(feePaid))}
+              value={renderAmount(convertStroopsToKinesis(feePaid), precision)}
               appendCurr={conn}
             />
             <HorizontalLabelledField

@@ -48,7 +48,7 @@ const MONITOR_ENDPOINTS = {
     'https://kem-testnet-america1.kinesisgroup.io:3000',
     'https://kem-testnet-america2.kinesisgroup.io:3000',
     'https://kem-testnet-america3.kinesisgroup.io:3000',
-  ]
+  ],
 }
 
 function getInfo(ep: string) {

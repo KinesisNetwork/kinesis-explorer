@@ -32,7 +32,7 @@ const FORMAT_VALUE: { [key: string]: (value: string) => string | number | React.
   from: (value) => <Link to={`/account/${value}`}>{value}</Link>,
   to: (value) => <Link to={`/account/${value}`}>{value}</Link>,
   transaction_hash: (value) => <Link to={`/transaction/${currConn}/${value}`}>{value}</Link>,
-  starting_balance: (value) => `${renderAmount(value)} ${currConn}`,
+  starting_balance: (value) => `${renderAmount(value, 7)} ${currConn}`,
   amount: (value) => `${renderAmount(value)} ${currConn}`,
 }
 

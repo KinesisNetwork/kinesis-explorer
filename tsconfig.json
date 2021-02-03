@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "target": "es5",
     "lib": [
@@ -9,7 +10,12 @@
     "module": "commonjs",
     "rootDir": "src",
     "outDir": "build",
-    "strict": true,
     "jsx": "react"
-  }
+  },
+  "exclude": [
+    "**/node_modules",
+  ],
+  "include": [
+    "src/**/*"
+  ]
 }
