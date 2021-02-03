@@ -44,10 +44,10 @@ const MONITOR_ENDPOINTS = {
     'https://kag-testnet-europe.kinesisgroup.io:3000',
   ],
   [Environments.kemTestnet]: [
-    'https://kem-testnet-europe0.kinesisgroup.io:3000',
-    'https://kem-testnet-europe1.kinesisgroup.io:3000',
-    'https://kem-testnet-europe2.kinesisgroup.io:3000',
-    'https://kem-testnet-europe3.kinesisgroup.io:3000',
+    'https://kem-testnet-america0.kinesisgroup.io:3000',
+    'https://kem-testnet-america1.kinesisgroup.io:3000',
+    'https://kem-testnet-america2.kinesisgroup.io:3000',
+    'https://kem-testnet-america3.kinesisgroup.io:3000',
   ],
 }
 
