@@ -26,10 +26,10 @@ const MONITOR_ENDPOINTS = {
     'https://kag-mainnet-europe.kinesisgroup.io:3000',
   ],
   [Environments.kemMainnet]: [
-    'https://kem-mainnet-oceania0.kinesisgroup.io:3000',
-    'https://kem-mainnet-asia0.kinesisgroup.io:3000',
-    'https://kem-mainnet-america0.kinesisgroup.io:3000',
-    'https://kem-mainnet-europe0.kinesisgroup.io:3000',
+    'https://kem-mainnet-oceania1.kinesisgroup.io:3000',
+    'https://kem-mainnet-asia1.kinesisgroup.io:3000',
+    'https://kem-mainnet-america1.kinesisgroup.io:3000',
+    'https://kem-mainnet-europe1.kinesisgroup.io:3000',
   ],
   [Environments.kauTestnet]: [
     'https://kau-testnet-london0.kinesisgroup.io:3000',
