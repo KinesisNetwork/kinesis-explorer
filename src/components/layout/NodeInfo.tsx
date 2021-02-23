@@ -38,10 +38,10 @@ const MONITOR_ENDPOINTS = {
     'https://kau-testnet-oceania2.kinesisgroup.io:3000',
   ],
   [Environments.kagTestnet]: [
-    'https://kag-testnet-oceania.kinesisgroup.io:3000',
     'https://kag-testnet-asia.kinesisgroup.io:3000',
     'https://kag-testnet-america.kinesisgroup.io:3000',
-    'https://kag-testnet-europe.kinesisgroup.io:3000',
+    'https://kag-testnet-oceania0.kinesisgroup.io:3000',
+    'https://kag-testnet-oceania1.kinesisgroup.io:3000',
   ],
   [Environments.kemTestnet]: [
     'https://kem-testnet-america0.kinesisgroup.io:3000',
@@ -154,7 +154,8 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
           <p>State: {state}</p>
           <p>
             Quorum Count:
-            <span className={agree < 12 ? 'has-text-danger' : ''}>{agree}</span>
+            {/* <span className={agree < 12 ? 'has-text-danger' : ''}>{agree}</span> */}
+            <span> {agree}</span>
           </p>
           <p>Ledger Age: {ledger.age}</p>
           <p>Ledger Number: {ledger.num}</p>
