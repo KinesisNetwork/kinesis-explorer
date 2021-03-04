@@ -104,8 +104,12 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
       return (
         <React.Fragment key={network}>
           <h1 className='title is-3'>{network}</h1>
-          {this.generateRegionView(networkRegionInfo).length >= 4 ? <div className='columns'>{this.generateRegionView(networkRegionInfo).slice(0,4)}</div> : ""}
-          {this.generateRegionView(networkRegionInfo).length > 4 ? <div className='columns'>{this.generateRegionView(networkRegionInfo).slice(4,8)}</div> : ""}
+         {this.generateRegionView(networkRegionInfo).length >= 4 ?
+         <div className='columns'>{this.generateRegionView(networkRegionInfo).slice(0, 4)}
+         </div> : ''}
+         {this.generateRegionView(networkRegionInfo).length > 4 ?
+         <div className='columns'>{this.generateRegionView(networkRegionInfo).slice(4, 8)}
+         </div> : ''}
           {/* <div className='columns'>{this.generateRegionView(networkRegionInfo)}</div> */}
         </React.Fragment>
       )
