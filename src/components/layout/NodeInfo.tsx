@@ -38,10 +38,10 @@ const MONITOR_ENDPOINTS = {
     'https://kau-testnet-oceania2.kinesisgroup.io:3000',
   ],
   [Environments.kagTestnet]: [
-    'https://kag-testnet-asia.kinesisgroup.io:3000',
-    'https://kag-testnet-america.kinesisgroup.io:3000',
     'https://kag-testnet-oceania0.kinesisgroup.io:3000',
     'https://kag-testnet-oceania1.kinesisgroup.io:3000',
+    'https://kag-testnet-america0.kinesisgroup.io:3000',
+    'https://kag-testnet-america1.kinesisgroup.io:3000',
   ],
   [Environments.kemTestnet]: [
     'https://kem-testnet-america0.kinesisgroup.io:3000',
@@ -104,7 +104,13 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
       return (
         <React.Fragment key={network}>
           <h1 className='title is-3'>{network}</h1>
-          <div className='columns'>{this.generateRegionView(networkRegionInfo)}</div>
+         {this.generateRegionView(networkRegionInfo).length >= 4 ?
+         <div className='columns'>{this.generateRegionView(networkRegionInfo).slice(0, 4)}
+         </div> : ''}
+         {this.generateRegionView(networkRegionInfo).length > 4 ?
+         <div className='columns'>{this.generateRegionView(networkRegionInfo).slice(4, 8)}
+         </div> : ''}
+          {/* <div className='columns'>{this.generateRegionView(networkRegionInfo)}</div> */}
         </React.Fragment>
       )
     })
