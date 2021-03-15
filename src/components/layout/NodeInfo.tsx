@@ -1,6 +1,6 @@
 import axios from 'axios'
 import * as React from 'react'
-
+import '../css/custom.css'
 const enum Environments {
   kauTestnet = 'kau-testnet',
   kagTestnet = 'kag-testnet',
@@ -94,6 +94,30 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
     clearInterval(this.state.interval)
   }
 
+  public generateHeader(network) {
+    return (
+      <div className="header-info display-flex-outer" >
+        <div className="display-flex right-header">
+          <div>
+            <img src="" />
+          </div>
+          <div >
+            <h1 className='text-data'>{network}</h1>
+          </div>
+        </div>
+        <div className="display-flex left-header" >
+          <div>
+            <input type="checkbox" />
+            <span className="span-data check-box-text-padding">Kinesis Node</span>
+          </div>
+          <div>
+            <input type="checkbox" /><span className="span-data check-box-text-padding">Idependent Node</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   public generateView() {
     const nodeInfo: any = this.state.nodeInfo
     const networks = Object.keys(nodeInfo)
@@ -103,13 +127,13 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
 
       return (
         <React.Fragment key={network}>
-          <h1 className='title is-3'>{network}</h1>
-         {this.generateRegionView(networkRegionInfo).length >= 4 ?
-         <div className='columns'>{this.generateRegionView(networkRegionInfo).slice(0, 4)}
-         </div> : ''}
-         {this.generateRegionView(networkRegionInfo).length > 4 ?
-         <div className='columns'>{this.generateRegionView(networkRegionInfo).slice(4, 8)}
-         </div> : ''}
+          {this.generateHeader(network)}
+          {this.generateRegionView(networkRegionInfo).length >= 4 ?
+            <div className='columns'>{this.generateRegionView(networkRegionInfo).slice(0, 4)}
+            </div> : ''}
+          {this.generateRegionView(networkRegionInfo).length > 4 ?
+            <div className='columns'>{this.generateRegionView(networkRegionInfo).slice(4, 8)}
+            </div> : ''}
           {/* <div className='columns'>{this.generateRegionView(networkRegionInfo)}</div> */}
         </React.Fragment>
       )
@@ -123,7 +147,7 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
 
       return (
         <React.Fragment key={region}>
-          <div className='column'>
+          <div className='column node-info-details '>
             <h2 className='title is-4'>{region}</h2>
             {regionNodeInfo === REGION_ERROR ? (
               <h3 className='title is-5 has-text-danger'>Region Offline</h3>
@@ -154,19 +178,21 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
       const { agree } = quorum ? qSet() : { agree: 0 }
       return (
         <React.Fragment key={node}>
-          <h2 className='title is-4' style={{ paddingTop: '15px' }}>
-            {node}
-          </h2>
-          <p>State: {state}</p>
-          <p>
-            Quorum Count:
+          <div className="individual-indetails">
+            <h2 className='title is-4' style={{ paddingTop: '15px' }}>
+              {node}
+            </h2>
+            <p>State: <span className="font-bolder">{state}</span></p>
+            <p>
+              Quorum Count:
             {/* <span className={agree < 12 ? 'has-text-danger' : ''}>{agree}</span> */}
-            <span> {agree}</span>
-          </p>
-          <p>Ledger Age: {ledger.age}</p>
-          <p>Ledger Number: {ledger.num}</p>
-          <p>Ledger Percentage Fee (b.p): {ledger.basePercentageFee}</p>
-          <p>Ledger Base Fee (stroops): {ledger.baseFee}</p>
+              <span className="font-bolder"> {agree}</span>
+            </p>
+            <p>Ledger Age: <span className="font-bolder" >{ledger.age}</span></p>
+            <p>Ledger Number:  <span className="font-bolder" >{ledger.num}</span></p>
+            <p>Ledger Percentage Fee (b.p): <span className="font-bolder" >{ledger.basePercentageFee}</span></p>
+            <p>Ledger Base Fee (stroops): <span className="font-bolder" >{ledger.baseFee}</span></p>
+          </div>
         </React.Fragment>
       )
     })
@@ -174,7 +200,7 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
   render() {
     return (
       <div className='container'>
-        <h1 className='title is-2'>Node Infomation</h1>
+        <h1 className=' Node-Information '>Node Infomation</h1>
         {this.generateView()}
       </div>
     )
