@@ -1,6 +1,10 @@
 import axios from 'axios'
 import * as React from 'react'
 import '../css/custom.css'
+import KagIcon from '../css/images/kag-icon.svg'
+import KauIcon from '../css/images/kau-icon.svg'
+import KemIcon from '../css/images/kem-icon.svg'
+
 const enum Environments {
   kauTestnet = 'kau-testnet',
   kagTestnet = 'kag-testnet',
@@ -11,6 +15,38 @@ const enum Environments {
 }
 
 const REGION_ERROR = { error: 'Region Offline' }
+
+const COMPANY_ENDPOINTS = {
+  [Environments.kauMainnet]: [
+    'Leeway',
+    'ABX',
+    'Leeway',
+    'Kinesis',
+  ],
+}
+
+const hello = {
+  "kauMainnet" : [
+    {
+      nodeUrl : "https://kau-mainnet-oceania.kinesisgroup.io:3000",
+      account : "Kinesis"
+    },
+    {
+      nodeUrl : "https://kau-mainnet-asia.kinesisgroup.io:3000",
+      account : "Kinesis"
+    },
+    {
+      nodeUrl : "https://kau-mainnet-america.kinesisgroup.io:3000",
+      account : "Kinesis"
+    },
+       {
+      nodeUrl : "https://kau-mainnet-europe.kinesisgroup.io:3000",
+      account : "Kinesis"
+    }
+  ],
+
+}
+
 
 const MONITOR_ENDPOINTS = {
   [Environments.kauMainnet]: [
@@ -99,7 +135,7 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
       <div className="header-info display-flex-outer" >
         <div className="display-flex right-header">
           <div>
-            <img src="" />
+            <img src={network.includes("kau") ? KauIcon : network.includes("kag") ? KagIcon : KemIcon} className="image-icon" />
           </div>
           <div >
             <h1 className='text-data'>{network}</h1>
@@ -144,15 +180,21 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
     const regions = Object.keys(networkRegionInfo)
     return regions.map((region) => {
       const regionNodeInfo = networkRegionInfo[region]
+      let regionArea = region.split('-')[2].split('.')[0]
 
       return (
         <React.Fragment key={region}>
           <div className='column node-info-details '>
-            <h2 className='title is-4'>{region}</h2>
+            <div className="region-header">
+              {/* <h2 className='title is-4'>{region}</h2> */}
+              <div className='display-space'>
+                <img src={KauIcon} className="image-icon icon-padding" />
+              </div>
+            </div>
             {regionNodeInfo === REGION_ERROR ? (
               <h3 className='title is-5 has-text-danger'>Region Offline</h3>
             ) : (
-              this.generateNodeView(regionNodeInfo)
+              this.generateNodeView(regionNodeInfo , regionArea ,region)
             )}
           </div>
         </React.Fragment>
@@ -160,7 +202,7 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
     })
   }
 
-  public generateNodeView(regionNodeInfo: any) {
+  public generateNodeView(regionNodeInfo: any , regionArea : string , region : string) {
     const nodes = Object.keys(regionNodeInfo)
 
     return nodes.map((node) => {
@@ -179,19 +221,19 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
       return (
         <React.Fragment key={node}>
           <div className="individual-indetails">
-            <h2 className='title is-4' style={{ paddingTop: '15px' }}>
-              {node}
-            </h2>
-            <p>State: <span className="font-bolder">{state}</span></p>
-            <p>
+            <h4 className='title is-4' style={{ paddingTop: '15px' }}>
+             <a target="_blank" href={region}>{regionArea +  " "  +node[4]}</a>
+            </h4>
+            <p className="para-text">State: <span className="font-bolder">{state}</span></p>
+            <p className="para-text">
               Quorum Count:
             {/* <span className={agree < 12 ? 'has-text-danger' : ''}>{agree}</span> */}
               <span className="font-bolder"> {agree}</span>
             </p>
-            <p>Ledger Age: <span className="font-bolder" >{ledger.age}</span></p>
-            <p>Ledger Number:  <span className="font-bolder" >{ledger.num}</span></p>
-            <p>Ledger Percentage Fee (b.p): <span className="font-bolder" >{ledger.basePercentageFee}</span></p>
-            <p>Ledger Base Fee (stroops): <span className="font-bolder" >{ledger.baseFee}</span></p>
+            <p className="para-text">Ledger Age: <span className="font-bolder" >{ledger.age}</span></p>
+            <p className="para-text">Ledger Number:  <span className="font-bolder" >{ledger.num}</span></p>
+            <p className="para-text">Ledger Percentage Fee (b.p): <span className="font-bolder" >{ledger.basePercentageFee}</span></p>
+            <p className="para-text">Ledger Base Fee (stroops): <span className="font-bolder" >{ledger.baseFee}</span></p>
           </div>
         </React.Fragment>
       )
