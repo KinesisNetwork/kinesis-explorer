@@ -25,27 +25,27 @@ const COMPANY_ENDPOINTS = {
   ],
 }
 
-const hello = {
-  "kauMainnet" : [
-    {
-      nodeUrl : "https://kau-mainnet-oceania.kinesisgroup.io:3000",
-      account : "Kinesis"
-    },
-    {
-      nodeUrl : "https://kau-mainnet-asia.kinesisgroup.io:3000",
-      account : "Kinesis"
-    },
-    {
-      nodeUrl : "https://kau-mainnet-america.kinesisgroup.io:3000",
-      account : "Kinesis"
-    },
-       {
-      nodeUrl : "https://kau-mainnet-europe.kinesisgroup.io:3000",
-      account : "Kinesis"
-    }
-  ],
 
-}
+// {
+//   "kauMainnet": [
+//     {
+//       "nodeUrl": "https://kau-mainnet-oceania.kinesisgroup.io:3000",
+//       "account": "Kinesis"
+//     },
+//     {
+//       "nodeUrl": "https://kau-mainnet-asia.kinesisgroup.io:3000",
+//       "account": "Kinesis"
+//     },
+//     {
+//       "nodeUrl": "https://kau-mainnet-america.kinesisgroup.io:3000",
+//       "account": "Kinesis"
+//     },
+//     {
+//       "nodeUrl": "https://kau-mainnet-europe.kinesisgroup.io:3000",
+//       "account": "Kinesis"
+//     }
+//   ]
+// }
 
 
 const MONITOR_ENDPOINTS = {

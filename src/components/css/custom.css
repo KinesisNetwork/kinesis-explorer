@@ -1,5 +1,5 @@
 .Node-Information {
-    font-family: Roboto !important;
+    /* font-family: Roboto !important; */
     font-size: 32px;
     font-weight: bolder;
     font-stretch: normal;
@@ -11,7 +11,30 @@
 }
 
 .font-bolder {
-    font-weight: bolder;
+    font-weight: 550 !important;
+    color: #0d1d2c !important;
+}
+
+.image-icon {
+    width: 63px;
+    height: 34px;
+}
+
+.para-text {
+    /* font-family: Roboto; */
+    font-size: 17px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.65;
+    letter-spacing: normal;
+    text-align: center;
+    color: #898989;
+}
+
+.region-header {
+    background-color: white;
+    border-bottom: solid 1px #f1f1f1;
 }
 
 .node-info-details {
@@ -56,8 +79,20 @@
     justify-content: space-between;
 }
 
+.display-space {
+    height: 70px;
+}
+
+.heading-display-text {
+    padding-bottom: 5px;
+}
+
+.icon-padding {
+    margin-top: 20px;
+}
+
 .span-data {
-    font-family: Roboto;
+    /* font-family: Roboto; */
     font-size: 15px;
     font-weight: normal;
     font-style: normal;
@@ -75,7 +110,7 @@
 }
 
 .text-data {
-    font-family: Roboto !important;
+    /* font-family: Roboto !important; */
     font-size: 24px;
     font-weight: 500;
     font-style: normal;
