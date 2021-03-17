@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="60px" height="52px" viewBox="0 0 200 196" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Kinesis-K-Wallet</title>
+    <defs>
+        <polygon id="path-1" points="0.141950568 0.096369209 136.689064 0.096369209 136.689064 132.216492 0.141950568 132.216492"></polygon>
+    </defs>
+    <g id="Logos" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(-400.000000, -371.000000)" id="Kinesis-K-Wallet">
+            <g transform="translate(400.000000, 371.000000)">
+                <polygon id="Fill-1" fill="#FCBD1B" points="0 0.180066014 0 164.750383 54.85579 109.893611 54.85579 0.180066014"></polygon>
+                <polygon id="Fill-2" fill="#FCBD1B" points="109.712366 0.180066014 109.712366 55.0368384 164.569138 0.180066014"></polygon>
+                <g id="Group-5" transform="translate(62.870840, 62.843334)">
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <g id="Clip-4"></g>
+                    <path d="M112.159122,106.245923 L38.9391528,0.096369209 L0.141950568,38.8935715 L53.3699752,116.561653 C61.0480765,127.767398 72.1251326,132.216492 84.0401391,132.216492 L136.689556,132.216492 C127.602755,125.12191 118.133817,114.909328 112.159122,106.245923" id="Fill-3" fill="#FCBD1B" mask="url(#mask-2)"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

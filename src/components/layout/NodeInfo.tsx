@@ -4,6 +4,10 @@ import '../css/custom.css'
 import KagIcon from '../css/images/kag-icon.svg'
 import KauIcon from '../css/images/kau-icon.svg'
 import KemIcon from '../css/images/kem-icon.svg'
+import KinesisLogo from '../css/images/KinesisIcon.svg'
+import LeewayLogo from '../css/images/LH.svg'
+import AbxLogo from '../css/images/ABX_logo.svg'
+
 
 const enum Environments {
   kauTestnet = 'kau-testnet',
@@ -95,20 +99,27 @@ function getInfo(ep: string) {
 }
 
 async function loadData() {
+  const nodesData = await axios.get("https://kinesis-config.s3-ap-southeast-2.amazonaws.com/kinesis-explorer-uat.json").then((d) => d.data)
   const data = await Promise.all(
-    Object.entries(MONITOR_ENDPOINTS).map(async ([environment, endpoints]) => {
+    Object.entries(nodesData).map(async ([environment, endpoints]) => {
       const envInfo = await Promise.all(
         endpoints.map(async (ep) => {
-          const info = await getInfo(ep)
-          return { [ep]: info }
+          const info = await getInfo(ep.nodeUrl)
+          // info.account = info.account
+          return { [ep.nodeUrl]: { ...info , account: ep.account} }
         }),
       )
-
-      const mergedEnvInfo = envInfo.reduce((acc, val) => ({ ...acc, ...val }), {})
+        console.log(envInfo , "------env info-----")
+      const mergedEnvInfo = envInfo.reduce((acc, val) => {
+        console.log("ACC" , acc , "Val" , val ,":::::::::::::::::;;;" )
+         return { ...acc, ...val }
+      } , {})
+      console.log(mergedEnvInfo , "-----mergedEnvInfo-----------")
       return { [environment]: mergedEnvInfo }
     }),
   )
 
+  console.log(data , ">>>>>>>>>>>>>>>>>>>>>>>>")
   return data.reduce((acc, val) => ({ ...acc, ...val }), {})
 }
 
@@ -141,15 +152,6 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
             <h1 className='text-data'>{network}</h1>
           </div>
         </div>
-        <div className="display-flex left-header" >
-          <div>
-            <input type="checkbox" />
-            <span className="span-data check-box-text-padding">Kinesis Node</span>
-          </div>
-          <div>
-            <input type="checkbox" /><span className="span-data check-box-text-padding">Idependent Node</span>
-          </div>
-        </div>
       </div>
     )
   }
@@ -170,6 +172,18 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
           {this.generateRegionView(networkRegionInfo).length > 4 ?
             <div className='columns'>{this.generateRegionView(networkRegionInfo).slice(4, 8)}
             </div> : ''}
+            {this.generateRegionView(networkRegionInfo).length > 8 ?
+            <div className='columns'>{this.generateRegionView(networkRegionInfo).slice(8, 12)}
+            </div> : ''}
+            {this.generateRegionView(networkRegionInfo).length > 12 ?
+            <div className='columns'>{this.generateRegionView(networkRegionInfo).slice(12, 16)}
+            </div> : ''}
+            {this.generateRegionView(networkRegionInfo).length > 16 ?
+            <div className='columns'>{this.generateRegionView(networkRegionInfo).slice(16, 20)}
+            </div> : ''}
+            {this.generateRegionView(networkRegionInfo).length > 20 ?
+            <div className='columns'>{this.generateRegionView(networkRegionInfo).slice(20, 24)}
+            </div> : ''}
           {/* <div className='columns'>{this.generateRegionView(networkRegionInfo)}</div> */}
         </React.Fragment>
       )
@@ -182,16 +196,19 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
       const regionNodeInfo = networkRegionInfo[region]
       let regionArea = region.split('-')[2].split('.')[0]
 
+      let { account } = regionNodeInfo
+
       return (
         <React.Fragment key={region}>
           <div className='column node-info-details '>
             <div className="region-header">
               {/* <h2 className='title is-4'>{region}</h2> */}
               <div className='display-space'>
-                <img src={KauIcon} className="image-icon icon-padding" />
+                <img src={account == "Kinesis" ?KinesisLogo : account == "leewayhertz" ? LeewayLogo : AbxLogo} className="image-icon icon-padding" />
+                {/* <p>{account}</p> */}
               </div>
             </div>
-            {regionNodeInfo === REGION_ERROR ? (
+            {regionNodeInfo.error === REGION_ERROR.error ? (
               <h3 className='title is-5 has-text-danger'>Region Offline</h3>
             ) : (
               this.generateNodeView(regionNodeInfo , regionArea ,region)
@@ -207,36 +224,40 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
 
     return nodes.map((node) => {
       const currentNode = regionNodeInfo[node]
-      const { info } = currentNode
-      const { quorum, ledger, state, protocol_version } = info
-      const qSet = () => {
-        if (protocol_version > 9) {
-          return Object.values(quorum)[1] as any
-        } else {
-          return Object.values(quorum)[0] as any
+
+      if(typeof currentNode === 'object') {
+        const { info } = currentNode
+        const { quorum, ledger, state, protocol_version } = info
+        const qSet = () => {
+          if (protocol_version > 9) {
+            return Object.values(quorum)[1] as any
+          } else {
+            return Object.values(quorum)[0] as any
+          }
         }
+  
+        const { agree } = quorum ? qSet() : { agree: 0 }
+        return (
+          <React.Fragment key={node}>
+            <div className="individual-indetails">
+              <h4 className='title is-4' style={{ paddingTop: '15px' }}>
+               <a target="_blank" href={region}>{regionArea.includes('0') || regionArea.includes('1') || regionArea.includes('2') || regionArea.includes('3') ? regionArea : regionArea +  " "  +node[4]}</a>
+              </h4>
+              <p className="para-text">State: <span className="font-bolder">{state}</span></p>
+              <p className="para-text">
+                Quorum Count:
+              {/* <span className={agree < 12 ? 'has-text-danger' : ''}>{agree}</span> */}
+                <span className="font-bolder"> {agree}</span>
+              </p>
+              <p className="para-text">Ledger Age: <span className="font-bolder" >{ledger.age}</span></p>
+              <p className="para-text">Ledger Number:  <span className="font-bolder" >{ledger.num}</span></p>
+              <p className="para-text">Ledger Percentage Fee (b.p): <span className="font-bolder" >{ledger.basePercentageFee || 45}</span></p>
+              <p className="para-text">Ledger Base Fee (stroops): <span className="font-bolder" >{ledger.baseFee}</span></p>
+            </div>
+          </React.Fragment>
+        )
       }
 
-      const { agree } = quorum ? qSet() : { agree: 0 }
-      return (
-        <React.Fragment key={node}>
-          <div className="individual-indetails">
-            <h4 className='title is-4' style={{ paddingTop: '15px' }}>
-             <a target="_blank" href={region}>{regionArea +  " "  +node[4]}</a>
-            </h4>
-            <p className="para-text">State: <span className="font-bolder">{state}</span></p>
-            <p className="para-text">
-              Quorum Count:
-            {/* <span className={agree < 12 ? 'has-text-danger' : ''}>{agree}</span> */}
-              <span className="font-bolder"> {agree}</span>
-            </p>
-            <p className="para-text">Ledger Age: <span className="font-bolder" >{ledger.age}</span></p>
-            <p className="para-text">Ledger Number:  <span className="font-bolder" >{ledger.num}</span></p>
-            <p className="para-text">Ledger Percentage Fee (b.p): <span className="font-bolder" >{ledger.basePercentageFee}</span></p>
-            <p className="para-text">Ledger Base Fee (stroops): <span className="font-bolder" >{ledger.baseFee}</span></p>
-          </div>
-        </React.Fragment>
-      )
     })
   }
   render() {
