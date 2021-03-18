@@ -8,88 +8,8 @@ import KinesisLogo from '../css/images/KinesisIcon.svg'
 import LeewayLogo from '../css/images/LH.svg'
 import AbxLogo from '../css/images/ABX_logo.svg'
 
-
-const enum Environments {
-  kauTestnet = 'kau-testnet',
-  kagTestnet = 'kag-testnet',
-  kauMainnet = 'kau-mainnet',
-  kagMainnet = 'kag-mainnet',
-  kemTestnet = 'kem-testnet',
-  kemMainnet = 'kem-mainnet',
-}
-
 const REGION_ERROR = { error: 'Region Offline' }
 
-const COMPANY_ENDPOINTS = {
-  [Environments.kauMainnet]: [
-    'Leeway',
-    'ABX',
-    'Leeway',
-    'Kinesis',
-  ],
-}
-
-
-// {
-//   "kauMainnet": [
-//     {
-//       "nodeUrl": "https://kau-mainnet-oceania.kinesisgroup.io:3000",
-//       "account": "Kinesis"
-//     },
-//     {
-//       "nodeUrl": "https://kau-mainnet-asia.kinesisgroup.io:3000",
-//       "account": "Kinesis"
-//     },
-//     {
-//       "nodeUrl": "https://kau-mainnet-america.kinesisgroup.io:3000",
-//       "account": "Kinesis"
-//     },
-//     {
-//       "nodeUrl": "https://kau-mainnet-europe.kinesisgroup.io:3000",
-//       "account": "Kinesis"
-//     }
-//   ]
-// }
-
-
-const MONITOR_ENDPOINTS = {
-  [Environments.kauMainnet]: [
-    'https://kau-mainnet-oceania.kinesisgroup.io:3000',
-    'https://kau-mainnet-asia.kinesisgroup.io:3000',
-    'https://kau-mainnet-america.kinesisgroup.io:3000',
-    'https://kau-mainnet-europe.kinesisgroup.io:3000',
-  ],
-  [Environments.kagMainnet]: [
-    'https://kag-mainnet-oceania.kinesisgroup.io:3000',
-    'https://kag-mainnet-asia.kinesisgroup.io:3000',
-    'https://kag-mainnet-america.kinesisgroup.io:3000',
-    'https://kag-mainnet-europe.kinesisgroup.io:3000',
-  ],
-  [Environments.kemMainnet]: [
-    'https://kem-mainnet-oceania1.kinesisgroup.io:3000',
-    'https://kem-mainnet-asia1.kinesisgroup.io:3000',
-    'https://kem-mainnet-america1.kinesisgroup.io:3000',
-    'https://kem-mainnet-europe1.kinesisgroup.io:3000',
-  ],
-  [Environments.kauTestnet]: [
-    'https://kau-testnet-london0.kinesisgroup.io:3000',
-    'https://kau-testnet-london1.kinesisgroup.io:3000',
-    'https://kau-testnet-oceania1.kinesisgroup.io:3000',
-    'https://kau-testnet-oceania2.kinesisgroup.io:3000',
-  ],
-  [Environments.kagTestnet]: [
-    'https://kag-testnet-oceania0.kinesisgroup.io:3000',
-    'https://kag-testnet-oceania1.kinesisgroup.io:3000',
-    'https://kag-testnet-america0.kinesisgroup.io:3000',
-    'https://kag-testnet-america1.kinesisgroup.io:3000',
-  ],
-  [Environments.kemTestnet]: [
-    'https://kem-testnet-america0.kinesisgroup.io:3000',
-    'https://kem-testnet-america1.kinesisgroup.io:3000',
-    'https://kem-testnet-america2.kinesisgroup.io:3000',
-    'https://kem-testnet-america3.kinesisgroup.io:3000',
-  ],
-}
 
 function getInfo(ep: string) {
   return axios
@@ -98,10 +18,18 @@ function getInfo(ep: string) {
     .catch(() => REGION_ERROR)
 }
 
+interface endpoints {
+  [n: string] : {
+    nodeUrl : string,
+    account : string
+  }
+}
+
 async function loadData() {
-  const nodesData = await axios.get("https://kinesis-config.s3-ap-southeast-2.amazonaws.com/kinesis-explorer-uat.json").then((d) => d.data)
+  const nodesData = await axios.get("https://kinesis-config.s3-ap-southeast-2.amazonaws.com/kinesis-explorer-uat.json").then((d) => d.data) 
   const data = await Promise.all(
     Object.entries(nodesData).map(async ([environment, endpoints]) => {
+    
       const envInfo = await Promise.all(
         endpoints.map(async (ep) => {
           const info = await getInfo(ep.nodeUrl)
