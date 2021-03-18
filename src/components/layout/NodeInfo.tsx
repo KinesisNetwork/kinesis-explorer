@@ -28,16 +28,16 @@ interface endpoints {
 async function loadData() {
   const nodesData = await axios.get("https://kinesis-config.s3-ap-southeast-2.amazonaws.com/kinesis-explorer-uat.json").then((d) => d.data) 
   const data = await Promise.all(
-    Object.entries(nodesData).map(async ([environment, endpoints]) => {
+    Object.entries(nodesData).map(async ([environment, endpoints] : any) => {
     
       const envInfo = await Promise.all(
-        endpoints.map(async (ep) => {
+        endpoints.map(async (ep : any) => {
           const info = await getInfo(ep.nodeUrl)
           // info.account = info.account
           return { [ep.nodeUrl]: { ...info , account: ep.account} }
         }),
       )
-      const mergedEnvInfo = envInfo.reduce((acc, val) => {
+      const mergedEnvInfo = envInfo.reduce((acc : any, val : any) => {
          return { ...acc, ...val }
       } , {})
       return { [environment]: mergedEnvInfo }
