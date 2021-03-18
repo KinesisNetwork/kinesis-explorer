@@ -109,17 +109,12 @@ async function loadData() {
           return { [ep.nodeUrl]: { ...info , account: ep.account} }
         }),
       )
-        console.log(envInfo , "------env info-----")
       const mergedEnvInfo = envInfo.reduce((acc, val) => {
-        console.log("ACC" , acc , "Val" , val ,":::::::::::::::::;;;" )
          return { ...acc, ...val }
       } , {})
-      console.log(mergedEnvInfo , "-----mergedEnvInfo-----------")
       return { [environment]: mergedEnvInfo }
     }),
   )
-
-  console.log(data , ">>>>>>>>>>>>>>>>>>>>>>>>")
   return data.reduce((acc, val) => ({ ...acc, ...val }), {})
 }
 
