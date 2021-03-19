@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/KinesisNetwork/kinesis-explorer#readme",
   "dependencies": {
+    "@abx/js-kinesis-sdk-v2": "0.0.33",
     "axios": "0.18.1",
     "bignumber.js": "^9.0.1",
     "bulma": "0.7.1",

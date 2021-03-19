@@ -11,7 +11,36 @@ import {
 } from 'js-kinesis-sdk'
 import { Connection } from '../types'
 
+import {
+  KinesisBlockchainGatewayFactory,
+  KinesisCoin, Environment , LedgerRecord as LedgerRecordNew, TransactionRecord as TransactionRecordNew , AccountDetails
+} from '@abx/js-kinesis-sdk-v2'
+
+
 const STROOPS_IN_ONE_KINESIS = 1e7
+
+function getCoinEnviron(connection){
+  let res;
+  if (connection.currency == "KAG") {
+    res = KinesisCoin.KAG
+  } 
+  else if (connection.currency == "KAU") {
+    res = KinesisCoin.KAU
+  } else {
+    res = KinesisCoin.KEM
+  }
+  console.log(res , "===")
+  let environ;
+  if (connection.stage === "mainnet") {
+    environ = Environment.mainnet
+  } else {
+    environ = Environment.testnet
+  }
+  return {
+    res,
+    environ
+  }
+}
 
 export function convertStroopsToKinesis(numberInStroops: number): number {
   return numberInStroops / STROOPS_IN_ONE_KINESIS
@@ -28,6 +57,7 @@ export function getServer(connection: Connection): Server {
 }
 
 export async function getTransaction(connection: Connection, transactionId: string) {
+
   const server = getServer(connection)
   return await server.transactions().transaction(transactionId).call()
 }
@@ -38,6 +68,7 @@ export async function getTransactions(
   limit = 10,
   cursor?: string,
 ): Promise<TransactionRecord[]> {
+
   const server = getServer(connection)
   const transactionsPromise = server.transactions()
 
@@ -63,10 +94,12 @@ export async function getTransactionStream(
   return await server.transactions().cursor(cursor).limit(limit)
 }
 
-export async function getLedger(connection: Connection, sequence: number | string): Promise<LedgerRecord> {
-  const server = getServer(connection)
-  const ledger = (await (server.ledgers() as any).ledger(sequence).call()) as LedgerRecord
-  return ledger
+export async function getLedger(connection: Connection, sequence: number | string): Promise<LedgerRecordNew> {
+
+  let response =  getCoinEnviron(connection)
+  let blockchainGateway = await new KinesisBlockchainGatewayFactory().getGatewayInstance(response.res, response.environ)
+   return  blockchainGateway.getLedgerWithSequenceNumber(sequence)
+  
 }
 
 export async function getLedgers(connection: Connection, limitVal: number = 10): Promise<LedgerRecord[]> {
@@ -80,10 +113,12 @@ export async function getLedgerStream(connection: Connection, cursor = 'now'): P
   return server.ledgers().cursor(cursor).limit(1)
 }
 
-export async function getAccount(connection: Connection, accountId: string): Promise<AccountRecord> {
-  const server = getServer(connection)
-  const account: AccountRecord = await server.loadAccount(accountId)
-  return account
+export async function getAccount(connection: Connection, accountId: string): Promise<AccountDetails> {
+  
+  let response =  getCoinEnviron(connection)
+  let blockchainGateway = await new KinesisBlockchainGatewayFactory().getGatewayInstance(response.res, response.environ)
+   return  blockchainGateway.getAccount(accountId)
+
 }
 
 export async function validateAccount(address: string): Promise<boolean> {
