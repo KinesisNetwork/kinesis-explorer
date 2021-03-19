@@ -4,8 +4,8 @@ import '../css/custom.css'
 import AbxLogo from '../css/images/ABX_logo.svg'
 import KagIcon from '../css/images/kag-icon.svg'
 import KauIcon from '../css/images/kau-icon.svg'
-import KemIcon from '../css/images/kem-icon.svg'
-import KinesisLogo from '../css/images/KinesisIcon.svg'
+import KemIcon from '../css/images/KEM_Logo.svg'
+import KinesisLogo from '../css/images/K_Logo_Midnight.svg'
 import LeewayLogo from '../css/images/LH.svg'
 
 const REGION_ERROR = { error: 'Region Offline' }
@@ -61,8 +61,8 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
     return (
       <div className='header-info display-flex-outer' >
         <div className='display-flex right-header'>
-          <div>
-            <img src={network.includes('kau') ? KauIcon : network.includes('kag') ? KagIcon : KemIcon} className='image-icon' />
+          <div className='icon-space'>
+            <img src={network.includes('kau') ? KauIcon : network.includes('kag') ? KagIcon : KemIcon} className={'image-icon' }  />
           </div>
           <div >
             <h1 className='text-data'>{network}</h1>
@@ -119,11 +119,11 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
           <div className='column node-info-details '>
             <div className='region-header'>
               <div className='display-space'>
-                <img src={account == 'Kinesis' ? KinesisLogo : account == 'leewayhertz' ? LeewayLogo : AbxLogo} className='image-icon icon-padding' />
+                <img src={account == 'Kinesis' ? KinesisLogo : account == 'leewayhertz' ? LeewayLogo : AbxLogo} className='image-icon-company icon-padding' />
               </div>
             </div>
             {regionNodeInfo.error === REGION_ERROR.error ? (
-              <h3 className='title is-5 has-text-danger'>Region Offline</h3>
+              <h3 className='title is-5 has-text-danger'>22 Offline</h3>
             ) : (
               this.generateNodeView(regionNodeInfo , regionArea , region)
             )}
