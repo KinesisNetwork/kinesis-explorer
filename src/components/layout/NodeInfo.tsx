@@ -2,13 +2,15 @@ import axios from 'axios'
 import * as React from 'react'
 import '../css/custom.css'
 import AbxLogo from '../css/images/ABX_logo.svg'
+import KinesisLogo from '../css/images/K_Logo_Midnight.svg'
 import KagIcon from '../css/images/kag-icon.svg'
 import KauIcon from '../css/images/kau-icon.svg'
 import KemIcon from '../css/images/KEM_Logo.svg'
-import KinesisLogo from '../css/images/K_Logo_Midnight.svg'
 import LeewayLogo from '../css/images/LH.svg'
 
 const REGION_ERROR = { error: 'Region Offline' }
+
+const S3_URL = 'https://kinesis-config.s3-ap-southeast-2.amazonaws.com/kinesis-explorer-uat.json'
 
 function getInfo(ep: string) {
   return axios
@@ -17,9 +19,8 @@ function getInfo(ep: string) {
     .catch(() => REGION_ERROR)
 }
 
-
 async function loadData() {
-  const nodesData = await axios.get('https://kinesis-config.s3-ap-southeast-2.amazonaws.com/kinesis-explorer-uat.json').then((d) => d.data)
+  const nodesData = await axios.get(S3_URL).then((d) => d.data)
   const data = await Promise.all(
     Object.entries(nodesData).map(async ([environment, endpoints]: any) => {
 
@@ -27,12 +28,12 @@ async function loadData() {
         endpoints.map(async (ep: any) => {
           const info = await getInfo(ep.nodeUrl)
           // info.account = info.account
-          return { [ep.nodeUrl]: { ...info , account: ep.account} }
+          return { [ep.nodeUrl]: { ...info, account: ep.account } }
         }),
       )
       const mergedEnvInfo = envInfo.reduce((acc: any, val: any) => {
-         return { ...acc, ...val }
-      } , {})
+        return { ...acc, ...val }
+      }, {})
       return { [environment]: mergedEnvInfo }
     }),
   )
@@ -62,7 +63,10 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
       <div className='header-info display-flex-outer' >
         <div className='display-flex right-header'>
           <div className='icon-space'>
-            <img src={network.includes('kau') ? KauIcon : network.includes('kag') ? KagIcon : KemIcon} className={'image-icon' }  />
+            <img
+              src={network.includes('kau') ? KauIcon : network.includes('kag') ? KagIcon : KemIcon}
+              className={'image-icon'}
+            />
           </div>
           <div >
             <h1 className='text-data'>{network}</h1>
@@ -88,16 +92,16 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
           {this.generateRegionView(networkRegionInfo).length > 4 ?
             <div className='columns'>{this.generateRegionView(networkRegionInfo).slice(4, 8)}
             </div> : ''}
-            {this.generateRegionView(networkRegionInfo).length > 8 ?
+          {this.generateRegionView(networkRegionInfo).length > 8 ?
             <div className='columns'>{this.generateRegionView(networkRegionInfo).slice(8, 12)}
             </div> : ''}
-            {this.generateRegionView(networkRegionInfo).length > 12 ?
+          {this.generateRegionView(networkRegionInfo).length > 12 ?
             <div className='columns'>{this.generateRegionView(networkRegionInfo).slice(12, 16)}
             </div> : ''}
-            {this.generateRegionView(networkRegionInfo).length > 16 ?
+          {this.generateRegionView(networkRegionInfo).length > 16 ?
             <div className='columns'>{this.generateRegionView(networkRegionInfo).slice(16, 20)}
             </div> : ''}
-            {this.generateRegionView(networkRegionInfo).length > 20 ?
+          {this.generateRegionView(networkRegionInfo).length > 20 ?
             <div className='columns'>{this.generateRegionView(networkRegionInfo).slice(20, 24)}
             </div> : ''}
           {/* <div className='columns'>{this.generateRegionView(networkRegionInfo)}</div> */}
@@ -119,13 +123,18 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
           <div className='column node-info-details '>
             <div className='region-header'>
               <div className='display-space'>
-                <img src={account == 'Kinesis' ? KinesisLogo : account == 'leewayhertz' ? LeewayLogo : AbxLogo} className='image-icon-company icon-padding' />
+                <img
+                  src={account === 'Kinesis' ?
+                    KinesisLogo : account === 'leewayhertz' ?
+                      LeewayLogo : AbxLogo}
+                  className='image-icon-company icon-padding'
+                />
               </div>
             </div>
             {regionNodeInfo.error === REGION_ERROR.error ? (
               <h3 className='title is-5 has-text-danger'>22 Offline</h3>
             ) : (
-              this.generateNodeView(regionNodeInfo , regionArea , region)
+              this.generateNodeView(regionNodeInfo, regionArea, region)
             )}
           </div>
         </React.Fragment>
@@ -133,7 +142,7 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
     })
   }
 
-  public generateNodeView(regionNodeInfo: any , regionArea: string , region: string) {
+  public generateNodeView(regionNodeInfo: any, regionArea: string, region: string) {
     const nodes = Object.keys(regionNodeInfo)
 
     return nodes.map((node) => {
@@ -155,7 +164,11 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
           <React.Fragment key={node}>
             <div className='individual-indetails'>
               <h4 className='title is-4' style={{ paddingTop: '15px' }}>
-               <a target='_blank' href={region}>{regionArea.includes('0') || regionArea.includes('1') || regionArea.includes('2') || regionArea.includes('3') ? regionArea : regionArea +  ' '  + node[4]}</a>
+                <a target='_blank' href={region}>{regionArea.includes('0')
+                  || regionArea.includes('1') || regionArea.includes('2')
+                  || regionArea.includes('3') ? regionArea[0].toUpperCase() + regionArea.substring(1) :
+                  regionArea[0].toUpperCase() + regionArea.substring(1) + ' ' + node[4]
+                }</a>
               </h4>
               <p className='para-text'>State: <span className='font-bolder'>{state}</span></p>
               <p className='para-text'>
@@ -165,8 +178,10 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
               </p>
               <p className='para-text'>Ledger Age: <span className='font-bolder' >{ledger.age}</span></p>
               <p className='para-text'>Ledger Number:  <span className='font-bolder' >{ledger.num}</span></p>
-              <p className='para-text'>Ledger Percentage Fee (b.p): <span className='font-bolder' >{ledger.basePercentageFee || 45}</span></p>
-              <p className='para-text'>Ledger Base Fee (stroops): <span className='font-bolder' >{ledger.baseFee}</span></p>
+              <p className='para-text'>Ledger Percentage Fee (b.p): <span className='font-bolder' >
+                {ledger.basePercentageFee || 45}</span></p>
+              <p className='para-text'>Ledger Base Fee (stroops): <span className='font-bolder' >
+                {ledger.baseFee}</span></p>
             </div>
           </React.Fragment>
         )
