@@ -75,7 +75,7 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
       selectedConnection: { currency },
     } = this.props
     let currAbbr: string = currency
-    if ((Number(localStorage.getItem('selectedConnection')) || 0) > 2) {
+    if ((Number(localStorage.getItem('selectedConnection')) || 0) > 1) {
       currAbbr = 'T' + currAbbr
     }
     return (
