@@ -132,7 +132,7 @@ export default class NodeInfo extends React.Component<any, { nodeInfo: any; inte
               </div>
             </div>
             {regionNodeInfo.error === REGION_ERROR.error ? (
-              <h3 className='title is-5 has-text-danger'>22 Offline</h3>
+              <h3 className='title is-5 has-text-danger'>Region Offline</h3>
             ) : (
               this.generateNodeView(regionNodeInfo, regionArea, region)
             )}
