@@ -38,7 +38,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     transactions: [],
     isLoading: false,
     ledgerLimit: 10,
-    transLimit: 10,
+    transLimit: 20,
   }
 
   closeLedgerStream!: () => void
@@ -55,6 +55,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     if (prevState.transLimit !== this.state.transLimit || prevState.ledgerLimit !== this.state.ledgerLimit) {
       this.closeTransactionStream()
       this.updateTransaction()
+
     }
   }
 
@@ -125,7 +126,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
   }
 
   handleConnectionChange = (): void => {
-    this.state.transLimit = 10
+    this.state.transLimit = 20
     this.state.ledgerLimit = 10
     this.closeDataStreams()
     this.fetchData()
@@ -199,16 +200,11 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
         <div className='tile is-ancestor'>
           <div className='tile is-vertical is-4 is-parent'>
             <Statistics />
-            <Converter />
+            {/* <Converter /> */}
           </div>
           <div className='tile is-vertical is-parent'>
-            <article className='tile is-child'>
-              <p className='title'>Ledgers</p>
-              <div className={this.state.isLoading ? 'is-loading-blur' : ''}>
-                <Ledgers ledgers={this.state.ledgers} />
-              </div>
-            </article>
-            <article className='tile is-child'>
+
+          <article className='tile is-child'>
               <p className='title'>Transactions</p>
               <div className={this.state.isLoading ? 'is-loading-blur' : ''}>
                 <Transactions transactions={this.state.transactions} conn={this.connectionSelector()} />
@@ -221,6 +217,19 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
                 Load More...
               </button>
             </article>
+            {/* <article className='tile is-child'>
+              <p className='title'>Transactions</p>
+              <div className={this.state.isLoading ? 'is-loading-blur' : ''}>
+                <Transactions transactions={this.state.transactions} conn={this.connectionSelector()} />
+              </div>
+              <button
+                className='button'
+                onClick={() => this.moreTxs()}
+                style={{ width: '100%', marginTop: '3px', overflowAnchor: 'none' }}
+              >
+                Load More...
+              </button>
+            </article> */}
           </div>
         </div>
       </section>
