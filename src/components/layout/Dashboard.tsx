@@ -205,7 +205,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
           <div className='tile is-vertical is-parent'>
 
           <article className='tile is-child'>
-              <p className='title'>Transactions</p>
+              <p className='title  is-child box' style={{ marginBottom: '0.3rem' }}>Transactions</p>
               <div className={this.state.isLoading ? 'is-loading-blur' : ''}>
                 <Transactions transactions={this.state.transactions} conn={this.connectionSelector()} />
               </div>
@@ -217,19 +217,6 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
                 Load More...
               </button>
             </article>
-            {/* <article className='tile is-child'>
-              <p className='title'>Transactions</p>
-              <div className={this.state.isLoading ? 'is-loading-blur' : ''}>
-                <Transactions transactions={this.state.transactions} conn={this.connectionSelector()} />
-              </div>
-              <button
-                className='button'
-                onClick={() => this.moreTxs()}
-                style={{ width: '100%', marginTop: '3px', overflowAnchor: 'none' }}
-              >
-                Load More...
-              </button>
-            </article> */}
           </div>
         </div>
       </section>
