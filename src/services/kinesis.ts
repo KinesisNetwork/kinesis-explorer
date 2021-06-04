@@ -8,6 +8,7 @@ import {
   StrKey,
   TransactionCallBuilder,
   TransactionRecord,
+  OperationRecord
 } from 'js-kinesis-sdk'
 import { Connection } from '../types'
 
@@ -68,6 +69,13 @@ export async function getLedger(connection: Connection, sequence: number | strin
   const ledger = (await (server.ledgers() as any).ledger(sequence).call()) as LedgerRecord
   return ledger
 }
+export async function getAccountMergeAmountfromResultxdr(connection: Connection, result_xdr: number | string): Promise<TransactionRecord> {
+  
+  const server = getServer(connection)
+  const transaction=(await (server.transactions() as any).transactions(result_xdr).call()) as TransactionRecord
+  return transaction
+
+}
 
 export async function getLedgers(connection: Connection, limitVal: number = 10): Promise<LedgerRecord[]> {
   const server = getServer(connection)
@@ -88,4 +96,16 @@ export async function getAccount(connection: Connection, accountId: string): Pro
 
 export async function validateAccount(address: string): Promise<boolean> {
   return StrKey.isValidEd25519PublicKey(address)
+}
+
+export async function getOperations(
+  connection: Connection,
+  limit = 10,
+  _cursor?: string,
+): Promise<OperationRecord[]> {
+  const server = getServer(connection)
+  const transactionsPromise = server.operations()
+  const { records }: CollectionPage<OperationRecord> = await transactionsPromise.limit(limit).order('desc').call()
+
+  return records
 }
