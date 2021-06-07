@@ -10,7 +10,6 @@ class OperationsTable extends React.Component<Props> {
   server = new Server(this.props?.networkUrl)
   state = {
     operations: [],
-    name: 'Nitish',
   }
 
   componentDidMount() {
@@ -38,9 +37,23 @@ class OperationsTable extends React.Component<Props> {
   }
 
   render() {
+    const operationType = this.state.operations[0]?.type
+    if (operationType === 'account_merge') {
+      const ACCOUNT_MERGE = 'Account Merge'
+      return ACCOUNT_MERGE
+    }
+
+    if (operationType === 'create_account') {
+      const CREATE_ACCOUNT = 'Create Account'
+      return CREATE_ACCOUNT
+    }
+    if (operationType === 'payment') {
+      const PAYMENT = 'Payment'
+      return PAYMENT
+    }
     return (
       <div>
-        <p> {this.state.operations[0]?.type} </p>
+        <p> {operationType} </p>
       </div>
     )
   }
