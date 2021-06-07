@@ -3,7 +3,7 @@ import * as React from 'react'
 import { Redirect, RouteComponentProps } from 'react-router'
 import { Link } from 'react-router-dom'
 import { Subscribe } from 'unstated'
-import { ConnectionContainer, ConnectionContext  } from '../../services/connections'
+import { ConnectionContainer, ConnectionContext } from '../../services/connections'
 import { getTransaction } from '../../services/kinesis'
 import { Connection } from '../../types'
 import { TransactionInfo } from '../widgets/TransactionInfo'
@@ -20,7 +20,7 @@ interface State {
 class TransactionPage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
-    this.state = { transaction: null, invalidTransaction: false, conn: undefined, selectedConnectionName: undefined  }
+    this.state = { transaction: null, invalidTransaction: false, conn: undefined, selectedConnectionName: undefined }
   }
 
   getId = (val: string) => {
@@ -36,32 +36,16 @@ class TransactionPage extends React.Component<Props, State> {
   }
 
   loadTransaction = async () => {
-
     try {
-      const activeConn = this.getId(this.props.match.params.connection)!
-
-      console.log(this.props.match.params.connection, 'MATCH')
-
-      let transaction: TransactionRecord
-
       this.props.connections.forEach(async (element) => {
-
         try {
-          // const { selectedConnection } = this.props
-
           const value = await getTransaction(element, this.props.match.params.id)
-          console.log(value, 'VALUE')
-          console.log(this.props.selectedConnection.name, 'selectedConnection')
-          console.log('element', element )
           this.setState({ transaction: value, selectedConnectionName: element })
-        //   this.setState({
-        //     selectedConnectionName : {...this.props.selectedConnection,[this.props.selectedConnection.name]: element}
-        // })
-          // console.log(selectedConnection, "SE")
-        } catch {}
+        } catch (err) {
+          // tslint:disable-next-line:no-console
+          console.error(err)
+        }
       })
-
-      console.log('Transaction', transaction)
     } catch (e) {
       this.setState({ invalidTransaction: true })
     }
@@ -98,12 +82,10 @@ class TransactionPage extends React.Component<Props, State> {
 }
 
 class ConnectedTransaction extends React.Component<ConnectedTransactionProps> {
-
   render() {
     return (
       <Subscribe to={[ConnectionContainer]}>
-        {({ state }: ConnectionContainer) => (
-          <TransactionPage {...this.props} {...state} />)}
+        {({ state }: ConnectionContainer) => <TransactionPage {...this.props} {...state} />}
       </Subscribe>
     )
   }

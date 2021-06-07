@@ -3,13 +3,12 @@ import * as React from 'react'
 import { Link } from 'react-router-dom'
 import { renderAmount, renderRelativeDate } from '../../utils'
 
-class OperationValue extends React.Component {
-  constructor(props: any) {
-    super(props)
-    {
-    }
-  }
+interface Props {
+  networkUrl?: string
+  translimit: number
+}
 
+class OperationValue extends React.Component <Props> {
   server = new Server(this.props?.networkUrl)
   state = {
     operations: [],
@@ -32,7 +31,6 @@ class OperationValue extends React.Component {
         .limit(1)
         .stream({
           onmessage: (nextData) => {
-            console.warn('New Data Recieved!!', nextData.transaction_hash)
             this.setState({
               operations: [nextData, ...this.state.operations.slice(0, 9)],
             })

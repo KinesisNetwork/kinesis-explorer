@@ -8,14 +8,12 @@ export class SearchBar extends React.Component {
 
   handleChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
     this.setState({ value: event.currentTarget.value })
-    console.log(event.target.value)
   }
 
   clearInput: React.MouseEventHandler<HTMLAnchorElement> = (event) => {
     this.setState(({ value: '' }))
   }
   handleKeypress = (e) => {
-    console.log('Eevnttttt', e.key)
     if (e.key === 'Enter') {
       top.location.href = `/search/${this.state.value}`
 

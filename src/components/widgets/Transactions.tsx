@@ -1,8 +1,6 @@
-import { AccountMergeOperationRecord, AccountRecord, OperationRecord, TransactionRecord } from 'js-kinesis-sdk'
-import { startCase, values } from 'lodash'
+import { TransactionRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
 import { Link } from 'react-router-dom'
-import { getOperations } from '../../services/kinesis'
 import OperationsTable from './OperationsTable'
 import OperationsTableAmount from './OperationsTableAmount'
 import OperationValue from './OperationValue'
@@ -12,10 +10,9 @@ function renderTransaction(
   conn?: string,
   from?: string,
   to?: string,
-  translimit: number,
+  translimit?: number,
 ): JSX.Element {
   const destinationAccountAddressNetwork = t._links.self.href
-  const destinationAddress = ''
   async function fetchDestinationAccountAddress() {
     const response = await fetch(`${destinationAccountAddressNetwork}/operations`)
     const url = await response.json()
@@ -28,25 +25,7 @@ function renderTransaction(
   fetchDestinationAccountAddress().then((destinationAccount) => {
     from = destinationAccount
   })
-  const networkName = t._links.self.href
-  const Kinesis = require('js-kinesis-sdk')
-  const destinationAccountAddress = t._links.self.href
 
-  const server = new Kinesis.Server(`${destinationAccountAddress}/operations`)
-  let initialData = []
-  const getOperations = async () => {
-    const transactionsRecord = await server.operations().limit(10).order('desc').call()
-    initialData = transactionsRecord.records
-    server
-      .operations()
-      .cursor('now')
-      .limit(1)
-      .stream({
-        onmessage: (nextData) => {
-          initialData = [nextData, ...initialData.slice(0, 9)]
-        },
-      })
-  }
   return (
     <tr key={t.id} className='tr'>
       <td className='td'>{t.created_at}</td>

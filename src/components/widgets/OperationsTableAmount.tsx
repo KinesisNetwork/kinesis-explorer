@@ -1,13 +1,12 @@
 import { Server } from 'js-kinesis-sdk'
 import * as React from 'react'
 
-class OperationsTableAmount extends React.Component {
-  constructor(props: any) {
-    super(props)
-    {
-    }
-  }
+interface Props {
+  networkUrl?: string
+  translimit: number
+}
 
+class OperationsTableAmount extends React.Component<Props> {
   server = new Server(this.props?.networkUrl)
   state = {
     operations: [],
@@ -30,8 +29,6 @@ class OperationsTableAmount extends React.Component {
         .limit(1)
         .stream({
           onmessage: (nextData) => {
-            console.warn('New Data Recieved!!', nextData.transaction_hash)
-
             this.setState({
               operations: [nextData, ...this.state.operations.slice(0, 9)],
             })
