@@ -12,6 +12,7 @@ interface Props extends ConnectedAccountProps, ConnectionContext { }
 interface State {
   transactions: TransactionRecord[]
   invalidAccount: boolean
+  translimit?: number
 }
 
 class MergedAccountPage extends React.Component<Props, State> {
@@ -20,6 +21,7 @@ class MergedAccountPage extends React.Component<Props, State> {
     this.state = {
       transactions: [],
       invalidAccount: false,
+
     }
   }
 
@@ -61,6 +63,7 @@ class MergedAccountPage extends React.Component<Props, State> {
   render() {
     const { match } = this.props
     const { transactions } = this.state
+    // const { translimit } = this.props
 
     const accountId = match.params.id
 

@@ -13,6 +13,12 @@ export class SearchBar extends React.Component {
   clearInput: React.MouseEventHandler<HTMLAnchorElement> = (event) => {
     this.setState(({ value: '' }))
   }
+  handleKeypress = (e) => {
+    if (e.key === 'Enter') {
+      top.location.href = `/search/${this.state.value}`
+
+      }
+}
 
   render() {
     return (
@@ -23,7 +29,9 @@ export class SearchBar extends React.Component {
             type='text'
             value={this.state.value}
             onChange={this.handleChange}
+            onKeyPress={(e) => this.handleKeypress(e)}
             placeholder='Search...'
+
           />
           <span className='icon is-right'>
             <i className='fas fa-search' />
