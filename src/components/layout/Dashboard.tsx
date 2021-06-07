@@ -207,7 +207,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
           <article className='tile is-child'>
               <p className='title  is-child box' style={{ marginBottom: '0.3rem' }}>Transactions</p>
               <div className={this.state.isLoading ? 'is-loading-blur' : ''}>
-                <Transactions transactions={this.state.transactions} conn={this.connectionSelector()} />
+                <Transactions transactions={this.state.transactions} conn={this.connectionSelector()} translimit= {this.state.transLimit}  />
               </div>
               <button
                 className='button'

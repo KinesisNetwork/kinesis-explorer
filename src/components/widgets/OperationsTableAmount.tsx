@@ -1,12 +1,13 @@
 import * as React from 'react'
 import { Server } from 'js-kinesis-sdk'
 
-class OperationsTable extends React.Component {
+class OperationsTableAmount extends React.Component {
   constructor(props: any) {
     super(props)
     {
     }
   }
+
   server = new Server(this.props?.networkUrl)
   state = {
     operations: [],
@@ -41,13 +42,10 @@ class OperationsTable extends React.Component {
 
   render() {
     return (
-      <>
-        <div>
-          <p> {this.state.operations[0]?.type} </p>
-        </div>
-        <div>{this.state.operations[0]?.amount}</div>
-      </>
+      <div>
+        <p> {this.state.operations[0]?.amount} </p>
+      </div>
     )
   }
 }
-export default OperationsTable
+export default OperationsTableAmount

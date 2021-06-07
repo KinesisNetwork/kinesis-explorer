@@ -1,12 +1,15 @@
 import * as React from 'react'
 import { Server } from 'js-kinesis-sdk'
+import { renderAmount, renderRelativeDate } from '../../utils'
+import { Link } from 'react-router-dom'
 
-class OperationsTable extends React.Component {
+class OperationValue extends React.Component {
   constructor(props: any) {
     super(props)
     {
     }
   }
+
   server = new Server(this.props?.networkUrl)
   state = {
     operations: [],
@@ -30,7 +33,6 @@ class OperationsTable extends React.Component {
         .stream({
           onmessage: (nextData) => {
             console.warn('New Data Recieved!!', nextData.transaction_hash)
-
             this.setState({
               operations: [nextData, ...this.state.operations.slice(0, 9)],
             })
@@ -41,13 +43,16 @@ class OperationsTable extends React.Component {
 
   render() {
     return (
-      <>
-        <div>
-          <p> {this.state.operations[0]?.type} </p>
-        </div>
-        <div>{this.state.operations[0]?.amount}</div>
-      </>
+      <div>
+        <p>
+          {' '}
+          <Link to={`/account/${this.state.operations[0]?.to}`}>
+            {this.state.operations[0]?.to?.slice(0, 4)}......
+            {this.state.operations[0]?.to?.substr(this.state.operations[0]?.to?.length - 4)}{' '}
+          </Link>
+        </p>
+      </div>
     )
   }
 }
-export default OperationsTable
+export default OperationValue
