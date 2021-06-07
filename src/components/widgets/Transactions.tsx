@@ -55,7 +55,7 @@ function renderTransaction(
 interface TransactionProps {
   transactions: TransactionRecord[]
   conn?: string
-  translimit: number
+  translimit?: number
   from?: string
   to?: string
 }
