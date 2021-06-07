@@ -4,11 +4,11 @@ import {
   LedgerCallBuilder,
   LedgerRecord,
   Network,
+  OperationRecord,
   Server,
   StrKey,
   TransactionCallBuilder,
   TransactionRecord,
-  OperationRecord
 } from 'js-kinesis-sdk'
 import { Connection } from '../types'
 
@@ -70,9 +70,9 @@ export async function getLedger(connection: Connection, sequence: number | strin
   return ledger
 }
 export async function getAccountMergeAmountfromResultxdr(connection: Connection, result_xdr: number | string): Promise<TransactionRecord> {
-  
+
   const server = getServer(connection)
-  const transaction=(await (server.transactions() as any).transactions(result_xdr).call()) as TransactionRecord
+  const transaction = (await (server.transactions() as any).transactions(result_xdr).call()) as TransactionRecord
   return transaction
 
 }

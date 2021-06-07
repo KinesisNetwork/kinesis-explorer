@@ -1,7 +1,7 @@
-import * as React from 'react'
 import { Server } from 'js-kinesis-sdk'
-import { renderAmount, renderRelativeDate } from '../../utils'
+import * as React from 'react'
 import { Link } from 'react-router-dom'
+import { renderAmount, renderRelativeDate } from '../../utils'
 
 class OperationValue extends React.Component {
   constructor(props: any) {

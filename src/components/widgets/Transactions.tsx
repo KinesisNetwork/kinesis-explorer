@@ -1,4 +1,4 @@
-import { OperationRecord, TransactionRecord, AccountRecord, AccountMergeOperationRecord } from 'js-kinesis-sdk'
+import { AccountMergeOperationRecord, AccountRecord, OperationRecord, TransactionRecord } from 'js-kinesis-sdk'
 import { startCase, values } from 'lodash'
 import * as React from 'react'
 import { Link } from 'react-router-dom'
@@ -15,7 +15,7 @@ function renderTransaction(
   translimit: number,
 ): JSX.Element {
   const destinationAccountAddressNetwork = t._links.self.href
-  let destinationAddress = ''
+  const destinationAddress = ''
   async function fetchDestinationAccountAddress() {
     const response = await fetch(`${destinationAccountAddressNetwork}/operations`)
     const url = await response.json()
@@ -48,26 +48,26 @@ function renderTransaction(
       })
   }
   return (
-    <tr key={t.id} className="tr">
-      <td className="td">{t.created_at}</td>
-      <td className="td">
+    <tr key={t.id} className='tr'>
+      <td className='td'>{t.created_at}</td>
+      <td className='td'>
         <Link to={`/transaction/${conn}/${t.hash}`}>
           {t.hash.slice(0, 4)}.....{t.hash.substr(t.hash.length - 4)}
         </Link>
       </td>
-      <td className="td">
+      <td className='td'>
         <Link to={`/account/${t.source_account}`}>
           {t.source_account.slice(0, 4)}.....{t.source_account.substr(t.source_account.length - 4)}{' '}
         </Link>
       </td>
-      <td className="td">
+      <td className='td'>
         {' '}
         <OperationValue networkUrl={destinationAccountAddressNetwork} translimit={translimit} />
       </td>
-      <td className="td">
+      <td className='td'>
         <OperationsTable networkUrl={destinationAccountAddressNetwork} translimit={translimit} />
       </td>
-      <td className="td">
+      <td className='td'>
         <OperationsTableAmount networkUrl={destinationAccountAddressNetwork} translimit={translimit} /> {currConn}
       </td>
     </tr>
@@ -83,18 +83,18 @@ interface TransactionProps {
 const Transactions: React.SFC<TransactionProps> = ({ transactions, conn, from, to, translimit }): JSX.Element => {
   currConn = conn
   return (
-    <table className="table is-bordered is-striped is-fullwidth">
-      <thead className="thead">
-        <tr className="tr">
-          <th className="th">Date</th>
-          <th className="th">Hash</th>
-          <th className="th">From</th>
-          <th className="th">To</th>
-          <th className="th">Type</th>
-          <th className="th">Amount</th>
+    <table className='table is-bordered is-striped is-fullwidth'>
+      <thead className='thead'>
+        <tr className='tr'>
+          <th className='th'>Date</th>
+          <th className='th'>Hash</th>
+          <th className='th'>From</th>
+          <th className='th'>To</th>
+          <th className='th'>Type</th>
+          <th className='th'>Amount</th>
         </tr>
       </thead>
-      <tbody className="tbody">
+      <tbody className='tbody'>
         {transactions.map((transaction) => renderTransaction(transaction, conn, from, to, translimit))}
       </tbody>
     </table>

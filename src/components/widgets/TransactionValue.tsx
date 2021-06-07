@@ -1,4 +1,4 @@
-import { OperationRecord, TransactionRecord, AccountRecord, AccountMergeOperationRecord } from 'js-kinesis-sdk'
+import { AccountMergeOperationRecord, AccountRecord, OperationRecord, TransactionRecord } from 'js-kinesis-sdk'
 import { startCase, values } from 'lodash'
 import * as React from 'react'
 import { Link } from 'react-router-dom'
@@ -7,7 +7,7 @@ import OperationsTable from './OperationsTable'
 let currConn: string
 function renderTransaction(t: OperationRecord, conn?: string, from?: string, to?: string): JSX.Element {
   const destinationAccountAddressNetwork = t._links.self.href
-  let destinationAddress = ''
+  const destinationAddress = ''
   async function fetchDestinationAccountAddress() {
     const response = await fetch(`${destinationAccountAddressNetwork}/operations`)
     const url = await response.json()
@@ -67,7 +67,7 @@ function renderTransaction(t: OperationRecord, conn?: string, from?: string, to?
       })
   }
   return (
-    <tr key={t.id} className="tr">
+    <tr key={t.id} className='tr'>
       {/* <td className="td">{t.created_at}</td>
       <td className="td">
         <Link to={`/transaction/${conn}/${t.hash}`}>
@@ -80,8 +80,8 @@ function renderTransaction(t: OperationRecord, conn?: string, from?: string, to?
         </Link>
       </td>
       <td className="td"> <OperationsTable   /></td> */}
-      <td className="td">{t.type}</td>
-      <td className="td">
+      <td className='td'>{t.type}</td>
+      <td className='td'>
         {/* {(t.result_xdr)}  */}
         {currConn}
       </td>
@@ -101,7 +101,7 @@ const Operations: React.SFC<OperationProps> = ({ operations, conn, from, to }): 
   currConn = conn
 
   return (
-    <table className="table is-bordered is-striped is-fullwidth">
+    <table className='table is-bordered is-striped is-fullwidth'>
       {/* <thead className="thead">
         <tr className="tr">
           <th className="th">Date</th>
@@ -112,10 +112,10 @@ const Operations: React.SFC<OperationProps> = ({ operations, conn, from, to }): 
           <th className="th">Amount</th>
         </tr>
       </thead> */}
-      <tbody className="tbody">
+      <tbody className='tbody'>
         {operations.map((operation) => renderTransaction(operation, conn, from, to))}
       </tbody>
-      <tbody className="tbody">
+      <tbody className='tbody'>
         <OperationsTable />
       </tbody>
     </table>

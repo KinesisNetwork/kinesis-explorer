@@ -81,10 +81,10 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
     return (
       <article className='tile is-child box'>
         <p className='title'>Kinesis in Circulation</p>
-        <div style = {{marginTop: "80%"}}>
+        <div style={{marginTop: '80%'}}>
           <HorizontalLabelledField
             label={''}
-           
+
             wideLabel={false}
             value={
               currency === 'KEM'

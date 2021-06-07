@@ -1,5 +1,5 @@
-import * as React from 'react'
 import { Server } from 'js-kinesis-sdk'
+import * as React from 'react'
 
 class OperationsTable extends React.Component {
   constructor(props: any) {
@@ -41,12 +41,9 @@ class OperationsTable extends React.Component {
 
   render() {
     return (
-      <>
-        <div>
-          <p> {this.state.operations[0]?.type} </p>
-        </div>
-        <div>{this.state.operations[0]?.amount}</div>
-      </>
+      <div>
+        <p> {this.state.operations[0]?.type} </p>
+      </div>
     )
   }
 }

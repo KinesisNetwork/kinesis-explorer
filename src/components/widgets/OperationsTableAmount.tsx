@@ -1,5 +1,5 @@
-import * as React from 'react'
 import { Server } from 'js-kinesis-sdk'
+import * as React from 'react'
 
 class OperationsTableAmount extends React.Component {
   constructor(props: any) {
