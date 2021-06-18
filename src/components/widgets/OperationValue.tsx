@@ -2,25 +2,28 @@ import { Server } from 'js-kinesis-sdk'
 import * as React from 'react'
 import { Link } from 'react-router-dom'
 import { renderAmount, renderRelativeDate } from '../../utils'
+import { Transactions } from '../widgets'
+import OperationsTable from './OperationsTable'
+import OperationsTableAmount from './OperationsTableAmount'
 
-interface Props {
+interface OperationProps {
   networkUrl?: string
   translimit: number
 }
 
-class OperationValue extends React.Component <Props> {
+class OperationValue extends React.Component <OperationProps> {
   server = new Server(this.props?.networkUrl)
   state = {
     operations: [],
-    name: 'Nitish',
+    // transactions:[]
   }
 
   componentDidMount() {
     this.getOperations()
   }
-  componentDidUpdate() {
-    this.getOperations()
-  }
+  // componentDidUpdate() {
+  //   this.getOperations()
+  // }
 
   async getOperations() {
     const operationRecord = await this.server.operations().limit(this.props.translimit).order('desc').call()
@@ -40,16 +43,38 @@ class OperationValue extends React.Component <Props> {
   }
 
   render() {
+    const operationType = this.state.operations[0]?.type
+    let destinationAccount
+    if (operationType === 'account_merge') {
+      destinationAccount = this.state.operations[0]?.into
+    }
+    if (operationType === 'create_account') {
+      destinationAccount = this.state.operations[0]?.account
+    }
+    if (operationType === 'payment') {
+      destinationAccount = this.state.operations[0]?.to
+    }
+    // console.log(this.state.operations,".....................");
     return (
+      <>
       <div>
+        {/* <Transactions 
+        transactions={this.state.transactions}
+        operations={this.state.operations}/> */}
         <p>
           {' '}
-          <Link to={`/account/${this.state.operations[0]?.to}`}>
-            {this.state.operations[0]?.to?.slice(0, 4)}......
-            {this.state.operations[0]?.to?.substr(this.state.operations[0]?.to?.length - 4)}{' '}
+          <Link to={`/account/${destinationAccount}`}>
+            {destinationAccount && destinationAccount.length && destinationAccount.slice(0, 4)}......
+            {destinationAccount &&
+              destinationAccount.length &&
+              destinationAccount.substr(destinationAccount.length - 4)}{' '}
           </Link>
         </p>
       </div>
+
+      
+      
+      </>
     )
   }
 }

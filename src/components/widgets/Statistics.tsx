@@ -9,7 +9,7 @@ import { getLedgers } from '../../services/kinesis'
 import { getBackedFees, getUnbackedBalances } from '../../services/statistics'
 import { Connection } from '../../types'
 import { renderAmount } from '../../utils'
-import { HorizontalLabelledField } from '../shared/LabelledField'
+import { HorizontalLabelledFieldStatistics } from '../shared/LabelledField'
 
 type StatisticsWidgetProps = ConnectionContext
 interface State {
@@ -82,7 +82,7 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
       <article className='tile is-child box'>
         <p className='title'>Kinesis in Circulation</p>
         <div style={{marginTop: '80%'}}>
-          <HorizontalLabelledField
+          <HorizontalLabelledFieldStatistics
             label={''}
 
             wideLabel={false}

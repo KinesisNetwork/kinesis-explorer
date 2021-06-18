@@ -5,27 +5,30 @@ import OperationsTable from './OperationsTable'
 import OperationsTableAmount from './OperationsTableAmount'
 import OperationValue from './OperationValue'
 let currConn: string
+
 function renderTransaction(
   t: TransactionRecord,
   conn?: string,
   from?: string,
   to?: string,
   translimit?: number,
+  operations?:any
 ): JSX.Element {
   const destinationAccountAddressNetwork = t._links.self.href
-  async function fetchDestinationAccountAddress() {
-    const response = await fetch(`${destinationAccountAddressNetwork}/operations`)
-    const url = await response.json()
-    const embeddedData = url._embedded
-    const records = embeddedData.records[0]
-    const destinationAccount = records.into
-    return destinationAccount
-  }
+  // async function fetchDestinationAccountAddress() {
+  //   const response = await fetch(`${destinationAccountAddressNetwork}/operations`)
+  //   const url = await response.json()
+  //   const embeddedData = url._embedded
+  //   const records = embeddedData.records[0]
+  //   const destinationAccount = records.into
+  //   return destinationAccount
+  // }
 
-  fetchDestinationAccountAddress().then((destinationAccount) => {
-    from = destinationAccount
-  })
-
+  // fetchDestinationAccountAddress().then((destinationAccount) => {
+  //   from = destinationAccount
+  // })
+  // console.log("opData..............",JSON.stringify(operations),t,conn);
+  
   return (
     <tr key={t.id} className='tr'>
       <td className='td'>{t.created_at}</td>
@@ -58,8 +61,9 @@ interface TransactionProps {
   translimit?: number
   from?: string
   to?: string
+  operations?:any
 }
-const Transactions: React.SFC<TransactionProps> = ({ transactions, conn, from, to, translimit }): JSX.Element => {
+const Transactions: React.SFC<TransactionProps> = ({ transactions, conn, from, to, translimit, operations }): JSX.Element => {
   currConn = conn
   return (
     <table className='table is-bordered is-striped is-fullwidth'>
@@ -74,7 +78,7 @@ const Transactions: React.SFC<TransactionProps> = ({ transactions, conn, from, t
         </tr>
       </thead>
       <tbody className='tbody'>
-        {transactions.map((transaction) => renderTransaction(transaction, conn, from, to, translimit))}
+        {transactions.map((transaction) => renderTransaction(transaction, conn, from, to, translimit, operations))}
       </tbody>
     </table>
   )

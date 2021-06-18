@@ -5,7 +5,8 @@ import * as React from 'react'
 import { getTransactions, getTransactionStream } from '../../services/kinesis'
 import { Connection } from '../../types'
 import { renderAmount } from '../../utils'
-import { HorizontalLabelledField } from '../shared'
+import DownArrow from '../css/images/down-arrow.svg'
+import { HorizontalLabelledField, HorizontalLabelledFieldBalance, HorizontalLabelledFieldInfo } from '../shared'
 import { OperationList } from './OperationList'
 
 interface KemRecord extends AccountRecord {
@@ -25,9 +26,10 @@ interface Props {
 }
 
 interface State {
-  operations: CollectionPage<OperationRecord> | null,
-  lastPagingToken: string | undefined,
-  showLoadMore: boolean,
+  operations: CollectionPage<OperationRecord> | null
+  lastPagingToken: string | undefined
+  showLoadMore: boolean
+  isSignersOpen: boolean
 }
 
 export class AccountInfo extends React.Component<Props, State> {
@@ -38,6 +40,7 @@ export class AccountInfo extends React.Component<Props, State> {
       operations: null,
       lastPagingToken: undefined,
       showLoadMore: true,
+      isSignersOpen: false,
     }
 
     this.onClickLoadMore = this.onClickLoadMore.bind(this)
@@ -69,17 +72,15 @@ export class AccountInfo extends React.Component<Props, State> {
   loadMergedTransactions = async (cursor: string = 'now', limit: number = 10) => {
     const transactions = await getTransactions(this.props.selectedConnection, this.props.accountId, limit, cursor)
 
-    const lastPagingToken = transactions.length
-      ? transactions[transactions.length - 1].paging_token
-      : undefined
+    const lastPagingToken = transactions.length ? transactions[transactions.length - 1].paging_token : undefined
 
     const showLoadMore = transactions.length ? transactions.length === limit : !cursor
     const originalRecordSet = this.state.operations ? this.state.operations.records : []
 
     // Simple de-duping
     const records = await Promise.all(
-      transactions.map(
-        (transaction) => transaction.operations({
+      transactions.map((transaction) =>
+        transaction.operations({
           limit: transaction.operation_count,
           cursor: undefined,
           order: 'desc',
@@ -87,13 +88,9 @@ export class AccountInfo extends React.Component<Props, State> {
       ),
     )
     const operations = {
-      records: records
-        .map((entry) => entry.records)
-        .reduce((total, amount) => total.concat(amount), []),
-      next: () =>
-        Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
-      prev: () =>
-        Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
+      records: records.map((entry) => entry.records).reduce((total, amount) => total.concat(amount), []),
+      next: () => Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
+      prev: () => Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
     }
 
     // Simple de-duping
@@ -141,13 +138,11 @@ export class AccountInfo extends React.Component<Props, State> {
     const precision = this.props.selectedConnection.currency === 'KEM' ? 7 : 5
     const balances = this.props.account.balances
       .map((balance) =>
-        balance.asset_type === 'native'
-          ? { ...balance, asset_type: this.props.selectedConnection.currency }
-          : balance,
+        balance.asset_type === 'native' ? { ...balance, asset_type: this.props.selectedConnection.currency } : balance,
       )
       .map((balance) => ({ ...balance, balance: renderAmount(balance.balance, precision) }))
       .map((balance, i) => (
-        <HorizontalLabelledField key={i} label={balance.asset_type} value={balance.balance} />
+        <HorizontalLabelledFieldBalance key={i} label={balance.asset_type} value={balance.balance} />
       ))
 
     return <React.Fragment>{balances}</React.Fragment>
@@ -155,13 +150,14 @@ export class AccountInfo extends React.Component<Props, State> {
 
   renderThresholds = () => {
     const thresholds = Object.entries(this.props.account.thresholds).map(([key, value]) => (
-      <HorizontalLabelledField key={key} label={startCase(key)} value={value} wideLabel={true} />
+      <HorizontalLabelledFieldInfo key={key} label={startCase(key)} value={value} wideLabel={true} />
     ))
     return <React.Fragment>{thresholds}</React.Fragment>
   }
 
   renderSigners = () => {
     const signers = this.props.account.signers.map((signer, i) => {
+
       return (
         <div key={i}>
           <HorizontalLabelledField
@@ -173,6 +169,10 @@ export class AccountInfo extends React.Component<Props, State> {
       )
     })
     return <React.Fragment>{signers}</React.Fragment>
+  }
+
+  renderSignersKey = () => {
+    this.setState({ isSignersOpen: !this.state.isSignersOpen })
   }
 
   connectionSelector(): string {
@@ -194,38 +194,55 @@ export class AccountInfo extends React.Component<Props, State> {
   render() {
     const { account } = this.props
     const { showLoadMore, operations } = this.state
-
     return (
       <div className='tile is-ancestor'>
         <div className='tile is-vertical'>
           <div className='tile'>
             <div className='tile is-parent'>
               <div className='tile is-child box'>
-                <p className='subtitle'>Info</p>
-                <HorizontalLabelledField
-                  label='Sequence'
-                  value={account.sequence}
-                  wideLabel={true}
-                />
-                {this.renderThresholds()}
-              </div>
-            </div>
-            <div className='tile is-parent'>
-              <div className='tile is-child box'>
                 <p className='subtitle'>Balances</p>
                 {this.renderBalances()}
               </div>
             </div>
-          </div>
-          <div className='tile is-parent'>
-            <div className='tile is-child box'>
-              <p className='subtitle'>Signers</p>
-              {this.renderSigners()}
+            <div className='tile is-parent'>
+              <div className='tile is-child box'>
+                <p className='subtitle'>Info</p>
+                {this.renderThresholds()}
+                {/* //Expandable View */}
+                <button className='drop-down-arrow' onClick={() => this.renderSignersKey()}>
+                View Signers <img className='down-arrow' src={DownArrow} />
+                </button>
+              </div>
             </div>
           </div>
+          {this.state.isSignersOpen ? (
+            <div>
+              <div className='tile is-parent'>
+                <div className='tile is-child box'>
+                  <p className='subtitle'>KAU Signers</p>
+                  {this.renderSigners()}
+                  <br/>
+                  <p className='subtitle'>KAG Signers</p>
+                  {this.renderSigners()}
+                </div>
+              </div>
+            </div>
+          ) : (
+            ''
+          )}
+          {/* <div className="tile is-parent">
+            <div className="tile is-child box">
+              <p className="subtitle">Signers</p>
+              {this.renderSigners()}
+            </div>
+          </div> */}
           <div className='tile is-parent is-vertical'>
             <OperationList operations={operations} conn={this.connectionSelector()} />
-            {showLoadMore && <button className='button' onClick={this.onClickLoadMore}>Load more</button>}
+            {showLoadMore && (
+              <button className='button' onClick={this.onClickLoadMore}>
+                Load more
+              </button>
+            )}
           </div>
         </div>
       </div>

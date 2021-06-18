@@ -1,5 +1,6 @@
 import { Server } from 'js-kinesis-sdk'
 import * as React from 'react'
+import { Link } from 'react-router-dom'
 
 interface Props {
   networkUrl?: string
@@ -15,9 +16,9 @@ class OperationsTable extends React.Component<Props> {
   componentDidMount() {
     this.getOperations()
   }
-  componentDidUpdate() {
-    this.getOperations()
-  }
+  // componentDidUpdate() {
+  //   this.getOperations()
+  // }
 
   async getOperations() {
     const operationRecord = await this.server.operations().limit(this.props.translimit).order('desc').call()
@@ -38,6 +39,7 @@ class OperationsTable extends React.Component<Props> {
 
   render() {
     const operationType = this.state.operations[0]?.type
+
     if (operationType === 'account_merge') {
       const ACCOUNT_MERGE = 'Account Merge'
       return ACCOUNT_MERGE
@@ -52,9 +54,11 @@ class OperationsTable extends React.Component<Props> {
       return PAYMENT
     }
     return (
-      <div>
+     <>
+     <div>
         <p> {operationType} </p>
       </div>
+     </>
     )
   }
 }

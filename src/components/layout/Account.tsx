@@ -69,7 +69,6 @@ class AccountPage extends React.Component<Props, State> {
     const { account } = this.state
 
     const accountId = match.params.id
-
     if (this.state.invalidAccount) {
       return <Redirect to={`/404`} />
     }
