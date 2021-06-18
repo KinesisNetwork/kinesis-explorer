@@ -12,7 +12,7 @@ function renderTransaction(
   from?: string,
   to?: string,
   translimit?: number,
-  operations?:any
+  operations?: any,
 ): JSX.Element {
   const destinationAccountAddressNetwork = t._links.self.href
   // async function fetchDestinationAccountAddress() {
@@ -28,7 +28,7 @@ function renderTransaction(
   //   from = destinationAccount
   // })
   // console.log("opData..............",JSON.stringify(operations),t,conn);
-  
+
   return (
     <tr key={t.id} className='tr'>
       <td className='td'>{t.created_at}</td>
@@ -61,9 +61,16 @@ interface TransactionProps {
   translimit?: number
   from?: string
   to?: string
-  operations?:any
+  operations?: any
 }
-const Transactions: React.SFC<TransactionProps> = ({ transactions, conn, from, to, translimit, operations }): JSX.Element => {
+const Transactions: React.SFC<TransactionProps> = ({
+  transactions,
+  conn,
+  from,
+  to,
+  translimit,
+  operations,
+}): JSX.Element => {
   currConn = conn
   return (
     <table className='table is-bordered is-striped is-fullwidth'>

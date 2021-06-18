@@ -1,7 +1,7 @@
 import { Server } from 'js-kinesis-sdk'
 import * as React from 'react'
 
-const Kinesis = require("js-kinesis-sdk");
+const Kinesis = require('js-kinesis-sdk')
 
 interface Props {
   networkUrl?: string
@@ -38,17 +38,15 @@ class OperationsTableAmount extends React.Component<Props> {
     })
   }
 
- 
-
   render() {
-  
+
     const destinationAccountAddressNetwork = this.state.operations[0]?._links.transaction.href
     // console.log("destinationAccountAddressNetwork",destinationAccountAddressNetwork);
     async function fetchDestinationAddressResponse() {
       const response = await fetch(`${destinationAccountAddressNetwork}`, {
         headers: {
           'Content-Type': 'application/json',
-          Accept: 'application/json',
+          'Accept': 'application/json',
         },
       })
       const url = await response.json()
@@ -74,7 +72,6 @@ class OperationsTableAmount extends React.Component<Props> {
       operationAmount = this.state.operations[0]?.amount
     }
     operationAmount = operationAmount && parseFloat(operationAmount).toFixed(5)
-  
 
     return (
       <div>

@@ -58,7 +58,7 @@ class OperationValue extends React.Component <OperationProps> {
     return (
       <>
       <div>
-        {/* <Transactions 
+        {/* <Transactions
         transactions={this.state.transactions}
         operations={this.state.operations}/> */}
         <p>
@@ -72,8 +72,6 @@ class OperationValue extends React.Component <OperationProps> {
         </p>
       </div>
 
-      
-      
       </>
     )
   }
