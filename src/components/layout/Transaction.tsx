@@ -37,15 +37,14 @@ class TransactionPage extends React.Component<Props, State> {
 
   loadTransaction = async () => {
     try {
-      this.props.connections.forEach(async (element) => {
-        try {
+      const element =   this.props.selectedConnection
+      try {
           const value = await getTransaction(element, this.props.match.params.id)
           this.setState({ transaction: value, selectedConnectionName: element })
         } catch (err) {
           // tslint:disable-next-line:no-console
           console.error(err)
         }
-      })
     } catch (e) {
       this.setState({ invalidTransaction: true })
     }

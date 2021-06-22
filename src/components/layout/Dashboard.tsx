@@ -160,20 +160,32 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
   // }
 
   connectionSelector(): string {
-    if (this.props.selectedConnection.name === 'Kinesis KAU Mainnet') {
+    // if (this.props.selectedConnection.name === 'Kinesis KAU Mainnet') {
+    //   return 'KAU'
+    // } else if (this.props.selectedConnection.name === 'Kinesis KAG Mainnet') {
+    //   return 'KAG'
+    // } else if (this.props.selectedConnection.name === 'Kinesis KEM Mainnet') {
+    //   return 'KEM'
+    // } else if (this.props.selectedConnection.name === 'Kinesis KAU Testnet') {
+    //   return 'TKAU'
+    // } else if (this.props.selectedConnection.name === 'Kinesis KAG Testnet') {
+    //   return 'TKAG'
+    // } else if (this.props.selectedConnection.name === 'Kinesis KEM Testnet') {
+    //   return 'TKEM'
+    // } else {
+    //   return 'KAU'
+    if (this.props.selectedConnection.kau.name.toLowerCase().includes('mainnet')
+      && (this.props.selectedConnection.kau.currency.toLowerCase().includes('kau'))) {
       return 'KAU'
-    } else if (this.props.selectedConnection.name === 'Kinesis KAG Mainnet') {
+    } else if (this.props.selectedConnection.kag.name.toLowerCase().includes('mainnet')
+      && (this.props.selectedConnection.kag.currency.toLowerCase().includes('kag'))) {
       return 'KAG'
-    } else if (this.props.selectedConnection.name === 'Kinesis KEM Mainnet') {
-      return 'KEM'
-    } else if (this.props.selectedConnection.name === 'Kinesis KAU Testnet') {
+    } else if (this.props.selectedConnection.kau.name.toLowerCase().includes('testnet')
+      && (this.props.selectedConnection.kau.currency.toLowerCase().includes('kau'))) {
       return 'TKAU'
-    } else if (this.props.selectedConnection.name === 'Kinesis KAG Testnet') {
+    } else if (this.props.selectedConnection.kag.name.toLowerCase().includes('testnet')
+      && (this.props.selectedConnection.kag.currency.toLowerCase().includes('kag'))) {
       return 'TKAG'
-    } else if (this.props.selectedConnection.name === 'Kinesis KEM Testnet') {
-      return 'TKEM'
-    } else {
-      return 'KAU'
     }
   }
 

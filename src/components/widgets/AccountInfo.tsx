@@ -135,15 +135,33 @@ export class AccountInfo extends React.Component<Props, State> {
   }
 
   renderBalances = () => {
-    const precision = this.props.selectedConnection.currency === 'KEM' ? 7 : 5
-    const balances = this.props.account.balances
-      .map((balance) =>
-        balance.asset_type === 'native' ? { ...balance, asset_type: this.props.selectedConnection.currency } : balance,
-      )
-      .map((balance) => ({ ...balance, balance: renderAmount(balance.balance, precision) }))
-      .map((balance, i) => (
-        <HorizontalLabelledFieldBalance key={i} label={balance.asset_type} value={balance.balance} />
-      ))
+    const currencyArray = this.props.selectedConnection?.currency
+    let balances = []
+    // console.log('this.props.account.balances', this.props.account.balances)
+
+    // for (let index = 0; index < currencyArray?.length; index++) {
+    //   const precision = currencyArray[index].includes('KEM') ? 7 : 5
+    //   balances = this.props.account.balances
+    //     .map((balance) =>
+    //       balance.asset_type === 'native' ? { ...balance, asset_type: currencyArray[index] } : balance,
+    //     )
+    //     .map((balance) => ({ ...balance, balance: renderAmount(balance.balance, precision) }))
+    //     .map((balance, i) => (
+    //       <HorizontalLabelledFieldBalance key={i} label={balance.asset_type} value={balance.balance} />
+    //     ))
+    // }
+    for (const currencyArrays of currencyArray) {
+      const precision = currencyArrays.includes('KEM') ? 7 : 5
+      balances = this.props.account.balances
+        .map((balance) =>
+          balance.asset_type === 'native' ? { ...balance, asset_type: currencyArrays } : balance,
+        )
+        .map((balance) => ({ ...balance, balance: renderAmount(balance.balance, precision) }))
+        .map((balance, i) => (
+          <HorizontalLabelledFieldBalance key={i} label={balance.asset_type} value={balance.balance} />
+        ))
+    }
+    // console.log('Balances', balances)
 
     return <React.Fragment>{balances}</React.Fragment>
   }
@@ -176,20 +194,20 @@ export class AccountInfo extends React.Component<Props, State> {
   }
 
   connectionSelector(): string {
-    if (this.props.selectedConnection.name === 'Kinesis KAU Mainnet') {
+    if (this.props.selectedConnection.kau.name.toLowerCase().includes('mainnet')
+     && (this.props.selectedConnection.kau.currency.toLowerCase().includes('kau'))) {
       return 'KAU'
-    } else if (this.props.selectedConnection.name === 'Kinesis KAG Mainnet') {
+    } else if (this.props.selectedConnection.kag.name.toLowerCase().includes('mainnet')
+     && (this.props.selectedConnection.kag.currency.toLowerCase().includes('kag'))) {
       return 'KAG'
-    } else if (this.props.selectedConnection.name === 'Kinesis KEM Mainnet') {
-      return 'KEM'
-    } else if (this.props.selectedConnection.name === 'Kinesis KAU Testnet') {
+  } else if (this.props.selectedConnection.kau.name.toLowerCase().includes('testnet')
+   && (this.props.selectedConnection.kau.currency.toLowerCase().includes('kau'))) {
       return 'TKAU'
-    } else if (this.props.selectedConnection.name === 'Kinesis KAG Testnet') {
+    } else if (this.props.selectedConnection.kag.name.toLowerCase().includes('testnet')
+     && (this.props.selectedConnection.kag.currency.toLowerCase().includes('kag'))) {
       return 'TKAG'
-    } else if (this.props.selectedConnection.name === 'Kinesis KEM Testnet') {
-      return 'TKEM'
-    } else { return 'KAU' }
   }
+}
 
   render() {
     const { account } = this.props
