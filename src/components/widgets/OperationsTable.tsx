@@ -39,7 +39,6 @@ class OperationsTable extends React.Component<Props> {
 
   render() {
     const operationType = this.state.operations[0]?.type
-
     if (operationType === 'account_merge') {
       const ACCOUNT_MERGE = 'Account Merge'
       return ACCOUNT_MERGE
@@ -52,6 +51,10 @@ class OperationsTable extends React.Component<Props> {
     if (operationType === 'payment') {
       const PAYMENT = 'Payment'
       return PAYMENT
+    }
+    if (operationType === 'inflation') {
+      const INFLATION = 'Inflation'
+      return INFLATION
     }
     return (
      <>

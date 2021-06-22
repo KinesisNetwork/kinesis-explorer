@@ -54,7 +54,7 @@ class OperationValue extends React.Component <OperationProps> {
     if (operationType === 'payment') {
       destinationAccount = this.state.operations[0]?.to
     }
-    // console.log(this.state.operations,".....................");
+   
     return (
       <>
       <div>
