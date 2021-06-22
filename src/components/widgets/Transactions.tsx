@@ -28,7 +28,7 @@ function renderTransaction(
   //   from = destinationAccount
   // })
   // console.log("opData..............",JSON.stringify(operations),t,conn);
-
+console.log(t, "TransactionRecord...............")
   return (
     <tr key={t.id} className='tr'>
       <td className='td'>{t.created_at}</td>

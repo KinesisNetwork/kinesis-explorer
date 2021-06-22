@@ -19,13 +19,19 @@ export function convertStroopsToKinesis(numberInStroops: number): number {
 }
 
 export function getNetwork(connection: Connection): Network {
-  Network.use(new Network(connection.networkPassphrase))
+  // for (let index = 0; index < connection.length; index++) {
+   
+    Network.use(new Network(connection.kau.networkPassphrase ))
+    Network.use(new Network(connection.kag.networkPassphrase ))
+  console.log(connection.kau.networkPassphrase,connection.kag.networkPassphrase, "HELLLOOOOOOOO")
   return Network.current()
+// }
+  
 }
 
 export function getServer(connection: Connection): Server {
-  Network.use(new Network(connection.networkPassphrase))
-  return new Server(connection.horizonURL)
+  Network.use(new Network(connection.kau.networkPassphrase || connection.kag.networkPassphrase))
+  return new Server(connection.kau.horizonURL || connection.kag.horizonURL)
 }
 
 export async function getTransaction(connection: Connection, transactionId: string) {

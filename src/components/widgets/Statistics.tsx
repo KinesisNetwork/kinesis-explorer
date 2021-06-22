@@ -72,12 +72,16 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
   render() {
     const { totalFeePool, totalInCirculation, isLoading } = this.state
     const {
-      selectedConnection: { currency },
+      selectedConnection: { kau, kag },
     } = this.props
-    let currAbbr: string = currency
+    let currAbbr: string = kau.currency 
+    let currName: string = kag.currency
     if ((Number(localStorage.getItem('selectedConnection')) || 0) > 1) {
       currAbbr = 'T' + currAbbr
+      currName = 'T' + currName
     }
+    
+   
     return (
       <article className='tile is-child box'>
         <p className='title'>Kinesis in Circulation</p>
@@ -87,9 +91,20 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
 
             wideLabel={false}
             value={
-              currency === 'KEM'
+              kau.currency === 'KAU'
                 ? `${currAbbr} ${renderAmount(totalInCirculation, 7)}`
                 : `${currAbbr} ${renderAmount(totalInCirculation)}`
+            }
+            isLoading={isLoading}
+          />
+           <HorizontalLabelledFieldStatistics
+            label={''}
+
+            wideLabel={false}
+            value={
+              kag.currency === 'KAG'
+                ? `${currName} ${renderAmount(totalInCirculation, 7)}`
+                : `${currName} ${renderAmount(totalInCirculation)}`
             }
             isLoading={isLoading}
           />
