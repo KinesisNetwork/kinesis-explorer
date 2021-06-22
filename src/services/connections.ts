@@ -9,7 +9,7 @@ export async function fetchConnections(): Promise<Connection[]> {
 
   // for UAT
   const response = await fetch(
-     'https://kinesis-config.s3-ap-southeast-2.amazonaws.com/kinesis-server-details-uat.json',
+     'https://kinesis-config.s3.ap-southeast-2.amazonaws.com/explorer-test.json',
    )
 
   const connections: Connection[] = await response.json()
