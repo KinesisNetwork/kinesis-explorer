@@ -90,7 +90,7 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
             wideLabel={false}
             value={
               kau.currency === 'KAU'
-                ? `${currAbbr} ${renderAmount(totalInCirculation, 7)}`
+                ? `${currAbbr} ${renderAmount(totalInCirculation, 5)}`
                 : `${currAbbr} ${renderAmount(totalInCirculation)}`
             }
             isLoading={isLoading}
@@ -100,7 +100,7 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
             wideLabel={false}
             value={
               kag.currency === 'KAG'
-                ? `${currName} ${renderAmount(totalInCirculation, 7)}`
+                ? `${currName} ${renderAmount(totalInCirculation, 5)}`
                 : `${currName} ${renderAmount(totalInCirculation)}`
             }
             isLoading={isLoading}
