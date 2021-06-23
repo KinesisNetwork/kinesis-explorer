@@ -1,4 +1,5 @@
 export interface Connection {
+  name: string
   length: number
   currency: ['KAU']
   kau: {
