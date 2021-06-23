@@ -13,15 +13,15 @@ import { HorizontalLabelledFieldStatistics } from '../shared/LabelledField'
 
 type StatisticsWidgetProps = ConnectionContext
 interface State {
-  totalFeePool: number
-  totalInCirculation: number
+  totalFeePool: any
+  totalInCirculation: any
   isLoading: boolean
 }
 
 class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
   state: State = {
-    totalFeePool: 0,
-    totalInCirculation: 0,
+    totalFeePool: {backedFeesInPoolKag:0, backedFeesInPoolKau:0},
+    totalInCirculation: {totalInCirculationKag:0,totalInCirculationKau:0},
     isLoading: false,
   }
 
@@ -38,20 +38,29 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
   loadStatisticsData = async (connection: Connection): Promise<void> => {
     this.setState({ isLoading: true })
     const { totalCoins, feePool } = await this.fetchLatestLedger(connection)
-    const [unbackedBalances, backedFeesInPool] = await Promise.all([
+    const [unbackedBalances, backedFeesInPoolKag, backedFeesInPoolKau] = await Promise.all([
       getUnbackedBalances(connection),
-      getBackedFees(connection),
+      getBackedFees(connection.kag),
+      getBackedFees(connection.kau),
+
     ])
 
     const ledgerFeePool = Number(feePool)
-    const unbackedFeesInPool = ledgerFeePool - backedFeesInPool
+    const unbackedFeesInPoolKag = ledgerFeePool - backedFeesInPoolKag
+    const unbackedFeesInPoolKau = ledgerFeePool - backedFeesInPoolKau
     // const totalInCirculation = totalCoins - Number(unbackedBalances) - unbackedFeesInPool
     const bigNum = new BigNumber(totalCoins)
-    const totalInCirculation = Number(bigNum.minus(unbackedBalances).minus(unbackedFeesInPool).toFixed(7))
+    const totalInCirculationKag = Number(bigNum.minus(unbackedBalances).minus(unbackedFeesInPoolKag).toFixed(7))
+    const totalInCirculationKau = Number(bigNum.minus(unbackedBalances).minus(unbackedFeesInPoolKau).toFixed(7))
+
+
+    console.log("totalInCirculationKag",this.state.totalInCirculation);
+    console.log("totalInCirculationKau",totalInCirculationKau);
+    
 
     this.setState({
-      totalInCirculation,
-      totalFeePool: backedFeesInPool,
+      totalInCirculation:{totalInCirculationKag,totalInCirculationKau},
+      totalFeePool: {backedFeesInPoolKag, backedFeesInPoolKau},
       isLoading: false,
     })
   }
@@ -90,8 +99,8 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
             wideLabel={false}
             value={
               kau.currency === 'KAU'
-                ? `${currAbbr} ${renderAmount(totalInCirculation, 5)}`
-                : `${currAbbr} ${renderAmount(totalInCirculation)}`
+                ? `${currAbbr} ${renderAmount(totalInCirculation.totalInCirculationKau, 5)}`
+                : `${currAbbr} ${renderAmount(totalInCirculation.totalInCirculationKau)}`
             }
             isLoading={isLoading}
           />
@@ -100,8 +109,8 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
             wideLabel={false}
             value={
               kag.currency === 'KAG'
-                ? `${currName} ${renderAmount(totalInCirculation, 5)}`
-                : `${currName} ${renderAmount(totalInCirculation)}`
+                ? `${currName} ${renderAmount(totalInCirculation.totalInCirculationKag, 5)}`
+                : `${currName} ${renderAmount(totalInCirculation.totalInCirculationKag)}`
             }
             isLoading={isLoading}
           />

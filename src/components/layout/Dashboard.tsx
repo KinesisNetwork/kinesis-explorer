@@ -34,18 +34,27 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
   }
 
   closeLedgerStream!: () => void
-  closeTransactionStream!: () => void
+  closeTransactionStreamKag!: () => void
+  closeTransactionStreamKau!: () => void
 
   componentDidMount() {
     this.fetchData()
   }
 
   componentDidUpdate(prevProps: DashboardProps, prevState: DashboardState) {
-    if (prevProps.selectedConnection !== this.props.selectedConnection) {
+   console.log("prevProps.selectedConnection.kau",prevProps.selectedConnection.kau);
+   console.log("this.props.selectedConnection.kau",this.props.selectedConnection.kau);
+   
+   
+    if (prevProps.selectedConnection.kau !== this.props.selectedConnection.kau) {
+      this.handleConnectionChange()
+    }
+    if (prevProps.selectedConnection.kag !== this.props.selectedConnection.kag) {
       this.handleConnectionChange()
     }
     if (prevState.transLimit !== this.state.transLimit || prevState.ledgerLimit !== this.state.ledgerLimit) {
-      this.closeTransactionStream()
+      this.closeTransactionStreamKag()
+      this.closeTransactionStreamKau()
       this.updateTransaction()
     }
   }
@@ -67,19 +76,26 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     const transactionCursor: string = (transactions[0] || {}).paging_token
 
     // const ledgerResponse = await getLedgerStream(this.props.selectedConnection, ledgerCursor)
-    const transactionResponse = await getTransactionStream(this.props.selectedConnection, transactionCursor)
+    const transactionResponseKag = await getTransactionStream(this.props.selectedConnection.kag,transactionCursor)
+    const transactionResponseKau = await getTransactionStream(this.props.selectedConnection.kau,transactionCursor)
 
     // this.closeLedgerStream = ledgerResponse.stream({
     //   onmessage: this.handleStreamData(Entity.ledgers),
     // })
-    this.closeTransactionStream = transactionResponse.stream({
+    this.closeTransactionStreamKag = transactionResponseKag.stream({
+      onmessage: this.handleStreamData(Entity.transactions),
+    })
+    this.closeTransactionStreamKau = transactionResponseKau.stream({
       onmessage: this.handleStreamData(Entity.transactions),
     })
   }
 
   closeDataStreams = (): void => {
-    if (this.closeTransactionStream) {
-      this.closeTransactionStream()
+    if (this.closeTransactionStreamKag) {
+      this.closeTransactionStreamKag()
+    }
+    if (this.closeTransactionStreamKau) {
+      this.closeTransactionStreamKau()
     }
     // if (this.closeLedgerStream) {
     //   this.closeLedgerStream()
@@ -138,9 +154,13 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
 
     const transactionCursor: string = (transactions[0] || {}).paging_token
 
-    const transactionResponse = await getTransactionStream(this.props.selectedConnection, transactionCursor)
+    const transactionResponseKag = await getTransactionStream(this.props.selectedConnection.kag,transactionCursor)
+    const transactionResponseKau = await getTransactionStream(this.props.selectedConnection.kau,transactionCursor)
 
-    this.closeTransactionStream = transactionResponse.stream({
+    this.closeTransactionStreamKag = transactionResponseKag.stream({
+      onmessage: this.handleStreamData(Entity.transactions),
+    })
+    this.closeTransactionStreamKau = transactionResponseKau.stream({
       onmessage: this.handleStreamData(Entity.transactions),
     })
   }

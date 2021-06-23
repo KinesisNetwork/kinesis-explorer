@@ -4,23 +4,30 @@ import { CollectionPage, OperationRecord, TransactionRecord } from 'js-kinesis-s
 import { OperationInfo } from './OperationInfo'
 
 interface Props {
+  selectedConnection: any,
   operations: CollectionPage<OperationRecord> | null,
-  conn?: string,
+  conn?: string
 }
+
 export class OperationList extends React.Component<Props> {
   constructor(props: Props) {
     super(props)
   }
 
   render() {
+    
     const operations = this.props.operations
-    const conn = (this.props.conn === undefined ? 'KAU' : this.props.conn)
+    const conn = (this.props.selectedConnection === undefined ? 'KAU' : this.props.conn)
+    console.log("Conn",this.props.selectedConnection,this.props);
+    
 
+   
+    
     return (
       <React.Fragment>
-        { operations ?
+        { operations && operations.records && operations.records.length ?
           operations.records.map(
-            (operation, i) => <OperationInfo key={i} operation={operation} conn={conn} />) : null}
+            (operation, i) => <OperationInfo key={i} operation={operation} conn={conn} selectedConnection={this.props.selectedConnection}/>) : null}
       </React.Fragment>
     )
   }

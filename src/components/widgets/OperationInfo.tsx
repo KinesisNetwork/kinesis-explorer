@@ -37,9 +37,10 @@ const FORMAT_VALUE: { [key: string]: (value: string) => string | number | React.
 }
 
 export const OperationInfo: React.SFC<{
+  selectedConnection: any,
   operation: OperationRecord | null,
   conn: string,
-}> = ({ operation, conn }) => {
+}> = ({ selectedConnection, operation, conn }) => {
   currConn = conn
   const fields = operation ? Object.entries(operation)
     .filter(([, val]) => typeof val === 'string')

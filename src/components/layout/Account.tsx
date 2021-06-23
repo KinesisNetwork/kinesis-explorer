@@ -12,7 +12,8 @@ interface Props extends ConnectedAccountProps, ConnectionContext { }
 
 interface State {
   accountId: string | null
-  account: AccountRecord | null
+  accountKag: AccountRecord | null
+  accountKau: AccountRecord | null
   invalidAccount: boolean
 }
 
@@ -21,7 +22,8 @@ class AccountPage extends React.Component<Props, State> {
     super(props)
     this.state = {
       accountId: null,
-      account: null,
+      accountKag: null,
+      accountKau: null,
       invalidAccount: false,
     }
   }
@@ -45,16 +47,21 @@ class AccountPage extends React.Component<Props, State> {
 
   getAccountDetailsOrUseEmptyBalanceAccount = async (accountId: string) => {
     try {
-      const account = await getAccount(this.props.selectedConnection, accountId)
-      this.setState({ account })
+      const accountKau = await getAccount(this.props.selectedConnection.kau, accountId)
+      const accountKag = await getAccount(this.props.selectedConnection.kag, accountId)
+      console.log("accountKag1",accountKag,accountKau);
+      this.setState({ accountKag, accountKau })
     } catch (e) {
       this.setState({
-        account: createEmptyBalanceAccountRecord(accountId),
+        accountKau: createEmptyBalanceAccountRecord(accountId),
+        accountKag: createEmptyBalanceAccountRecord(accountId),
       })
     }
   }
 
   componentDidMount() {
+    console.log("hellooooo");
+    
     this.loadAccount()
   }
 
@@ -66,26 +73,28 @@ class AccountPage extends React.Component<Props, State> {
 
   render() {
     const { match, selectedConnection } = this.props
-    const { account } = this.state
+    const { accountKau,accountKag } = this.state
 
     const accountId = match.params.id
     if (this.state.invalidAccount) {
       return <Redirect to={`/404`} />
     }
-
+    console.log("accountKag",accountKag,accountKau);
+    
     return (
       <section className='section'>
         <h1 className='title'>Account</h1>
         <h2 className='subtitle'>{accountId}</h2>
-        {!account ? (
+        {!accountKag && !accountKau ? (
           <div />
-        ) : (
+       ) : ( 
             <AccountInfo
               accountId={accountId}
-              account={account}
+              accountKag={accountKag? accountKag:undefined}
+              accountKau={accountKau?accountKau:undefined}
               selectedConnection={selectedConnection}
             />
-          )}
+           )}  
       </section>
     )
   }

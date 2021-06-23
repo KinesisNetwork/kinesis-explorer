@@ -51,9 +51,9 @@ async function getBackedFeesFromTransactions(
     : getBackedFeesFromTransactions(await ts.next(), connection, currentTotalFees)
 }
 
-export async function getBackedFees(connection: Connection): Promise<number> {
+export async function getBackedFees(connection: any): Promise<number> {
 
-  const server = getServer(connection)
+  const server = getServer(connection.networkPassphrase,connection.horizonURL)
   try {
     const first200OperationPage = await server.operations().limit(200).order('desc').call()
 
