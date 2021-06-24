@@ -49,7 +49,7 @@ class AccountPage extends React.Component<Props, State> {
     try {
       const accountKau = await getAccount(this.props.selectedConnection.kau, accountId)
       const accountKag = await getAccount(this.props.selectedConnection.kag, accountId)
-      console.log("accountKag1",accountKag,accountKau);
+      // console.log('accountKag1', accountKag, accountKau)
       this.setState({ accountKag, accountKau })
     } catch (e) {
       this.setState({
@@ -60,8 +60,6 @@ class AccountPage extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    console.log("hellooooo");
-    
     this.loadAccount()
   }
 
@@ -73,28 +71,26 @@ class AccountPage extends React.Component<Props, State> {
 
   render() {
     const { match, selectedConnection } = this.props
-    const { accountKau,accountKag } = this.state
+    const { accountKau, accountKag } = this.state
 
     const accountId = match.params.id
     if (this.state.invalidAccount) {
       return <Redirect to={`/404`} />
     }
-    console.log("accountKag",accountKag,accountKau);
-    
     return (
       <section className='section'>
         <h1 className='title'>Account</h1>
         <h2 className='subtitle'>{accountId}</h2>
         {!accountKag && !accountKau ? (
           <div />
-       ) : ( 
+       ) : (
             <AccountInfo
               accountId={accountId}
-              accountKag={accountKag? accountKag:undefined}
-              accountKau={accountKau?accountKau:undefined}
+              accountKag={accountKag ? accountKag : undefined}
+              accountKau={accountKau ? accountKau : undefined}
               selectedConnection={selectedConnection}
             />
-           )}  
+           )}
       </section>
     )
   }

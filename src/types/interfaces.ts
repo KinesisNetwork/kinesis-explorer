@@ -1,7 +1,7 @@
 export interface Connection {
   name: string
   length: number
-  currency: ['KAU']
+  currency: ['KAU', 'KAG']
   kau: {
     horizonURL: string
     name: string

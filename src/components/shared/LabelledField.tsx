@@ -53,7 +53,7 @@ export const HorizontalLabelledFieldBalance: React.SFC<Props> = (props) => (
     </div>
     <div className={`field-body ${props.isLoading ? 'is-loading-blur' : ''}`}>
       <div className='field'>
-        <div className={`padding-right-130`}>
+        <div className={`padding-right-110`}>
           <p className='input is-static custom-p width-105'>
             {props.value} {props.appendCurr}
           </p>

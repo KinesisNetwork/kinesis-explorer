@@ -10,26 +10,24 @@ import { HorizontalLabelledField, HorizontalLabelledFieldBalance, HorizontalLabe
 import { OperationList } from './OperationList'
 
 interface KemRecord extends AccountRecord {
-  signers: Array<
-    {
-      public_key: string
-      weight: number
-      key?: string,
-    }
-  >
+  signers: Array<{
+    public_key: string,
+    weight: number,
+    key?: string,
+  }>
 }
 
 interface Props {
-  accountId: string,
-  accountKau: KemRecord,
-  accountKag: KemRecord,
-  selectedConnection: Connection,
+  accountId: string
+  accountKau: KemRecord
+  accountKag: KemRecord
+  selectedConnection: Connection
 }
 
 interface State {
   operations: CollectionPage<OperationRecord> | any
   lastPagingToken: string | undefined
-  showLoadMore: boolean 
+  showLoadMore: boolean
   isSignersOpen: boolean
 }
 
@@ -70,8 +68,6 @@ export class AccountInfo extends React.Component<Props, State> {
         return originalRecordSet.findIndex((ov) => ov.id === v.id) === -1
       }),
     )
-    // console.log("operations",operations);
-
     return [operations, lastPagingToken, showLoadMore]
     // this.setState({
     //  [this.state[keys.operations]]:operations,
@@ -84,7 +80,7 @@ export class AccountInfo extends React.Component<Props, State> {
     if (!account) {
       return
     }
-    let [operations, lastPagingToken, showLoadMore] = await this.loadOperations(
+    const [operations, lastPagingToken, showLoadMore] = await this.loadOperations(
       cursor,
       limit,
       account,
@@ -92,20 +88,14 @@ export class AccountInfo extends React.Component<Props, State> {
       this.state.showLoadMore,
       this.state.operations,
     )
-      console.log("OPERATIONS",this.state.operations,operations);
-      let operation = this.state.operations
+    let operation = this.state.operations
     if (operations && operations.records && operations.records.length > 0) {
       if (this.state.operations && Object.keys(this.state.operations) && Object.keys(this.state.operations).length) {
-      operation['records'] = [...operations.records,...operation['records']]
+        operation['records'] = [...operations.records, ...operation['records']]
         // operation['records'].concat(operations.records)
-       console.log("op,op.records,operation",operation,operations.records);
-        
       } else {
         operation = operations
-       console.log("operationELSE",operation);
-
       }
-      //  console.log("this.state.operations",this.state.operations);
     }
     this.setState({
       operations: operation,
@@ -115,15 +105,10 @@ export class AccountInfo extends React.Component<Props, State> {
   }
 
   loadMergedTransactions = async (cursor: string = 'now', limit: number = 10) => {
-    console.log('ghdfghdhfdhfghfhdhdhfdh', this.state.operations)
-
     const transactions = await getTransactions(this.props.selectedConnection, this.props.accountId, limit, cursor)
-
     const lastPagingToken = transactions.length ? transactions[transactions.length - 1].paging_token : undefined
-
     const showLoadMore = transactions.length ? transactions.length === limit : !cursor
     const originalRecordSet = this.state.operations ? this.state.operations['records'] : []
-    console.log('operation', this.state.operations)
 
     // Simple de-duping
     const records = await Promise.all(
@@ -182,8 +167,6 @@ export class AccountInfo extends React.Component<Props, State> {
   }
 
   onClickLoadMore() {
-    // console.log('this.props.accountKag?', this.props.accountKau?.balances[0], this.props)
-
     // 200 is the limit as defined on the horizon server
     if (this.props.accountKag?.balances[0].balance === '0.0') {
       this.loadMergedTransactions(this.state.lastPagingToken, 10)
@@ -200,8 +183,8 @@ export class AccountInfo extends React.Component<Props, State> {
   renderBalances = () => {
     const currencyArray = this.props.selectedConnection?.currency
     let balances = []
-    let balanceKau = this.getBalances(this.props.accountKau?.balances, 'KAU', 5)
-    let balanceKag = this.getBalances(this.props.accountKag?.balances, 'KAG', 5)
+    const balanceKau = this.getBalances(this.props.accountKau?.balances, 'KAU', 5)
+    const balanceKag = this.getBalances(this.props.accountKag?.balances, 'KAG', 5)
     balances = [...balanceKau, ...balanceKag]
     balances = balances.map((balance, i) => (
       <HorizontalLabelledFieldBalance key={i} label={balance.asset_type} value={balance.balance} />
@@ -221,24 +204,21 @@ export class AccountInfo extends React.Component<Props, State> {
         return balance
       })
       .map((balance) => ({ ...balance, balance: renderAmount(balance?.balance, precision) }))
-
-    // console.log("balances",balances);
-
     return balances
   }
 
   getThresholdData = (threshold, key) => {
-    let thresholdData = {}
+    const thresholdData = {}
 
-    for (let index = 0; index < Object.keys(threshold).length; index++) {
-      thresholdData[key + '_' + Object.keys(threshold)[index]] = threshold[Object.keys(threshold)[index]]
+    for (const thresholds of Object.keys(threshold)) {
+      thresholdData[key + '_' + thresholds] = threshold[thresholds]
     }
     return thresholdData
   }
 
   getAccountThresholds = () => {
-    let thresholdKag = this.props.accountKag?.thresholds
-    let thresholdKau = this.props.accountKau?.thresholds
+    const thresholdKag = this.props.accountKag?.thresholds
+    const thresholdKau = this.props.accountKau?.thresholds
 
     if (thresholdKau && thresholdKag) {
       return { ...this.getThresholdData(thresholdKau, 'kau'), ...this.getThresholdData(thresholdKag, 'kag') }
@@ -250,9 +230,7 @@ export class AccountInfo extends React.Component<Props, State> {
   }
 
   renderThresholds = () => {
-    let threshold = this.getAccountThresholds()
-    // console.log("threshold",threshold, this.props.accountKag, this.props.accountKau);
-
+    const threshold = this.getAccountThresholds()
     const thresholds = Object.entries(threshold).map(([key, value]) => (
       <HorizontalLabelledFieldInfo key={key} label={startCase(key)} value={value} wideLabel={true} />
     ))
@@ -264,7 +242,7 @@ export class AccountInfo extends React.Component<Props, State> {
       return (
         <div key={i}>
           <HorizontalLabelledField
-            label="Public Key"
+            label='Public Key'
             value={signer.public_key || signer.key}
             tag={`Weight: ${signer.weight}`}
           />
@@ -306,34 +284,34 @@ export class AccountInfo extends React.Component<Props, State> {
     const { accountKag } = this.props
     const { showLoadMore, operations } = this.state
     return (
-      <div className="tile is-ancestor">
-        <div className="tile is-vertical">
-          <div className="tile">
-            <div className="tile is-parent">
-              <div className="tile is-child box">
-                <p className="subtitle">Balances</p>
+      <div className='tile is-ancestor'>
+        <div className='tile is-vertical'>
+          <div className='tile'>
+            <div className='tile is-parent'>
+              <div className='tile is-child box'>
+                <p className='subtitle'>Balances</p>
                 {this.renderBalances()}
               </div>
             </div>
-            <div className="tile is-parent">
-              <div className="tile is-child box">
-                <p className="subtitle">Info</p>
+            <div className='tile is-parent'>
+              <div className='tile is-child box'>
+                <p className='subtitle'>Info</p>
                 {this.renderThresholds()}
                 {/* //Expandable View */}
-                <button className="drop-down-arrow" onClick={() => this.renderSignersKey()}>
-                  View Signers <img className="down-arrow" src={DownArrow} />
+                <button className='drop-down-arrow' onClick={() => this.renderSignersKey()}>
+                  View Signers <img className='down-arrow' src={DownArrow} />
                 </button>
               </div>
             </div>
           </div>
           {this.state.isSignersOpen ? (
             <div>
-              <div className="tile is-parent">
-                <div className="tile is-child box">
-                  <p className="subtitle">KAU Signers</p>
+              <div className='tile is-parent'>
+                <div className='tile is-child box'>
+                  <p className='subtitle'>KAU Signers</p>
                   {this.renderSigners(this.props.accountKau?.signers)}
                   <br />
-                  <p className="subtitle">KAG Signers</p>
+                  <p className='subtitle'>KAG Signers</p>
                   {this.renderSigners(this.props.accountKag?.signers)}
                 </div>
               </div>
@@ -347,14 +325,14 @@ export class AccountInfo extends React.Component<Props, State> {
               {this.renderSigners()}
             </div>
           </div> */}
-          <div className="tile is-parent is-vertical">
+         <div className='tile is-parent is-vertical'>
             <OperationList
               operations={operations}
               conn={this.connectionSelector()}
               selectedConnection={this.props.selectedConnection}
             />
             {showLoadMore && (
-              <button className="button" onClick={this.onClickLoadMore}>
+              <button className='button' onClick={this.onClickLoadMore}>
                 Load more
               </button>
             )}

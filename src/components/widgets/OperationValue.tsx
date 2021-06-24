@@ -88,7 +88,7 @@ class OperationValue extends React.Component<OperationProps> {
     return (
       <>
         {destinationAccount && destinationAccount.length > 0 ? (
-          <td className="td">
+          <td className='td'>
             <p>
               {' '}
               <Link to={`/account/${destinationAccount}`}>
@@ -100,23 +100,23 @@ class OperationValue extends React.Component<OperationProps> {
             </p>
           </td>
         ) : (
-          <td className="td">.....</td>
+          <td className='td'>.....</td>
         )}
         {typeOfOperation ? (
-          <td className="td">
+          <td className='td'>
             <p>{typeOfOperation}</p>
           </td>
         ) : (
-          <td className="td">.....</td>
+          <td className='td'>.....</td>
         )}
         {operationAmount ? (
-          <td className="td">
+          <td className='td'>
             <p>
               {operationAmount} {this.props.conn}
             </p>
           </td>
         ) : (
-          <td className="td">{this.props.conn}</td>
+          <td className='td'>{this.props.conn}</td>
         )}
       </>
     )

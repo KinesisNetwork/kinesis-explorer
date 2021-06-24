@@ -86,7 +86,7 @@ export async function getTransactions(
   const recordsKau = await getRecords(transactionsPromise.kau, limit)
   const recordsKag = await getRecords(transactionsPromise.kag, limit)
   records = [...recordsKau, ...recordsKag]
-  console.log('getTransactionsRecords', records)
+  // console.log('getTransactionsRecords', records)
   // return records.length > 0
   //   ? records.sort((recordA, recordB) => {
   //       return moment(recordA.created_at).valueOf() - moment(recordB.created_at).valueOf()
@@ -111,34 +111,34 @@ export async function getTransactionStream(
   cursor = 'now',
   limit = 1,
 ): Promise<TransactionCallBuilder> {
-  const server = getServer(connection.networkPassphrase,connection.horizonURL)
-  console.log("connection.pass",connection.networkPassphrase);
-  
+  const server = getServer(connection.networkPassphrase, connection.horizonURL)
+  // console.log('connection.pass', connection.networkPassphrase)
+
   return await server.transactions().cursor(cursor).limit(limit)
 }
 
 export async function getLedger(connection: any, sequence: number | string): Promise<LedgerRecord> {
-  const server = getServer(connection.networkPassphrase,connection.horizonURL)
+  const server = getServer(connection.networkPassphrase, connection.horizonURL)
   const ledger = (await (server.ledgers() as any).ledger(sequence).call()) as LedgerRecord
   return ledger
 }
 
 export async function getLedgers(connection: any, limitVal: number = 10): Promise<LedgerRecord[]> {
-  const server = getServer(connection.networkPassphrase,connection.horizonURL)
+  const server = getServer(connection.networkPassphrase, connection.horizonURL)
   const { records }: CollectionPage<LedgerRecord> = await server.ledgers().limit(limitVal).order('desc').call()
   return records
 }
 
 export async function getLedgerStream(connection: any, cursor = 'now'): Promise<LedgerCallBuilder> {
-  const server = getServer(connection.networkPassphrase,connection.horizonURL)
+  const server = getServer(connection.networkPassphrase, connection.horizonURL)
   return server.ledgers().cursor(cursor).limit(1)
 }
 
 export async function getAccount(connection: any, accountId: string): Promise<AccountRecord> {
-  let serv:AccountRecord
+  let serv: AccountRecord
   try {
     const servers = getServer(connection.networkPassphrase, connection.horizonURL)
-   return await servers.loadAccount(accountId)
+    return await servers.loadAccount(accountId)
   } catch (error) {
     return serv
   }

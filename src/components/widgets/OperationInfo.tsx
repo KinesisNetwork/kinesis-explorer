@@ -42,32 +42,7 @@ export const OperationInfo: React.SFC<{
   conn: string,
 }> = ({ selectedConnection, operation, conn }) => {
   currConn = conn
-  
 
-  // const AmountMergeAddressNetwork = operation?._links.effects?.href
-  // console.log("AmountMergeAddressNetwork",AmountMergeAddressNetwork);
-  // async function fetchAmountAddressResponse() {
-  // const response = await fetch(`${AmountMergeAddressNetwork}?order=desc`, {
-  // headers: {
-  // 'Content-Type': 'application/json',
-  // 'Accept': 'application/json',
-  // },
-  // })
-  // console.log(response, 'response')
-  // const url = await response.json()
-  // const getAccountMergeAmount = url?._embedded?.records[2]?.amount
-  
-  // console.log("getAccountMergeAmount",getAccountMergeAmount)
-  // return getAccountMergeAmount
-  // }
-  
-  // fetchAmountAddressResponse().then((getAccountMergeAmount) => {
-  //  console.log("getAccountMergeAmountNew",getAccountMergeAmount)
-  //  return getAccountMergeAmount
-  // })
-
-
-  
   const fields = operation ? Object.entries(operation)
     .filter(([, val]) => typeof val === 'string')
     .filter(([key]) => !BASE_OPERATION_KEYS.includes(key))

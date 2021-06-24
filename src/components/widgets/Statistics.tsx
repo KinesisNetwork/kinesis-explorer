@@ -20,8 +20,8 @@ interface State {
 
 class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
   state: State = {
-    totalFeePool: {backedFeesInPoolKag:0, backedFeesInPoolKau:0},
-    totalInCirculation: {totalInCirculationKag:0,totalInCirculationKau:0},
+    totalFeePool: {backedFeesInPoolKag: 0, backedFeesInPoolKau: 0},
+    totalInCirculation: {totalInCirculationKag: 0, totalInCirculationKau: 0},
     isLoading: false,
   }
 
@@ -53,13 +53,11 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
     const totalInCirculationKag = Number(bigNum.minus(unbackedBalances).minus(unbackedFeesInPoolKag).toFixed(7))
     const totalInCirculationKau = Number(bigNum.minus(unbackedBalances).minus(unbackedFeesInPoolKau).toFixed(7))
 
-
-    console.log("totalInCirculationKag",this.state.totalInCirculation);
-    console.log("totalInCirculationKau",totalInCirculationKau);
-    
+    // console.log('totalInCirculationKag', this.state.totalInCirculation)
+    // console.log('totalInCirculationKau', totalInCirculationKau)
 
     this.setState({
-      totalInCirculation:{totalInCirculationKag,totalInCirculationKau},
+      totalInCirculation: {totalInCirculationKag, totalInCirculationKau},
       totalFeePool: {backedFeesInPoolKag, backedFeesInPoolKau},
       isLoading: false,
     })

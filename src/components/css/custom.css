@@ -135,6 +135,10 @@
   color: #ffffff;
 }
 
+.padding-right-110 {
+  padding-right: 110px !important;
+}
+
 .padding-right-130 {
   padding-right: 130px !important;
 }
@@ -163,7 +167,7 @@
   /* left: 45%; */
   /* background: transparent !important; */
   position: absolute;
-  left: 92%;
+  left: 100%;
   background: transparent !important;
   padding-bottom: 8px;
   margin-left: 5px;
@@ -176,7 +180,7 @@
   text-align: right !important;
   /* position: relative; */
   position: sticky;
-  left: 84%;
+  left: 82%;
   background: transparent !important;
   padding-bottom: 0px;
 }
