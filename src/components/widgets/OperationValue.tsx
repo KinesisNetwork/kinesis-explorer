@@ -57,10 +57,10 @@ class OperationValue extends React.Component<OperationProps> {
     if (operationType === 'payment') {
       destinationAccount = this.state.operations[0]?.to
     }
-    if (operationType === 'inflation') {
-      const INFLATION = 'Inflation'
-      return INFLATION
-    }
+    // if (operationType === 'inflation') {
+    //   const INFLATION = 'Inflation'
+    //   return INFLATION
+    // }
     let operationAmount
 
     if (operationType === 'account_merge') {
@@ -79,8 +79,7 @@ class OperationValue extends React.Component<OperationProps> {
     if (splitArray) {
       if (splitArray?.length > 1) {
         for (const splitArrays of splitArray) {
-          typeOfOperation +=
-            splitArrays?.charAt(0).toUpperCase() + splitArrays?.substr(1).toLowerCase() + ' '
+          typeOfOperation += splitArrays?.charAt(0).toUpperCase() + splitArrays?.substr(1).toLowerCase() + ' '
         }
       } else {
         typeOfOperation = splitArray[0]?.charAt(0).toUpperCase() + splitArray[0]?.substr(1).toLowerCase()
@@ -88,25 +87,37 @@ class OperationValue extends React.Component<OperationProps> {
     }
     return (
       <>
-        <td className='td'>
-          <p>
-            {' '}
-            <Link to={`/account/${destinationAccount}`}>
-              {destinationAccount && destinationAccount.length && destinationAccount.slice(0, 4)}......
-              {destinationAccount &&
-                destinationAccount.length &&
-                destinationAccount.substr(destinationAccount.length - 4)}{' '}
-            </Link>
-          </p>
-        </td>
-        <td className='td'>
-          <p>{typeOfOperation}</p>
-        </td>
-        <td className='td'>
-          <p>
-            {operationAmount} {this.props.conn}
-          </p>
-        </td>
+        {destinationAccount && destinationAccount.length > 0 ? (
+          <td className="td">
+            <p>
+              {' '}
+              <Link to={`/account/${destinationAccount}`}>
+                {destinationAccount && destinationAccount.length && destinationAccount.slice(0, 4)}......
+                {destinationAccount &&
+                  destinationAccount.length &&
+                  destinationAccount.substr(destinationAccount.length - 4)}{' '}
+              </Link>
+            </p>
+          </td>
+        ) : (
+          <td className="td">.....</td>
+        )}
+        {typeOfOperation ? (
+          <td className="td">
+            <p>{typeOfOperation}</p>
+          </td>
+        ) : (
+          <td className="td">.....</td>
+        )}
+        {operationAmount ? (
+          <td className="td">
+            <p>
+              {operationAmount} {this.props.conn}
+            </p>
+          </td>
+        ) : (
+          <td className="td">{this.props.conn}</td>
+        )}
       </>
     )
   }
