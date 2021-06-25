@@ -18,7 +18,11 @@ const STROOPS_IN_ONE_KINESIS = 1e7
 export function convertStroopsToKinesis(numberInStroops: number): number {
   return numberInStroops / STROOPS_IN_ONE_KINESIS
 }
-
+export function getNewNetwork(connection: any): Network {
+  Network.use(new Network(connection.networkPassphrase))
+  // Network.use(new Network(connection.kag.networkPassphrase ))
+  return Network.current()
+}
 export function getNetwork(connection: Connection): Network {
   Network.use(new Network(connection.kau.networkPassphrase))
   // Network.use(new Network(connection.kag.networkPassphrase ))

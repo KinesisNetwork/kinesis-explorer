@@ -20,8 +20,8 @@ interface State {
 
 class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
   state: State = {
-    totalFeePool: {backedFeesInPoolKag: 0, backedFeesInPoolKau: 0},
-    totalInCirculation: {totalInCirculationKag: 0, totalInCirculationKau: 0},
+    totalFeePool: { backedFeesInPoolKag: 0, backedFeesInPoolKau: 0 },
+    totalInCirculation: { totalInCirculationKag: 0, totalInCirculationKau: 0 },
     isLoading: false,
   }
 
@@ -36,29 +36,33 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
   }
 
   loadStatisticsData = async (connection: Connection): Promise<void> => {
+    console.log('in loadStatisticsData >>>>>>>>>>>>>>>> connection : ', connection)
     this.setState({ isLoading: true })
-    const { totalCoins, feePool } = await this.fetchLatestLedger(connection)
-    const [unbackedBalances, backedFeesInPoolKag, backedFeesInPoolKau] = await Promise.all([
-      getUnbackedBalances(connection),
+    const { totalCoins: kauTotalCoins, feePool: kauFeePool } = await this.fetchLatestLedger(connection.kau)
+    const { totalCoins: kagTotalCoins, feePool: kagFeePool } = await this.fetchLatestLedger(connection.kag)
+    const [kauUnbackedBalances, kagUnbackedBalances, backedFeesInPoolKag, backedFeesInPoolKau] = await Promise.all([
+      getUnbackedBalances(connection.kau),
+      getUnbackedBalances(connection.kag),
       getBackedFees(connection.kag),
       getBackedFees(connection.kau),
-
     ])
-
-    const ledgerFeePool = Number(feePool)
-    const unbackedFeesInPoolKag = ledgerFeePool - backedFeesInPoolKag
-    const unbackedFeesInPoolKau = ledgerFeePool - backedFeesInPoolKau
+    console.log('2 in loadStatisticsData >>>>>>>>>>>>>> connection : ', kauTotalCoins, kauFeePool)
+    const kauLedgerFeePool = Number(kauFeePool)
+    const kagLedgerFeePool = Number(kagFeePool)
+    const unbackedFeesInPoolKag = kauLedgerFeePool - backedFeesInPoolKag
+    const unbackedFeesInPoolKau = kagLedgerFeePool - backedFeesInPoolKau
     // const totalInCirculation = totalCoins - Number(unbackedBalances) - unbackedFeesInPool
-    const bigNum = new BigNumber(totalCoins)
-    const totalInCirculationKag = Number(bigNum.minus(unbackedBalances).minus(unbackedFeesInPoolKag).toFixed(7))
-    const totalInCirculationKau = Number(bigNum.minus(unbackedBalances).minus(unbackedFeesInPoolKau).toFixed(7))
+    const kauInBigNum = new BigNumber(kauTotalCoins)
+    const kagInBigNum = new BigNumber(kagTotalCoins)
+    const totalInCirculationKag = Number(kagInBigNum.minus(kagUnbackedBalances).minus(unbackedFeesInPoolKag).toFixed(7))
+    const totalInCirculationKau = Number(kauInBigNum.minus(kauUnbackedBalances).minus(unbackedFeesInPoolKau).toFixed(7))
 
-    // console.log('totalInCirculationKag', this.state.totalInCirculation)
-    // console.log('totalInCirculationKau', totalInCirculationKau)
+    console.log('totalInCirculationKag', this.state.totalInCirculation)
+    console.log('totalInCirculationKau', totalInCirculationKau)
 
     this.setState({
-      totalInCirculation: {totalInCirculationKag, totalInCirculationKau},
-      totalFeePool: {backedFeesInPoolKag, backedFeesInPoolKau},
+      totalInCirculation: { totalInCirculationKag, totalInCirculationKau },
+      totalFeePool: { backedFeesInPoolKag, backedFeesInPoolKau },
       isLoading: false,
     })
   }
@@ -89,8 +93,8 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
     }
 
     return (
-      <article className='tile is-child box'>
-        <p className='title'>Kinesis in Circulation</p>
+      <article className="tile is-child box">
+        <p className="title">Kinesis in Circulation</p>
         <div style={{ marginTop: '80%' }}>
           <HorizontalLabelledFieldStatistics
             label={''}

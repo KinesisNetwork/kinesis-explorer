@@ -12,7 +12,7 @@ import {
 } from 'js-kinesis-sdk'
 import { Connection } from '../types'
 import { flatten, sum } from '../utils'
-import { convertStroopsToKinesis, getAccount, getNetwork, getServer } from './kinesis'
+import { convertStroopsToKinesis, getAccount, getNetwork, getServer, getNewNetwork } from './kinesis'
 
 interface KemFee extends TransactionRecord {
   fee_charged?: string | number
@@ -20,6 +20,7 @@ interface KemFee extends TransactionRecord {
 
 export async function getUnbackedBalances(connection: Connection): Promise<string> {
   const accounts = await fetchUnbackedAccounts(connection)
+  
   return sumNativeBalances(...accounts)
 }
 
@@ -75,13 +76,16 @@ export async function getBackedFees(connection: any): Promise<number> {
 }
 
 async function fetchUnbackedAccounts(connection: Connection): Promise<AccountRecord[]> {
+  
   const { rootId, emissionId } = getUnbackedAccountKeys(connection)
+  
   return Promise.all([getAccount(connection, rootId), getAccount(connection, emissionId)])
 }
 
 function getUnbackedAccountKeys(connection: Connection) {
   const emissionKeypair = getEmissionKeypair(connection)
   const masterKeypair = getMasterKeypair()
+  // console.log("fetchUnbackedAccounts>>>>>>")
   return {
     emissionId: emissionKeypair.publicKey(),
     rootId: masterKeypair.publicKey(),
@@ -89,7 +93,9 @@ function getUnbackedAccountKeys(connection: Connection) {
 }
 
 export function getEmissionKeypair(connection: Connection): Keypair {
-  const currentNetwork = getNetwork(connection)
+  console.log("getUnbackedAccountKeys>>>>>>", connection)
+  const currentNetwork = getNewNetwork(connection)
+  console.log("getUnbackedAccountKeys>>>>>>", connection, currentNetwork)
   const emissionSeedString = `${currentNetwork.networkPassphrase()}emission`
   const hash = createHash('sha256')
   hash.update(emissionSeedString)
