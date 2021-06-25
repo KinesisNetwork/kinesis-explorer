@@ -17,11 +17,3 @@ export interface Connection {
     stage: 'testnet' | 'mainnet',
   }
 }
-
-export interface OldConnection {
-  horizonURL: string
-  name: string
-  networkPassphrase: string
-  currency: 'KAU' | 'KAG'
-  stage: 'testnet' | 'mainnet'
-}

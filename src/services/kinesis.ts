@@ -139,7 +139,7 @@ export async function getLedgerStream(connection: any, cursor = 'now'): Promise<
 }
 
 export async function getAccount(connection: any, accountId: string): Promise<AccountRecord> {
-  let serv: AccountRecord
+  const serv: AccountRecord = undefined
   try {
     const servers = getServer(connection.networkPassphrase, connection.horizonURL)
     return await servers.loadAccount(accountId)

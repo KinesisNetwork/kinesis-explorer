@@ -80,7 +80,7 @@ export class AccountInfo extends React.Component<Props, State> {
     if (!account) {
       return
     }
-    const [operations, lastPagingToken, showLoadMore] = await this.loadOperations(
+    let [operations, lastPagingToken, showLoadMore] = await this.loadOperations(
       cursor,
       limit,
       account,
@@ -88,12 +88,14 @@ export class AccountInfo extends React.Component<Props, State> {
       this.state.showLoadMore,
       this.state.operations,
     )
+
     let operation = this.state.operations
     if (operations && operations.records && operations.records.length > 0) {
       if (this.state.operations && Object.keys(this.state.operations) && Object.keys(this.state.operations).length) {
+        operations = await this.getAccountMergedAmount(operations)
         operation['records'] = [...operations.records, ...operation['records']]
-        // operation['records'].concat(operations.records)
       } else {
+        operations = await this.getAccountMergedAmount(operations)
         operation = operations
       }
     }
@@ -102,6 +104,25 @@ export class AccountInfo extends React.Component<Props, State> {
       lastPagingToken,
       showLoadMore,
     })
+  }
+
+  getAccountMergedAmount = async (operations) => {
+    for (let index = 0; index < operations?.records.length; index++) {
+      const operation = operations?.records[index]
+      if (operation?.type === 'account_merge') {
+        const AmountMergeAddressNetwork = operation?._links.effects?.href
+        const response = await fetch(`${AmountMergeAddressNetwork}?order=desc`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        })
+        const url = await response.json()
+        const getAccountMergeAmount = url?._embedded?.records[2]?.amount
+        operation['amount'] = getAccountMergeAmount
+      }
+    }
+    return operations
   }
 
   loadMergedTransactions = async (cursor: string = 'now', limit: number = 10) => {
@@ -325,7 +346,7 @@ export class AccountInfo extends React.Component<Props, State> {
               {this.renderSigners()}
             </div>
           </div> */}
-         <div className='tile is-parent is-vertical'>
+          <div className='tile is-parent is-vertical'>
             <OperationList
               operations={operations}
               conn={this.connectionSelector()}

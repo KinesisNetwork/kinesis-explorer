@@ -12,26 +12,25 @@ import {
 } from 'js-kinesis-sdk'
 import { Connection } from '../types'
 import { flatten, sum } from '../utils'
-import { convertStroopsToKinesis, getAccount, getNetwork, getServer, getNewNetwork } from './kinesis'
+import { convertStroopsToKinesis, getAccount, getNetwork, getNewNetwork, getServer } from './kinesis'
 
 interface KemFee extends TransactionRecord {
   fee_charged?: string | number
 }
 
-export async function getUnbackedBalances(connection: Connection): Promise<string> {
+export async function getUnbackedBalances(connection: any): Promise<string> {
   const accounts = await fetchUnbackedAccounts(connection)
-  
   return sumNativeBalances(...accounts)
 }
 
-function getUnbackedKeysCheck(connection: Connection): (account: string) => boolean {
+function getUnbackedKeysCheck(connection: any): (account: string) => boolean {
   const unbackedKeys = Object.values(getUnbackedAccountKeys(connection))
   return (account: string) => unbackedKeys.includes(account)
 }
 
 async function getBackedFeesFromTransactions(
   ts: CollectionPage<KemFee>,
-  connection: Connection,
+  connection: any,
   accumulatedFee = 0,
 ): Promise<number> {
   if (ts.records.length === 0) {
@@ -75,14 +74,12 @@ export async function getBackedFees(connection: any): Promise<number> {
   }
 }
 
-async function fetchUnbackedAccounts(connection: Connection): Promise<AccountRecord[]> {
-  
+async function fetchUnbackedAccounts(connection: any): Promise<AccountRecord[]> {
   const { rootId, emissionId } = getUnbackedAccountKeys(connection)
-  
   return Promise.all([getAccount(connection, rootId), getAccount(connection, emissionId)])
 }
 
-function getUnbackedAccountKeys(connection: Connection) {
+function getUnbackedAccountKeys(connection: any) {
   const emissionKeypair = getEmissionKeypair(connection)
   const masterKeypair = getMasterKeypair()
   // console.log("fetchUnbackedAccounts>>>>>>")
@@ -92,10 +89,10 @@ function getUnbackedAccountKeys(connection: Connection) {
   }
 }
 
-export function getEmissionKeypair(connection: Connection): Keypair {
-  console.log("getUnbackedAccountKeys>>>>>>", connection)
+export function getEmissionKeypair(connection: any): Keypair {
+  // console.log("getUnbackedAccountKeys>>>>>>", connection)
   const currentNetwork = getNewNetwork(connection)
-  console.log("getUnbackedAccountKeys>>>>>>", connection, currentNetwork)
+  // console.log("getUnbackedAccountKeys>>>>>>", connection, currentNetwork)
   const emissionSeedString = `${currentNetwork.networkPassphrase()}emission`
   const hash = createHash('sha256')
   hash.update(emissionSeedString)

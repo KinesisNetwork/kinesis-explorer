@@ -36,48 +36,43 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
   }
 
   loadStatisticsData = async (connection: Connection): Promise<void> => {
-    console.log('in loadStatisticsData >>>>>>>>>>>>>>>> connection : ', connection)
     this.setState({ isLoading: true })
-    const { totalCoins: kauTotalCoins, feePool: kauFeePool } = await this.fetchLatestLedger(connection.kau)
-    const { totalCoins: kagTotalCoins, feePool: kagFeePool } = await this.fetchLatestLedger(connection.kag)
-    const [kauUnbackedBalances, kagUnbackedBalances, backedFeesInPoolKag, backedFeesInPoolKau] = await Promise.all([
+    const fetLedgerResponse = await this.fetchLatestLedger(connection)
+    // const { totalCoins: kagTotalCoins, feePool: kagFeePool } = await this.fetchLatestLedger(connection)
+    const [kauUnbackedBalances, kagUnbackedBalances, backedFeesInPoolKau, backedFeesInPoolKag] = await Promise.all([
+      // getUnbackedBalances(connection.kau),
       getUnbackedBalances(connection.kau),
       getUnbackedBalances(connection.kag),
-      getBackedFees(connection.kag),
       getBackedFees(connection.kau),
+      getBackedFees(connection.kag),
     ])
-    console.log('2 in loadStatisticsData >>>>>>>>>>>>>> connection : ', kauTotalCoins, kauFeePool)
-    const kauLedgerFeePool = Number(kauFeePool)
-    const kagLedgerFeePool = Number(kagFeePool)
-    const unbackedFeesInPoolKag = kauLedgerFeePool - backedFeesInPoolKag
-    const unbackedFeesInPoolKau = kagLedgerFeePool - backedFeesInPoolKau
+    const kauLedgerFeePool = Number(fetLedgerResponse.kauFeePool)
+    const kagLedgerFeePool = Number(fetLedgerResponse.kagFeePool)
+    const unbackedFeesInPoolKau = kauLedgerFeePool - backedFeesInPoolKau
+    const unbackedFeesInPoolKag = kagLedgerFeePool - backedFeesInPoolKag
     // const totalInCirculation = totalCoins - Number(unbackedBalances) - unbackedFeesInPool
-    const kauInBigNum = new BigNumber(kauTotalCoins)
-    const kagInBigNum = new BigNumber(kagTotalCoins)
-    const totalInCirculationKag = Number(kagInBigNum.minus(kagUnbackedBalances).minus(unbackedFeesInPoolKag).toFixed(7))
-    const totalInCirculationKau = Number(kauInBigNum.minus(kauUnbackedBalances).minus(unbackedFeesInPoolKau).toFixed(7))
-
-    console.log('totalInCirculationKag', this.state.totalInCirculation)
-    console.log('totalInCirculationKau', totalInCirculationKau)
+    const kauInBigNum = new BigNumber(fetLedgerResponse.totalCoinsKau)
+    const kagInBigNum = new BigNumber(fetLedgerResponse.totalCoinsKag)
+    const totalInCirculationKau = Number(kauInBigNum.minus(kauUnbackedBalances).minus(unbackedFeesInPoolKau).toFixed(5))
+    const totalInCirculationKag = Number(kagInBigNum.minus(kagUnbackedBalances).minus(unbackedFeesInPoolKag).toFixed(5))
 
     this.setState({
-      totalInCirculation: { totalInCirculationKag, totalInCirculationKau },
-      totalFeePool: { backedFeesInPoolKag, backedFeesInPoolKau },
+      totalInCirculation: { totalInCirculationKau, totalInCirculationKag },
+      totalFeePool: { backedFeesInPoolKau, backedFeesInPoolKag },
       isLoading: false,
     })
   }
 
-  fetchLatestLedger = async (
-    connection: Connection,
-  ): Promise<LedgerRecord & { totalCoins: number; feePool: number }> => {
-    const ledgers = await getLedgers(connection)
-    const latest = ledgers[0]
-
-    return {
-      ...latest,
-      totalCoins: Number(latest.total_coins),
-      feePool: Number(latest.fee_pool),
-    }
+  fetchLatestLedger = async (connection: any) => {
+    const response = { totalCoinsKag: 0, totalCoinsKau: 0, kagFeePool: 0, kauFeePool: 0 }
+    const ledgersKag = await getLedgers(connection.kag)
+    response['totalCoinsKag'] = Number(ledgersKag[0]?.total_coins)
+    response['kagFeePool'] = Number(ledgersKag[0]?.fee_pool)
+    const ledgersKau = await getLedgers(connection.kau)
+    response['totalCoinsKau'] = Number(ledgersKau[0]?.total_coins)
+    response['kauFeePool'] = Number(ledgersKau[0]?.fee_pool)
+    // const latest = {...ledgersKag[0],...ledgersKau[0]}
+    return response
   }
 
   render() {
@@ -93,8 +88,8 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
     }
 
     return (
-      <article className="tile is-child box">
-        <p className="title">Kinesis in Circulation</p>
+      <article className='tile is-child box'>
+        <p className='title'>Kinesis in Circulation</p>
         <div style={{ marginTop: '80%' }}>
           <HorizontalLabelledFieldStatistics
             label={''}

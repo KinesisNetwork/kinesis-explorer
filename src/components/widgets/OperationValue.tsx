@@ -27,7 +27,8 @@ class OperationValue extends React.Component<OperationProps> {
   // }
 
   async getOperations() {
-    const operationRecord = await this.server.operations().limit(this.props.translimit).order('desc').call()
+    let operationRecord = await this.server.operations().limit(this.props.translimit).order('desc').call()
+    operationRecord = await this.getAccountMergedAmount(operationRecord)
     this.setState({ operations: operationRecord.records })
     // this.setState({ operations: operationRecord.records },
     //    () => {
@@ -45,6 +46,30 @@ class OperationValue extends React.Component<OperationProps> {
     // })
   }
 
+  getAccountMergedAmount = async (operations) => {
+    for (let index = 0; index < operations?.records.length; index++) {
+      const operation = operations?.records[index]
+      if (operation?.type === 'account_merge' || operation?.type === 'inflation') {
+        const AmountMergeAddressNetwork = operation?._links.effects?.href
+        const response = await fetch(`${AmountMergeAddressNetwork}?order=desc`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        })
+        const url = await response.json()
+        let getAccountMergeAmount = 0
+        if (operation?.type === 'account_merge') {
+          getAccountMergeAmount = url?._embedded?.records[2]?.amount
+        } else if (operation?.type === 'inflation') {
+          getAccountMergeAmount = url?._embedded?.records[0]?.amount
+        }
+        operation['amount'] = getAccountMergeAmount
+      }
+    }
+    return operations
+  }
+
   render() {
     const operationType = this.state.operations[0]?.type
     let destinationAccount
@@ -57,19 +82,18 @@ class OperationValue extends React.Component<OperationProps> {
     if (operationType === 'payment') {
       destinationAccount = this.state.operations[0]?.to
     }
-    // if (operationType === 'inflation') {
-    //   const INFLATION = 'Inflation'
-    //   return INFLATION
-    // }
-    let operationAmount
 
+    let operationAmount
     if (operationType === 'account_merge') {
-      operationAmount = this.state.operations[0]?.starting_balance
+      operationAmount = this.state.operations[0]?.amount
     }
     if (operationType === 'create_account') {
       operationAmount = this.state.operations[0]?.starting_balance
     }
     if (operationType === 'payment') {
+      operationAmount = this.state.operations[0]?.amount
+    }
+    if (operationType === 'inflation') {
       operationAmount = this.state.operations[0]?.amount
     }
     operationAmount = operationAmount && parseFloat(operationAmount).toFixed(5)
