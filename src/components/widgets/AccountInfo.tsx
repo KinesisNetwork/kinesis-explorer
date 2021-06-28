@@ -80,7 +80,8 @@ export class AccountInfo extends React.Component<Props, State> {
     if (!account) {
       return
     }
-    let [operations, lastPagingToken, showLoadMore] = await this.loadOperations(
+    // let [operations, lastPagingToken, showLoadMore] = await this.loadOperations(
+    const result = await this.loadOperations(
       cursor,
       limit,
       account,
@@ -88,6 +89,8 @@ export class AccountInfo extends React.Component<Props, State> {
       this.state.showLoadMore,
       this.state.operations,
     )
+    const [lastPagingToken, showLoadMore] = result
+    let [operations] = result
 
     let operation = this.state.operations
     if (operations && operations.records && operations.records.length > 0) {
