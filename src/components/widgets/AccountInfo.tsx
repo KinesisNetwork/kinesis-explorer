@@ -107,8 +107,8 @@ export class AccountInfo extends React.Component<Props, State> {
   }
 
   getAccountMergedAmount = async (operations) => {
-    for (let index = 0; index < operations?.records.length; index++) {
-      const operation = operations?.records[index]
+    for (const operationsData of operations?.records) {
+      const operation = operationsData
       if (operation?.type === 'account_merge') {
         const AmountMergeAddressNetwork = operation?._links.effects?.href
         const response = await fetch(`${AmountMergeAddressNetwork}?order=desc`, {

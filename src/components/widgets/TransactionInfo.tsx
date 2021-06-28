@@ -12,7 +12,8 @@ interface KemFee extends TransactionRecord {
 
 interface Props {
   transaction: KemFee,
-  conn?: string
+  conn?: string,
+  selectedConnection: any
 }
 interface State {
   operations: CollectionPage<OperationRecord> | null
@@ -67,7 +68,11 @@ export class TransactionInfo extends React.Component<Props, State> {
             />
           </div>
           <div className='tile is-child'>
-            <OperationList operations={this.state.operations} conn={conn} />
+            <OperationList
+             operations={this.state.operations}
+             conn={conn}
+             selectedConnection={this.props.selectedConnection}
+            />
           </div>
           <div className='tile is-child box'>
             <p className='subtitle'>Signatures</p>

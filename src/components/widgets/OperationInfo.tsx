@@ -22,7 +22,10 @@ const BASE_OPERATION_KEYS = [
   'result_xdr',
   'result_meta_xdr',
   'fee_meta_xdr',
+  'into',
+  'account',
 ]
+const BASE_KEYS = ['into', 'account']
 
 const FORMAT_VALUE: { [key: string]: (value: string) => string | number | React.ReactNode } = {
   created_at: (value) => `${value} | ${renderRelativeDate(value)}`,
@@ -43,22 +46,26 @@ export const OperationInfo: React.SFC<{
 }> = ({ selectedConnection, operation, conn }) => {
   currConn = conn
 
-  const fields = operation ? Object.entries(operation)
-    .filter(([, val]) => typeof val === 'string')
-    .filter(([key]) => !BASE_OPERATION_KEYS.includes(key))
-    .map(([key, value]) => FORMAT_VALUE[key] ? [key, FORMAT_VALUE[key](value)] : [key, value])
-    .map(([key, value]) => (
-      <HorizontalLabelledField
-        key={key}
-        label={startCase(key)}
-        value={value}
-      />
-    )) : []
+  const fields = operation
+    ? Object.entries(operation)
+        .filter(([, val]) => typeof val === 'string')
+        .filter(([key]) => !BASE_OPERATION_KEYS.includes(key))
+        .map(([key, value]) => (FORMAT_VALUE[key] ? [key, FORMAT_VALUE[key](value)] : [key, value]))
+        .map(([key, value]) => <HorizontalLabelledField key={key} label={startCase(key)} value={value} />)
+    : []
+
+  const field = operation
+    ? Object.entries(operation)
+        .filter(([, val]) => typeof val === 'string')
+        .filter(([key]) => BASE_KEYS.includes(key))
+        .map(([key, value]) => (FORMAT_VALUE[key] ? [key, FORMAT_VALUE[key](value)] : [key, value]))
+        .map(([key, value]) => <HorizontalLabelledField key={key} label={startCase(key)} value={value} />)
+    : []
 
   return (
     <div className='tile is-child box'>
       <p className='subtitle is-marginless'>{operation ? startCase(operation.type) : ''}</p>
-      {fields}
+      {fields} {field}
     </div>
   )
 }

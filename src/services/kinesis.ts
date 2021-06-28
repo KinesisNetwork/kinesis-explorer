@@ -113,7 +113,7 @@ export async function getRecords(transactionsPromise, limit) {
 export async function getTransactionStream(
   connection: any,
   cursor = 'now',
-  limit = 1,
+  limit = 0,
 ): Promise<TransactionCallBuilder> {
   const server = getServer(connection.networkPassphrase, connection.horizonURL)
   // console.log('connection.pass', connection.networkPassphrase)

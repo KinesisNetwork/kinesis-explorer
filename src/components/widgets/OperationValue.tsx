@@ -47,8 +47,8 @@ class OperationValue extends React.Component<OperationProps> {
   }
 
   getAccountMergedAmount = async (operations) => {
-    for (let index = 0; index < operations?.records.length; index++) {
-      const operation = operations?.records[index]
+    for (const operationData of operations?.records) {
+      const operation = operationData
       if (operation?.type === 'account_merge' || operation?.type === 'inflation') {
         const AmountMergeAddressNetwork = operation?._links.effects?.href
         const response = await fetch(`${AmountMergeAddressNetwork}?order=desc`, {
