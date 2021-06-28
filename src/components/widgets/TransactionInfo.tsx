@@ -25,19 +25,55 @@ export class TransactionInfo extends React.Component<Props, State> {
       operations: null,
     }
   }
-
-  loadOperations = async () => {
-    const operations = await this.props.transaction.operations()
-    this.setState({ operations })
+  loadOperations = async (operations?: any) => {
+    operations = await this.props.transaction.operations()
+    // this.setState({ operations })
+    return [operations]
   }
-
+  handleOperations = async (transaction?: any) => {
+    if (!transaction) {
+      return
+    }
+    let [operations] = await this.loadOperations(this.state.operations)
+    let operation = this.state.operations
+    if (operations && operations.records && operations.records.length > 0) {
+      if (this.state.operations && Object.keys(this.state.operations) && Object.keys(this.state.operations).length) {
+        operations = await this.getAccountMergedAmount(operations)
+        operation['records'] = [...operations.records, ...operation['records']]
+      } else {
+        operations = await this.getAccountMergedAmount(operations)
+        operation = operations
+      }
+    }
+    this.setState({
+      operations: operation,
+    })
+  }
+  getAccountMergedAmount = async (operations) => {
+    for (const operationsData of operations?.records) {
+      const operation = operationsData
+      if (operation?.type === 'account_merge') {
+        const AmountMergeAddressNetwork = operation?._links.effects?.href
+        const response = await fetch(`${AmountMergeAddressNetwork}?order=desc`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        })
+        const url = await response.json()
+        const getAccountMergeAmount = url?._embedded?.records[2]?.amount
+        operation['amount'] = getAccountMergeAmount
+      }
+    }
+    return operations
+  }
   componentDidMount() {
-    this.loadOperations()
+    this.handleOperations(this.props.transaction)
   }
 
   componentDidUpdate(prevProps: Props) {
     if (prevProps.transaction.id !== this.props.transaction.id) {
-      this.loadOperations()
+      this.handleOperations(this.props.transaction)
     }
   }
 
