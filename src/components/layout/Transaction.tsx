@@ -72,7 +72,11 @@ class TransactionPage extends React.Component<Props, State> {
           {!this.state.transaction ? (
             <div />
           ) : (
-            <TransactionInfo transaction={this.state.transaction} conn={this.props.match.params.connection} />
+            <TransactionInfo
+             transaction={this.state.transaction}
+             conn={this.props.match.params.connection}
+             selectedConnection={this.props.selectedConnection}
+            />
           )}
         </div>
       </section>
