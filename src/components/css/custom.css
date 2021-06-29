@@ -134,3 +134,7 @@
     padding-left: "10px";
     color: #ffffff;
 }
+.flex-n {
+        flex: none;
+    }
+    

@@ -198,11 +198,10 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     return (
       <section className='section'>
         <div className='tile is-ancestor'>
-          <div className='tile is-vertical is-4 is-parent'>
-            <Statistics />
-            {/* <Converter /> */}
-          </div>
-          <div className='tile is-vertical is-parent'>
+        <div className='tile is-vertical is-parent flex-n'>
+        {this.props.selectedConnection.stage! === 'testnet' && <Statistics/>}
+        </div>
+        <div className='tile is-vertical is-parent'>
 
           <article className='tile is-child'>
               <p className='title  is-child box' style={{ marginBottom: '0.3rem' }}>Transactions</p>
