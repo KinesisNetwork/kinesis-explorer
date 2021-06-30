@@ -27,7 +27,6 @@ class AccountPage extends React.Component<Props, State> {
       invalidAccount: false,
     }
   }
-
   loadAccount = async () => {
     const accountId = this.props.match.params.id
     this.setState({ accountId })
@@ -46,24 +45,37 @@ class AccountPage extends React.Component<Props, State> {
       return
     }
   }
-
   getAccountDetailsOrUseEmptyBalanceAccount = async (accountId: string) => {
     try {
       const accountKau = await getAccount(this.props.selectedConnection.kau, accountId)
       const accountKag = await getAccount(this.props.selectedConnection.kag, accountId)
-      // console.log('accountKag1', accountKag, accountKau)
+      //  console.log('accountKag1', accountKag, accountKau)
       this.setState({ accountKag, accountKau })
-      
+      if(accountKag === undefined){
+        this.setState({
+          accountKag: createEmptyBalanceAccountRecord(accountId),   
+        })
+        if(accountKau === undefined){
+        this.setState({  
+          accountKau: createEmptyBalanceAccountRecord(accountId),
+        }) 
+      }
+    }
+    else if(accountKau === undefined ){
+      this.setState({  
+        accountKau: createEmptyBalanceAccountRecord(accountId),
+      })
+    }
+    else{
+        this.setState({accountKag, accountKau})
+       } 
     } catch (e) {
       this.setState({
         accountKau: createEmptyBalanceAccountRecord(accountId),
         accountKag: createEmptyBalanceAccountRecord(accountId),
       })
-    }
-    
+    } 
   }
-  
-
   componentDidMount() {
     this.loadAccount()
   }
