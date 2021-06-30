@@ -1,6 +1,6 @@
 {
   "name": "kinesis-explorer",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "Kinesis-compatible chain explorer",
   "main": "index.html",
   "scripts": {
