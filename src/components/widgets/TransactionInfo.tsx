@@ -86,7 +86,8 @@ export class TransactionInfo extends React.Component<Props, State> {
         <div className='tile is-vertical is-parent'>
           <div className='tile is-child box'>
             <p className='subtitle'>Summary</p>
-            <HorizontalLabelledField label='Created At' value={transaction.created_at} />
+            
+            <HorizontalLabelledField label='Created At' value={(transaction.created_at.slice(8,10) +'/'+ transaction.created_at.slice(5,7)+'/' +transaction.created_at.slice(0,4))}   />
             <HorizontalLabelledField
               label='Fee'
               value={renderAmount(convertStroopsToKinesis(feePaid), precision)}

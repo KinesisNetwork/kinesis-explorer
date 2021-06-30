@@ -245,11 +245,11 @@ export class AccountInfo extends React.Component<Props, State> {
     const thresholdKau = this.props.accountKau?.thresholds
 
     if (thresholdKau && thresholdKag) {
-      return { ...this.getThresholdData(thresholdKau, 'kau'), ...this.getThresholdData(thresholdKag, 'kag') }
+      return { ...this.getThresholdData(thresholdKau, 'KAU'), ...this.getThresholdData(thresholdKag, 'KAG') }
     } else if (thresholdKau) {
-      return { ...this.getThresholdData(thresholdKau, 'kau') }
+      return { ...this.getThresholdData(thresholdKau, 'KAU') }
     } else if (thresholdKag) {
-      return { ...this.getThresholdData(thresholdKag, 'kag') }
+      return { ...this.getThresholdData(thresholdKag, 'KAG') }
     }
   }
 
@@ -322,8 +322,8 @@ export class AccountInfo extends React.Component<Props, State> {
                 <p className='subtitle'>Info</p>
                 {this.renderThresholds()}
                 {/* //Expandable View */}
-                <button className='drop-down-arrow' onClick={() => this.renderSignersKey()}>
-                  View Signers <img className='down-arrow' src={DownArrow} />
+                <button className='button w-100' onClick={() => this.renderSignersKey()}>
+                  View Signers 
                 </button>
               </div>
             </div>

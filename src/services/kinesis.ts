@@ -122,11 +122,21 @@ export async function getTransactionStream(
 }
 
 export async function getLedger(connection: any, sequence: number | string): Promise<LedgerRecord> {
-  const server = getServer(connection.networkPassphrase, connection.horizonURL)
-  const ledger = (await (server.ledgers() as any).ledger(sequence).call()) as LedgerRecord
+  const serverKag = getServer(connection.kag.networkPassphrase, connection.kag.horizonURL)
+  const serverKau = getServer(connection.kau.networkPassphrase, connection.kau.horizonURL)
+  // const ledger = (await (server.ledgers() as any).ledger(sequence).call()) as LedgerRecord
+  // return ledger
+  let ledger
+  try {
+    ledger = (await (serverKau.ledgers() as any).ledger(sequence).call()) as LedgerRecord 
+  } catch (error) {
+    try {
+      ledger = (await (serverKag.ledgers() as any).ledger(sequence).call()) as LedgerRecord
+    } catch (error) {
+    }
+  }
   return ledger
 }
-
 export async function getLedgers(connection: any, limitVal: number = 10): Promise<LedgerRecord[]> {
   const server = getServer(connection.networkPassphrase, connection.horizonURL)
   const { records }: CollectionPage<LedgerRecord> = await server.ledgers().limit(limitVal).order('desc').call()
@@ -147,7 +157,7 @@ export async function getAccount(connection: any, accountId: string): Promise<Ac
     return serv
   }
 }
-  // return serv
+  
 
 export async function validateAccount(address: string): Promise<boolean> {
   return StrKey.isValidEd25519PublicKey(address)

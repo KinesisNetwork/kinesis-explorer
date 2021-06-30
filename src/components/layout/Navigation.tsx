@@ -89,7 +89,7 @@ class Navigation extends React.Component<NavigationProps, State> {
               </Link>
             </div> */}
             <div className='navbar-end'>
-              <a className='navbar-item'>{selectedConnection.name}</a>
+              <div className='navbar-item'>{selectedConnection.name}</div>
               {this.renderNetworkSelect()}
               <div className='navbar-item'>
                 <SearchBar />

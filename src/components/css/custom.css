@@ -195,3 +195,12 @@
   text-align: right !important;
   margin-top: 6px;
 }
+.flex-n {
+  flex: none;
+}
+.w-80{
+  width: 80%
+}
+.w-100 {
+width: 100%
+}

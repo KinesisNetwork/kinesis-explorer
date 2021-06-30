@@ -213,8 +213,8 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
       <section className='section'>
         <div className='tile is-ancestor'>
           {/* <div className='tile is-vertical is-4 is-parent'> */}
-          <div className='tile is-vertical is-statistics is-parent'>
-            <Statistics />
+          <div className='tile is-vertical is-parent flex-n'>
+          {this.props.selectedConnection.kag.stage! === 'testnet' && <Statistics/>}
             {/* <Converter /> */}
           </div>
           <div className='tile is-vertical is-parent'>
