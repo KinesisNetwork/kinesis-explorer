@@ -323,7 +323,7 @@ export class AccountInfo extends React.Component<Props, State> {
                 {this.renderThresholds()}
                 {/* //Expandable View */}
                 <button className='button w-100' onClick={() => this.renderSignersKey()}>
-                  View Signers 
+                  View Signers
                 </button>
               </div>
             </div>

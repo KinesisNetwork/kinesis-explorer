@@ -8,11 +8,11 @@ interface NewKem extends LedgerRecord {
   successful_transaction_count?: number
 }
 interface Props {
-  ledger: NewKem,
+  ledger: NewKem
 }
 
 interface State {
-  transactions: TransactionRecord[],
+  transactions: TransactionRecord[]
 }
 
 export class LedgerInfo extends React.Component<Props, State> {
@@ -48,7 +48,10 @@ export class LedgerInfo extends React.Component<Props, State> {
               <HorizontalLabelledField label='Hash' value={ledger.hash} />
               <HorizontalLabelledField
                 label='Closed At'
-                value={`${ledger.closed_at.slice(8,10)}/${ledger.closed_at.slice(5,7)}/${ledger.closed_at.slice(0,4)}  | ${renderRelativeDate(ledger.closed_at)}`}
+                value={`${ledger.closed_at.slice(8, 10)}/${ledger.closed_at.slice(5, 7)}/${ledger.closed_at.slice(
+                  0,
+                  4,
+                )}  | ${renderRelativeDate(ledger.closed_at)}`}
               />
             </div>
           </div>

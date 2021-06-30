@@ -128,11 +128,12 @@ export async function getLedger(connection: any, sequence: number | string): Pro
   // return ledger
   let ledger
   try {
-    ledger = (await (serverKau.ledgers() as any).ledger(sequence).call()) as LedgerRecord 
+    ledger = (await (serverKau.ledgers() as any).ledger(sequence).call()) as LedgerRecord
   } catch (error) {
     try {
       ledger = (await (serverKag.ledgers() as any).ledger(sequence).call()) as LedgerRecord
     } catch (error) {
+      // console.log(error)
     }
   }
   return ledger
@@ -157,7 +158,6 @@ export async function getAccount(connection: any, accountId: string): Promise<Ac
     return serv
   }
 }
-  
 
 export async function validateAccount(address: string): Promise<boolean> {
   return StrKey.isValidEd25519PublicKey(address)

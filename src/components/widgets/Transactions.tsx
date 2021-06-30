@@ -34,10 +34,10 @@ function renderTransaction(
   // console.log("opData..............",JSON.stringify(operations),t,conn);
   // console.log(t, 'TransactionRecord...............')
   // console.log(conn, currConn, 'Connnnnnnnnnn...............')
-  
+
   return (
     <tr key={t.id} className='tr'>
-      <td className='td'>{t.created_at.slice(8,10)}/{t.created_at.slice(5,7)}/{t.created_at.slice(0, 4)}</td>
+      <td className='td'>{t.created_at.slice(8, 10)}/{t.created_at.slice(5, 7)}/{t.created_at.slice(0, 4)}</td>
       <td className='td'>
         <Link to={`/transaction/${conn}/${t.hash}`}>
           {t.hash.slice(0, 4)}.....{t.hash.substr(t.hash.length - 4)}

@@ -34,11 +34,10 @@ class AccountPage extends React.Component<Props, State> {
       const isAccountAddressValid: boolean = await validateAccount(accountId)
       if (!isAccountAddressValid) {
         return this.setState({ invalidAccount: true })
-      } 
-      else  {
+      } else  {
         // In the scenario required, should add /transactions to URI to access deactivated account
         await this.getAccountDetailsOrUseEmptyBalanceAccount(accountId)
-     
+
       }
     } catch (e) {
       this.setState({ invalidAccount: true })
@@ -51,30 +50,28 @@ class AccountPage extends React.Component<Props, State> {
       const accountKag = await getAccount(this.props.selectedConnection.kag, accountId)
       //  console.log('accountKag1', accountKag, accountKau)
       this.setState({ accountKag, accountKau })
-      if(accountKag === undefined){
+      if (accountKag === undefined) {
         this.setState({
-          accountKag: createEmptyBalanceAccountRecord(accountId),   
+          accountKag: createEmptyBalanceAccountRecord(accountId),
         })
-        if(accountKau === undefined){
-        this.setState({  
+        if (accountKau === undefined) {
+        this.setState({
           accountKau: createEmptyBalanceAccountRecord(accountId),
-        }) 
+        })
       }
-    }
-    else if(accountKau === undefined ){
-      this.setState({  
+    } else if (accountKau === undefined ) {
+      this.setState({
         accountKau: createEmptyBalanceAccountRecord(accountId),
       })
-    }
-    else{
+    } else {
         this.setState({accountKag, accountKau})
-       } 
+       }
     } catch (e) {
       this.setState({
         accountKau: createEmptyBalanceAccountRecord(accountId),
         accountKag: createEmptyBalanceAccountRecord(accountId),
       })
-    } 
+    }
   }
   componentDidMount() {
     this.loadAccount()
