@@ -70,14 +70,18 @@ export const HorizontalLabelledFieldBalance: React.SFC<Props> = (props) => (
 
 export const HorizontalLabelledFieldInfo: React.SFC<Props> = (props) => (
   <div className='field is-horizontal is-marginless'>
+    <table className='info-table padding-right-580'>
+    <tr>
+      <td>
     <div className='field-label-info is-normal' style={props.wideLabel ? { flexGrow: 3 } : {}}>
-      <label className='label'>{props.label}</label>
+      <div className='label' style={{display: 'flex'}}>{props.label}</div>
     </div>
+  </td>
     <div className={`field-body ${props.isLoading ? 'is-loading-blur' : ''}`}>
       <div className='field'>
         <div className={`padding-right-580`}>
           <p className='input is-static custom-p'>
-            {props.value} {props.appendCurr}
+           {props.value} {props.appendCurr}
           </p>
         </div>
       </div>
@@ -87,6 +91,8 @@ export const HorizontalLabelledFieldInfo: React.SFC<Props> = (props) => (
         </span>
       )}
     </div>
+    </tr>
+    </table>
   </div>
 )
 

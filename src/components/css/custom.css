@@ -204,3 +204,7 @@
 .w-100 {
 width: 100%
 }
+.info-table{
+table-layout: fixed;
+width: 65%
+}

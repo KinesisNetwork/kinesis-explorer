@@ -37,7 +37,12 @@ function renderTransaction(
 
   return (
     <tr key={t.id} className='tr'>
-      <td className='td'>{t.created_at.slice(8, 10)}/{t.created_at.slice(5, 7)}/{t.created_at.slice(0, 4)}</td>
+      <td className='td'>
+        {t.created_at.slice(8, 10)}/{t.created_at.slice(5, 7)}/{t.created_at.slice(0, 4)}&nbsp;
+        {t.created_at.slice(11, 14)}
+        {t.created_at.slice(14, 17)}
+        {t.created_at.slice(17, 19)}
+      </td>
       <td className='td'>
         <Link to={`/transaction/${conn}/${t.hash}`}>
           {t.hash.slice(0, 4)}.....{t.hash.substr(t.hash.length - 4)}
@@ -49,14 +54,14 @@ function renderTransaction(
         </Link>
       </td>
       {/* <td className="td"> */}
-        {/* {' '} */}
-        <OperationValue networkUrl={destinationAccountAddressNetwork} translimit={translimit} conn={conn} />
+      {/* {' '} */}
+      <OperationValue networkUrl={destinationAccountAddressNetwork} translimit={translimit} conn={conn} />
       {/* </td> */}
       {/* <td className="td"> */}
-        {/* <OperationsTable networkUrl={destinationAccountAddressNetwork} translimit={translimit} /> */}
+      {/* <OperationsTable networkUrl={destinationAccountAddressNetwork} translimit={translimit} /> */}
       {/* </td> */}
       {/* <td className="td"> */}
-        {/* <OperationsTableAmount networkUrl={destinationAccountAddressNetwork} translimit={translimit} /> {conn} */}
+      {/* <OperationsTableAmount networkUrl={destinationAccountAddressNetwork} translimit={translimit} /> {conn} */}
       {/* </td> */}
     </tr>
   )
@@ -82,7 +87,7 @@ const Transactions: React.SFC<TransactionProps> = ({
     <table className='table is-bordered is-striped is-fullwidth'>
       <thead className='thead'>
         <tr className='tr'>
-          <th className='th'>Date</th>
+          <th className='th'>Date & Time (UTC)</th>
           <th className='th'>Hash</th>
           <th className='th'>From</th>
           <th className='th'>To</th>

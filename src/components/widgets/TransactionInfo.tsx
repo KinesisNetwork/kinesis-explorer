@@ -94,7 +94,11 @@ export class TransactionInfo extends React.Component<Props, State> {
                 '/' +
                 transaction.created_at.slice(5, 7) +
                 '/' +
-                transaction.created_at.slice(0, 4)
+                transaction.created_at.slice(0, 4) +
+               '' +
+                transaction.created_at.slice(11, 14) +
+                transaction.created_at.slice(14, 17) +
+                transaction.created_at.slice(17, 19)
               }
             />
             <HorizontalLabelledField
