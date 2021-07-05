@@ -28,7 +28,11 @@ const BASE_OPERATION_KEYS = [
 const BASE_KEYS = ['into', 'account']
 
 const FORMAT_VALUE: { [key: string]: (value: string) => string | number | React.ReactNode } = {
-  created_at: (value) => `${value.slice(8, 10)}/${value.slice(5, 7)}/${value.slice(0, 4)}`,
+  created_at: (value) =>
+    `${value.slice(8, 10)}/${value.slice(5, 7)}/${value.slice(0, 4)} ${value.slice(11, 14)}${value.slice(
+      14,
+      17,
+    )}${value.slice(17, 19)}`,
   source_account: (value) => <Link to={`/account/${value}`}>{value}</Link>,
   funder: (value) => <Link to={`/account/${value}`}>{value}</Link>,
   account: (value) => <Link to={`/account/${value}`}>{value}</Link>,
