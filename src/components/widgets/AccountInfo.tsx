@@ -137,13 +137,14 @@ export class AccountInfo extends React.Component<Props, State> {
     // Simple de-duping
     const records = await Promise.all(
       transactions.map((transaction) =>
-        transaction.operations({
+       transaction.operations({
           limit: transaction.operation_count,
           cursor: undefined,
           order: 'desc',
         }),
       ),
     )
+    console.log(records, 'records.......')
     const operations = {
       records: records.map((entry) => entry.records).reduce((total, amount) => total.concat(amount), []),
       next: () => Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
@@ -162,7 +163,7 @@ export class AccountInfo extends React.Component<Props, State> {
       lastPagingToken,
       showLoadMore,
     })
-  }
+  } 
 
   componentDidUpdate(prevProps: Props) {
     if (prevProps.accountKag?.account_id !== this.props.accountKag?.account_id) {
@@ -178,12 +179,14 @@ export class AccountInfo extends React.Component<Props, State> {
     })
     if (this.props.accountKag?.balances[0]?.balance === '0.0') {
       this.loadMergedTransactions()
+      console.log(this.loadMergedTransactions(), 'ABC.....')
     } else {
       // this.loadOperations()
       this.handleOperations(this.props.accountKag)
     }
     if (this.props.accountKau?.balances[0]?.balance === '0.0') {
       this.loadMergedTransactions()
+      console.log(this.loadMergedTransactions(), 'DEF.....')
     } else {
       // this.loadOperations()
       this.handleOperations(this.props.accountKau)
@@ -194,11 +197,13 @@ export class AccountInfo extends React.Component<Props, State> {
     // 200 is the limit as defined on the horizon server
     if (this.props.accountKag?.balances[0].balance === '0.0') {
       this.loadMergedTransactions(this.state.lastPagingToken, 10)
+      console.log(this.loadMergedTransactions, 'GHI.....')
     } else {
       this.handleOperations(this.props.accountKag, '', 10)
     }
     if (this.props.accountKau?.balances[0].balance === '0.0') {
       this.loadMergedTransactions(this.state.lastPagingToken, 10)
+      console.log(this.loadMergedTransactions, 'JKL.....')
     } else {
       this.handleOperations(this.props.accountKau, '', 10)
     }
