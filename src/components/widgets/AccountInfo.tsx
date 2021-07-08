@@ -2,7 +2,7 @@ import { AccountRecord, CollectionPage, OperationRecord, TransactionRecord } fro
 import _, { startCase } from 'lodash'
 import { isEmpty } from 'lodash'
 import * as React from 'react'
-import { getTransactions, getTransactionStream } from '../../services/kinesis'
+import { getRecords, getTransactions, getTransactionStream } from '../../services/kinesis'
 import { Connection } from '../../types'
 import { renderAmount } from '../../utils'
 import DownArrow from '../css/images/down-arrow.svg'
@@ -68,6 +68,7 @@ export class AccountInfo extends React.Component<Props, State> {
         return originalRecordSet.findIndex((ov) => ov.id === v.id) === -1
       }),
     )
+    // this.setState({operations})
     return [operations, lastPagingToken, showLoadMore]
     // this.setState({
     //  [this.state[keys.operations]]:operations,
@@ -133,6 +134,7 @@ export class AccountInfo extends React.Component<Props, State> {
     const lastPagingToken = transactions.length ? transactions[transactions.length - 1].paging_token : undefined
     const showLoadMore = transactions.length ? transactions.length === limit : !cursor
     const originalRecordSet = this.state.operations ? this.state.operations['records'] : []
+    const originalRecord = this.state.operations ? this.state.operations['records'] : []
 
     // Simple de-duping
     const records = await Promise.all(
@@ -149,21 +151,22 @@ export class AccountInfo extends React.Component<Props, State> {
       records: records.map((entry) => entry.records).reduce((total, amount) => total.concat(amount), []),
       next: () => Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
       prev: () => Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
-    }
-
+    }  
+    this.setState({operations})
     // Simple de-duping
     operations.records = originalRecordSet.concat(
       ...operations.records.filter((v) => {
         return originalRecordSet.findIndex((ov) => ov.id === v.id) === -1
       }),
     )
-
     this.setState({
       operations,
       lastPagingToken,
       showLoadMore,
+      
     })
-  } 
+    
+  }
 
   componentDidUpdate(prevProps: Props) {
     if (prevProps.accountKag?.account_id !== this.props.accountKag?.account_id) {
@@ -177,10 +180,13 @@ export class AccountInfo extends React.Component<Props, State> {
     this.setState({
       lastPagingToken: undefined,
     })
+    
     if (this.props.accountKag?.balances[0]?.balance === '0.0') {
+      console.log('IF............')
       this.loadMergedTransactions()
-      console.log(this.loadMergedTransactions(), 'ABC.....')
-    } else {
+      console.log( 'ABC.....')
+    } 
+    else {
       // this.loadOperations()
       this.handleOperations(this.props.accountKag)
     }

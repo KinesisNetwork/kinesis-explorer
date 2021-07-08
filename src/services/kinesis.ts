@@ -88,8 +88,11 @@ export async function getTransactions(
   }
   let records
   const recordsKau = await getRecords(transactionsPromise.kau, limit)
+  console.log(recordsKau, 'recordkau')
   const recordsKag = await getRecords(transactionsPromise.kag, limit)
-  records = [...recordsKau, ...recordsKag]
+  console.log(recordsKag, 'recordkag')
+  records = [...recordsKau , ...recordsKag]
+  console.log(records, 'records')
   // console.log('getTransactionsRecords', records)
   // return records.length > 0
   //   ? records.sort((recordA, recordB) => {
