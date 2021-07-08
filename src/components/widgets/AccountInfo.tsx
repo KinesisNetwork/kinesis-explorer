@@ -68,7 +68,6 @@ export class AccountInfo extends React.Component<Props, State> {
         return originalRecordSet.findIndex((ov) => ov.id === v.id) === -1
       }),
     )
-    // this.setState({operations})
     return [operations, lastPagingToken, showLoadMore]
     // this.setState({
     //  [this.state[keys.operations]]:operations,
@@ -146,12 +145,12 @@ export class AccountInfo extends React.Component<Props, State> {
         }),
       ),
     )
-    console.log(records, 'records.......')
+    // console.log(records, 'records.......')
     const operations = {
       records: records.map((entry) => entry.records).reduce((total, amount) => total.concat(amount), []),
       next: () => Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
       prev: () => Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
-    }  
+    }
     this.setState({operations})
     // Simple de-duping
     operations.records = originalRecordSet.concat(
@@ -163,9 +162,8 @@ export class AccountInfo extends React.Component<Props, State> {
       operations,
       lastPagingToken,
       showLoadMore,
-      
+
     })
-    
   }
 
   componentDidUpdate(prevProps: Props) {
@@ -180,19 +178,15 @@ export class AccountInfo extends React.Component<Props, State> {
     this.setState({
       lastPagingToken: undefined,
     })
-    
+
     if (this.props.accountKag?.balances[0]?.balance === '0.0') {
-      console.log('IF............')
       this.loadMergedTransactions()
-      console.log( 'ABC.....')
-    } 
-    else {
+    } else {
       // this.loadOperations()
       this.handleOperations(this.props.accountKag)
     }
     if (this.props.accountKau?.balances[0]?.balance === '0.0') {
       this.loadMergedTransactions()
-      console.log(this.loadMergedTransactions(), 'DEF.....')
     } else {
       // this.loadOperations()
       this.handleOperations(this.props.accountKau)
@@ -203,13 +197,11 @@ export class AccountInfo extends React.Component<Props, State> {
     // 200 is the limit as defined on the horizon server
     if (this.props.accountKag?.balances[0].balance === '0.0') {
       this.loadMergedTransactions(this.state.lastPagingToken, 10)
-      console.log(this.loadMergedTransactions, 'GHI.....')
     } else {
       this.handleOperations(this.props.accountKag, '', 10)
     }
     if (this.props.accountKau?.balances[0].balance === '0.0') {
       this.loadMergedTransactions(this.state.lastPagingToken, 10)
-      console.log(this.loadMergedTransactions, 'JKL.....')
     } else {
       this.handleOperations(this.props.accountKau, '', 10)
     }
