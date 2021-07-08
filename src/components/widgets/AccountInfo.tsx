@@ -2,7 +2,7 @@ import { AccountRecord, CollectionPage, OperationRecord, TransactionRecord } fro
 import _, { startCase } from 'lodash'
 import { isEmpty } from 'lodash'
 import * as React from 'react'
-import { getTransactions, getTransactionStream } from '../../services/kinesis'
+import { getRecords, getTransactions, getTransactionStream } from '../../services/kinesis'
 import { Connection } from '../../types'
 import { renderAmount } from '../../utils'
 import DownArrow from '../css/images/down-arrow.svg'
@@ -133,34 +133,36 @@ export class AccountInfo extends React.Component<Props, State> {
     const lastPagingToken = transactions.length ? transactions[transactions.length - 1].paging_token : undefined
     const showLoadMore = transactions.length ? transactions.length === limit : !cursor
     const originalRecordSet = this.state.operations ? this.state.operations['records'] : []
+    const originalRecord = this.state.operations ? this.state.operations['records'] : []
 
     // Simple de-duping
     const records = await Promise.all(
       transactions.map((transaction) =>
-        transaction.operations({
+       transaction.operations({
           limit: transaction.operation_count,
           cursor: undefined,
           order: 'desc',
         }),
       ),
     )
+    // console.log(records, 'records.......')
     const operations = {
       records: records.map((entry) => entry.records).reduce((total, amount) => total.concat(amount), []),
       next: () => Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
       prev: () => Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
     }
-
+    this.setState({operations})
     // Simple de-duping
     operations.records = originalRecordSet.concat(
       ...operations.records.filter((v) => {
         return originalRecordSet.findIndex((ov) => ov.id === v.id) === -1
       }),
     )
-
     this.setState({
       operations,
       lastPagingToken,
       showLoadMore,
+
     })
   }
 
@@ -176,6 +178,7 @@ export class AccountInfo extends React.Component<Props, State> {
     this.setState({
       lastPagingToken: undefined,
     })
+
     if (this.props.accountKag?.balances[0]?.balance === '0.0') {
       this.loadMergedTransactions()
     } else {

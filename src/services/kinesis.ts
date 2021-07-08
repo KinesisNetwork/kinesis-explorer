@@ -30,12 +30,10 @@ export function getNetwork(connection: Connection): Network {
 }
 
 export function getServer(networkPassphrase, horizonUrl): Server {
-
   Network.use(new Network(networkPassphrase))
   // Network.use(new Network(connection.kag.networkPassphrase))
   return new Server(horizonUrl)
 }
-
 // export function getServerKag(connection, horizonUrl): Server {
 //   Network.use(new Network(connection))
 //   return new Server(horizonUrl)
@@ -49,7 +47,6 @@ export function getServer(networkPassphrase, horizonUrl): Server {
 export async function getTransaction(connection: Connection, transactionId: string) {
   let server
   // console.log('Get transaction')
-
   try {
     const serversKag = getServer(connection.kag.networkPassphrase, connection.kag.horizonURL)
     server = await serversKag.transactions().transaction(transactionId).call()
@@ -62,7 +59,6 @@ export async function getTransaction(connection: Connection, transactionId: stri
       // console.log('error', error)
     }
   }
-
   return server
 }
 
@@ -86,19 +82,48 @@ export async function getTransactions(
     transactionsPromise.kag.cursor(cursor)
     transactionsPromise.kau.cursor(cursor)
   }
+  // let records
+  // const recordsKau = await getRecords(transactionsPromise.kau, limit)
+  // console.log(recordsKau, 'recordkau')
+  // const recordsKag = await getRecords(transactionsPromise.kag, limit)
+  // console.log(recordsKag, 'recordkag')
+  // records = [...recordsKau , ...recordsKag]
+  // console.log(records, 'records')
+  const recordsKau = new Promise((resolve, reject) => {
+    resolve(getRecords(transactionsPromise.kau, limit))
+  })
+  const recordsKag = new Promise((resolve, reject) => {
+    resolve(getRecords(transactionsPromise.kag, limit))
+  })
+  const outputKau = Promise.all([recordsKau])
+    .then((res) => {
+      return res[0]
+    })
+    .catch((err) => {
+      return []
+    })
+  const outputKag = Promise.all([recordsKag])
+    .then((res) => {
+      return res[0]
+    })
+    .catch((err) => {
+      return []
+    })
+  const Kau: any = await outputKau.then((result) => result)
+  // console.log('output', Kau)
   let records
-  const recordsKau = await getRecords(transactionsPromise.kau, limit)
-  const recordsKag = await getRecords(transactionsPromise.kag, limit)
-  records = [...recordsKau, ...recordsKag]
+  const Kag: any = await outputKag.then((result) => result)
+  // console.log('output1', Kag)
+  records = [...Kau, ...Kag]
+  return records
   // console.log('getTransactionsRecords', records)
   // return records.length > 0
   //   ? records.sort((recordA, recordB) => {
   //       return moment(recordA.created_at).valueOf() - moment(recordB.created_at).valueOf()
   //     })
   //   : []
-  return records
+  // return records
 }
-
 export async function getRecords(transactionsPromise, limit) {
   const { records }: CollectionPage<TransactionRecord> = await transactionsPromise.limit(limit).order('desc').call()
   // console.log('Records', records, limit)
