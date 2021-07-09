@@ -210,13 +210,28 @@ export class AccountInfo extends React.Component<Props, State> {
   renderBalances = () => {
     const currencyArray = this.props.selectedConnection?.currency
     let balances = []
-    const balanceKau = this.getBalances(this.props.accountKau?.balances, 'KAU', 5)
+    // const balanceKau = this.getBalances(this.props.accountKau?.balances, 'KAU', 5)
+    // const balanceKag = this.getBalances(this.props.accountKag?.balances, 'KAG', 5)
+    if ((Number(localStorage.getItem('selectedConnection')) === 1)) {
+    const balanceKau = this.getBalances(this.props.accountKau?.balances, 'TKAU', 5)
+    const balanceKag = this.getBalances(this.props.accountKag?.balances, 'TKAG', 5)
+    balances = [...balanceKau, ...balanceKag]
+    balances = balances.map((balance, i) => (
+      <HorizontalLabelledFieldBalance key={i} label={balance.asset_type} value={balance.balance} />
+    ))
+    return <React.Fragment>{balances}</React.Fragment>
+    }
+    else {
+      console.log('Mainnet')
+      const balanceKau = this.getBalances(this.props.accountKau?.balances, 'KAU', 5)
     const balanceKag = this.getBalances(this.props.accountKag?.balances, 'KAG', 5)
     balances = [...balanceKau, ...balanceKag]
     balances = balances.map((balance, i) => (
       <HorizontalLabelledFieldBalance key={i} label={balance.asset_type} value={balance.balance} />
     ))
     return <React.Fragment>{balances}</React.Fragment>
+    }
+    
   }
 
   getBalances = (balances, currency, precision) => {
@@ -246,7 +261,16 @@ export class AccountInfo extends React.Component<Props, State> {
   getAccountThresholds = () => {
     const thresholdKag = this.props.accountKag?.thresholds
     const thresholdKau = this.props.accountKau?.thresholds
-
+    if ((Number(localStorage.getItem('selectedConnection')) === 1)) {
+    if (thresholdKau && thresholdKag) {
+      return { ...this.getThresholdData(thresholdKau, 'TKAU'), ...this.getThresholdData(thresholdKag, 'TKAG') }
+    } else if (thresholdKau) {
+      return { ...this.getThresholdData(thresholdKau, 'KAU') }
+    } else if (thresholdKag) {
+      return { ...this.getThresholdData(thresholdKag, 'KAG') }
+    }
+  }
+  else{
     if (thresholdKau && thresholdKag) {
       return { ...this.getThresholdData(thresholdKau, 'KAU'), ...this.getThresholdData(thresholdKag, 'KAG') }
     } else if (thresholdKau) {
@@ -254,6 +278,7 @@ export class AccountInfo extends React.Component<Props, State> {
     } else if (thresholdKag) {
       return { ...this.getThresholdData(thresholdKag, 'KAG') }
     }
+  }
   }
 
   renderThresholds = () => {
@@ -305,7 +330,7 @@ export class AccountInfo extends React.Component<Props, State> {
     ) {
       return 'TKAG'
     }
-  }
+}
 
   render() {
     const { accountKag } = this.props
