@@ -82,9 +82,12 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
     } = this.props
     let currAbbr: string = kau.currency
     let currName: string = kag.currency
-    if ((Number(localStorage.getItem('selectedConnection')) || 0) > 1) {
+    if ((Number(localStorage.getItem('selectedConnection')) === 1)) {
       currAbbr = 'T' + currAbbr
       currName = 'T' + currName
+    }
+    else{
+    // console.log('Mainnet.....')
     }
 
     return (

@@ -111,14 +111,22 @@ const getCurrency = (transaction) => {
   if (!transaction) {
     return ''
   }
+  if ((Number(localStorage.getItem('selectedConnection')) === 1)) {
+    if (responseUrl?.toLowerCase().includes('kau')) {
+      return 'TKAU'
+    } else if (responseUrl?.toLowerCase().includes('kag')) {
+      return 'TKAG'
+    }
+    console.log('Testnet')
+  }
+  
+  else {
+  console.log('Maiinnet....')
   if (responseUrl?.toLowerCase().includes('kau')) {
     return 'KAU'
   } else if (responseUrl?.toLowerCase().includes('kag')) {
     return 'KAG'
-  } else if (responseUrl?.toLowerCase().includes('kau')) {
-    return 'TKAU'
-  } else if (responseUrl?.toLowerCase().includes('kag')) {
-    return 'TKAG'
+  }
   }
 }
 
