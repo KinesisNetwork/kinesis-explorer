@@ -41,7 +41,7 @@ export class AccountInfo extends React.Component<Props, State> {
       showLoadMore: true,
       isSignersOpen: false,
     }
-
+console.log("seectedConnection",this.props.accountKag,this.props.accountKau)
     this.onClickLoadMore = this.onClickLoadMore.bind(this)
   }
 
@@ -307,34 +307,48 @@ export class AccountInfo extends React.Component<Props, State> {
   renderSignersKey = () => {
     this.setState({ isSignersOpen: !this.state.isSignersOpen })
   }
-
-  connectionSelector(): string {
-    if (
-      this.props.selectedConnection.kau.name.toLowerCase().includes('mainnet') &&
-      this.props.selectedConnection.kau.currency.toLowerCase().includes('kau')
-    ) {
-      return 'KAU'
-    } else if (
-      this.props.selectedConnection.kag.name.toLowerCase().includes('mainnet') &&
-      this.props.selectedConnection.kag.currency.toLowerCase().includes('kag')
-    ) {
-      return 'KAG'
-    } else if (
-      this.props.selectedConnection.kau.name.toLowerCase().includes('testnet') &&
-      this.props.selectedConnection.kau.currency.toLowerCase().includes('kau')
-    ) {
-      return 'TKAU'
-    } else if (
-      this.props.selectedConnection.kag.name.toLowerCase().includes('testnet') &&
-      this.props.selectedConnection.kag.currency.toLowerCase().includes('kag')
-    ) {
-      return 'TKAG'
-    }
-}
-
+//   connectionSelector(): string {
+//     if (
+//       this.props.selectedConnection.kau.name.toLowerCase().includes('mainnet') &&
+//       this.props.selectedConnection.kau.currency.toLowerCase().includes('kau')
+//     ) {
+//       return 'KAU'
+//     } else if (
+//       this.props.selectedConnection.kag.name.toLowerCase().includes('mainnet') &&
+//       this.props.selectedConnection.kag.currency.toLowerCase().includes('kag')
+//     ) {
+//       return 'KAG'
+//     } else if (
+//       this.props.selectedConnection.kau.name.toLowerCase().includes('testnet') &&
+//       this.props.selectedConnection.kau.currency.toLowerCase().includes('kau')
+//     ) {
+//       return 'TKAU'
+//     } else if (
+//       this.props.selectedConnection.kag.name.toLowerCase().includes('testnet') &&
+//       this.props.selectedConnection.kag.currency.toLowerCase().includes('kag')
+//     ) {
+//       return 'TKAG'
+//     }
+// }
+// connectionSelector(): string {
+//   if ((Number(localStorage.getItem('selectedConnection')) === 1)) {
+//   if ( this.props.accountKag ===undefined)
+//     {
+//       console.log("kau")
+//       return 'TKAU'
+//     }
+//     if ( this.props.accountKau ===undefined)
+//     {
+//       console.log("kag")
+//       return 'TKAG'
+//     }
+//   }
+   
+// }
   render() {
     const { accountKag } = this.props
     const { showLoadMore, operations } = this.state
+
     return (
       <div className='tile is-ancestor'>
         <div className='tile is-vertical'>
@@ -377,12 +391,23 @@ export class AccountInfo extends React.Component<Props, State> {
               {this.renderSigners()}
             </div>
           </div> */}
+        {console.log("this",this.props.accountKag?.balances?.[0]?.asset_type)}
           <div className='tile is-parent is-vertical'>
+          {((Number(localStorage.getItem('selectedConnection')) === 1)) ?(
             <OperationList
               operations={operations}
-              conn={this.connectionSelector()}
-              selectedConnection={this.props.selectedConnection}
+              // conn={this.connectionSelector()}
+              conn={(this.props.accountKag?.balances?.[0]?.balance == "0.0") ? "TKAU" : "TKAG"  && (this.props.accountKau?.balances?.[0]?.balance == "0.0") ? "TKAG" : "TKAU" }
+               selectedConnection={this.props.selectedConnection}
             />
+            ) : (
+              <OperationList
+              operations={operations}
+              // conn={this.connectionSelector()}
+              conn={(this.props.accountKag?.balances?.[0]?.balance == "0.0") ? "KAU" : "KAG"  && (this.props.accountKau?.balances?.[0]?.balance == "0.0") ? "KAG" : "KAU"}
+               selectedConnection={this.props.selectedConnection}
+            />
+              )}    
             {showLoadMore && (
               <button className='button' onClick={this.onClickLoadMore}>
                 Load more
