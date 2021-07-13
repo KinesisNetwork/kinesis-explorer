@@ -117,11 +117,7 @@ const getCurrency = (transaction) => {
     } else if (responseUrl?.toLowerCase().includes('kag')) {
       return 'TKAG'
     }
-    console.log('Testnet')
-  }
-  
-  else {
-  console.log('Maiinnet....')
+  } else {
   if (responseUrl?.toLowerCase().includes('kau')) {
     return 'KAU'
   } else if (responseUrl?.toLowerCase().includes('kag')) {

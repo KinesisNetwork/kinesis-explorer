@@ -220,18 +220,16 @@ export class AccountInfo extends React.Component<Props, State> {
       <HorizontalLabelledFieldBalance key={i} label={balance.asset_type} value={balance.balance} />
     ))
     return <React.Fragment>{balances}</React.Fragment>
-    }
-    else {
-      console.log('Mainnet')
+    } else {
       const balanceKau = this.getBalances(this.props.accountKau?.balances, 'KAU', 5)
-    const balanceKag = this.getBalances(this.props.accountKag?.balances, 'KAG', 5)
-    balances = [...balanceKau, ...balanceKag]
-    balances = balances.map((balance, i) => (
+      const balanceKag = this.getBalances(this.props.accountKag?.balances, 'KAG', 5)
+      balances = [...balanceKau, ...balanceKag]
+      balances = balances.map((balance, i) => (
       <HorizontalLabelledFieldBalance key={i} label={balance.asset_type} value={balance.balance} />
     ))
-    return <React.Fragment>{balances}</React.Fragment>
+      return <React.Fragment>{balances}</React.Fragment>
     }
-    
+
   }
 
   getBalances = (balances, currency, precision) => {
@@ -269,8 +267,7 @@ export class AccountInfo extends React.Component<Props, State> {
     } else if (thresholdKag) {
       return { ...this.getThresholdData(thresholdKag, 'KAG') }
     }
-  }
-  else{
+  } else {
     if (thresholdKau && thresholdKag) {
       return { ...this.getThresholdData(thresholdKau, 'KAU'), ...this.getThresholdData(thresholdKag, 'KAG') }
     } else if (thresholdKau) {
