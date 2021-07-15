@@ -85,8 +85,7 @@ class StatisticsWidget extends React.Component<StatisticsWidgetProps, State> {
     if ((Number(localStorage.getItem('selectedConnection')) === 1)) {
       currAbbr = 'T' + currAbbr
       currName = 'T' + currName
-    }
-    else{
+    } else {
     // console.log('Mainnet.....')
     }
 
