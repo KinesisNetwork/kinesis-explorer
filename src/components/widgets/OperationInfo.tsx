@@ -48,7 +48,9 @@ export const OperationInfo: React.SFC<{
   operation: OperationRecord | null,
   conn: string,
 }> = ({ selectedConnection, operation, conn }) => {
-  currConn = conn
+  const networkType =  operation._links?.effects?.href.slice(12, 19) === 'testnet' ? 'T' : ''
+  currConn = networkType + operation._links?.effects?.href.slice(8, 11).toUpperCase()
+  // console.log(networkType, 'current connection.......')
 
   const fields = operation
     ? Object.entries(operation)
