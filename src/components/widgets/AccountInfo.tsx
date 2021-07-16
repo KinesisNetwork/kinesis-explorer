@@ -11,8 +11,8 @@ import { OperationList } from './OperationList'
 
 interface KemRecord extends AccountRecord {
   signers: Array<{
-    public_key: string,
-    weight: number,
+    public_key: string
+    weight: number
     key?: string,
   }>
 }
@@ -41,7 +41,7 @@ export class AccountInfo extends React.Component<Props, State> {
       showLoadMore: true,
       isSignersOpen: false,
     }
-
+    // console.log('seectedConnection', this.props.accountKag, this.props.accountKau)
     this.onClickLoadMore = this.onClickLoadMore.bind(this)
   }
 
@@ -53,6 +53,7 @@ export class AccountInfo extends React.Component<Props, State> {
     showLoadMore?: any,
     operations?: any,
     keys?: any,
+    network?: string,
   ) => {
     operations = await account.operations({ limit, cursor, order: 'desc' })
 
@@ -61,14 +62,17 @@ export class AccountInfo extends React.Component<Props, State> {
       : undefined
 
     showLoadMore = operations.records.length ? operations.records.length === limit : !cursor
+    // const showLoadMore = transactions.length ? transactions.length === limit : !cursor
     const originalRecordSet = this.state[operations] ? this.state[operations].records : []
     // Simple de-duping
+
     operations.records = originalRecordSet.concat(
       ...operations.records.filter((v) => {
         return originalRecordSet.findIndex((ov) => ov.id === v.id) === -1
       }),
     )
-    return [operations, lastPagingToken, showLoadMore]
+
+    return [operations, lastPagingToken, showLoadMore, network]
     // this.setState({
     //  [this.state[keys.operations]]:operations,
     //  [this.state[keys.lastPagingToken]]:lastPagingToken,
@@ -76,7 +80,7 @@ export class AccountInfo extends React.Component<Props, State> {
     // })
   }
 
-  handleOperations = async (account?: any, cursor?: string, limit: number = 10) => {
+  handleOperations = async (account?: any, network?: string, cursor?: string, limit: number = 10) => {
     if (!account) {
       return
     }
@@ -88,7 +92,9 @@ export class AccountInfo extends React.Component<Props, State> {
       this.state.lastPagingToken,
       this.state.showLoadMore,
       this.state.operations,
+      network,
     )
+    // console.log(result, 'result')
     const [lastPagingToken, showLoadMore] = result
     let [operations] = result
 
@@ -138,7 +144,7 @@ export class AccountInfo extends React.Component<Props, State> {
     // Simple de-duping
     const records = await Promise.all(
       transactions.map((transaction) =>
-       transaction.operations({
+        transaction.operations({
           limit: transaction.operation_count,
           cursor: undefined,
           order: 'desc',
@@ -151,7 +157,7 @@ export class AccountInfo extends React.Component<Props, State> {
       next: () => Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
       prev: () => Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
     }
-    this.setState({operations})
+    this.setState({ operations })
     // Simple de-duping
     operations.records = originalRecordSet.concat(
       ...operations.records.filter((v) => {
@@ -162,16 +168,15 @@ export class AccountInfo extends React.Component<Props, State> {
       operations,
       lastPagingToken,
       showLoadMore,
-
     })
   }
 
   componentDidUpdate(prevProps: Props) {
-    if (prevProps.accountKag?.account_id !== this.props.accountKag?.account_id) {
-      this.handleOperations(this.props.accountKag)
-    } else if (prevProps.accountKau?.account_id !== this.props.accountKau?.account_id) {
-      this.handleOperations(this.props.accountKau)
-    }
+    // if (prevProps.accountKag?.account_id !== this.props.accountKag?.account_id) {
+    //   this.handleOperations(this.props.accountKag)
+    // } else if (prevProps.accountKau?.account_id !== this.props.accountKau?.account_id) {
+    //   this.handleOperations(this.props.accountKau)
+    // }
   }
 
   componentDidMount() {
@@ -191,6 +196,11 @@ export class AccountInfo extends React.Component<Props, State> {
       // this.loadOperations()
       this.handleOperations(this.props.accountKau)
     }
+    if (this.props.accountKag?.account_id !== this.props.accountKag?.account_id) {
+      this.handleOperations(this.props.accountKag)
+    } else if (this.props.accountKau?.account_id !== this.props.accountKau?.account_id) {
+      this.handleOperations(this.props.accountKau)
+    }
   }
 
   onClickLoadMore() {
@@ -198,12 +208,12 @@ export class AccountInfo extends React.Component<Props, State> {
     if (this.props.accountKag?.balances[0].balance === '0.0') {
       this.loadMergedTransactions(this.state.lastPagingToken, 10)
     } else {
-      this.handleOperations(this.props.accountKag, '', 10)
+      this.handleOperations(this.props.accountKag?.account_id !== this.props.accountKag?.account_id)
     }
     if (this.props.accountKau?.balances[0].balance === '0.0') {
       this.loadMergedTransactions(this.state.lastPagingToken, 10)
     } else {
-      this.handleOperations(this.props.accountKau, '', 10)
+      this.handleOperations(this.props.accountKau.account_id !== this.props.accountKau?.account_id)
     }
   }
 
@@ -212,24 +222,24 @@ export class AccountInfo extends React.Component<Props, State> {
     let balances = []
     // const balanceKau = this.getBalances(this.props.accountKau?.balances, 'KAU', 5)
     // const balanceKag = this.getBalances(this.props.accountKag?.balances, 'KAG', 5)
-    if ((Number(localStorage.getItem('selectedConnection')) === 1)) {
-    const balanceKau = this.getBalances(this.props.accountKau?.balances, 'TKAU', 5)
-    const balanceKag = this.getBalances(this.props.accountKag?.balances, 'TKAG', 5)
-    balances = [...balanceKau, ...balanceKag]
-    balances = balances.map((balance, i) => (
-      <HorizontalLabelledFieldBalance key={i} label={balance.asset_type} value={balance.balance} />
-    ))
-    return <React.Fragment>{balances}</React.Fragment>
+    if (Number(localStorage.getItem('selectedConnection')) === 1) {
+      const balanceKau = this.getBalances(this.props.accountKau?.balances, 'TKAU', 5)
+      const balanceKag = this.getBalances(this.props.accountKag?.balances, 'TKAG', 5)
+      balances = [...balanceKau, ...balanceKag]
+      balances = balances.map((balance, i) => (
+        <HorizontalLabelledFieldBalance key={i} label={balance.asset_type} value={balance.balance} />
+      ))
+      return <React.Fragment>{balances}</React.Fragment>
     } else {
+      // console.log('Mainnet')
       const balanceKau = this.getBalances(this.props.accountKau?.balances, 'KAU', 5)
       const balanceKag = this.getBalances(this.props.accountKag?.balances, 'KAG', 5)
       balances = [...balanceKau, ...balanceKag]
       balances = balances.map((balance, i) => (
-      <HorizontalLabelledFieldBalance key={i} label={balance.asset_type} value={balance.balance} />
-    ))
+        <HorizontalLabelledFieldBalance key={i} label={balance.asset_type} value={balance.balance} />
+      ))
       return <React.Fragment>{balances}</React.Fragment>
     }
-
   }
 
   getBalances = (balances, currency, precision) => {
@@ -259,23 +269,23 @@ export class AccountInfo extends React.Component<Props, State> {
   getAccountThresholds = () => {
     const thresholdKag = this.props.accountKag?.thresholds
     const thresholdKau = this.props.accountKau?.thresholds
-    if ((Number(localStorage.getItem('selectedConnection')) === 1)) {
-    if (thresholdKau && thresholdKag) {
-      return { ...this.getThresholdData(thresholdKau, 'TKAU'), ...this.getThresholdData(thresholdKag, 'TKAG') }
-    } else if (thresholdKau) {
-      return { ...this.getThresholdData(thresholdKau, 'KAU') }
-    } else if (thresholdKag) {
-      return { ...this.getThresholdData(thresholdKag, 'KAG') }
+    if (Number(localStorage.getItem('selectedConnection')) === 1) {
+      if (thresholdKau && thresholdKag) {
+        return { ...this.getThresholdData(thresholdKau, 'TKAU'), ...this.getThresholdData(thresholdKag, 'TKAG') }
+      } else if (thresholdKau) {
+        return { ...this.getThresholdData(thresholdKau, 'KAU') }
+      } else if (thresholdKag) {
+        return { ...this.getThresholdData(thresholdKag, 'KAG') }
+      }
+    } else {
+      if (thresholdKau && thresholdKag) {
+        return { ...this.getThresholdData(thresholdKau, 'KAU'), ...this.getThresholdData(thresholdKag, 'KAG') }
+      } else if (thresholdKau) {
+        return { ...this.getThresholdData(thresholdKau, 'KAU') }
+      } else if (thresholdKag) {
+        return { ...this.getThresholdData(thresholdKag, 'KAG') }
+      }
     }
-  } else {
-    if (thresholdKau && thresholdKag) {
-      return { ...this.getThresholdData(thresholdKau, 'KAU'), ...this.getThresholdData(thresholdKag, 'KAG') }
-    } else if (thresholdKau) {
-      return { ...this.getThresholdData(thresholdKau, 'KAU') }
-    } else if (thresholdKag) {
-      return { ...this.getThresholdData(thresholdKag, 'KAG') }
-    }
-  }
   }
 
   renderThresholds = () => {
@@ -304,34 +314,50 @@ export class AccountInfo extends React.Component<Props, State> {
   renderSignersKey = () => {
     this.setState({ isSignersOpen: !this.state.isSignersOpen })
   }
-
   connectionSelector(): string {
     if (
       this.props.selectedConnection.kau.name.toLowerCase().includes('mainnet') &&
       this.props.selectedConnection.kau.currency.toLowerCase().includes('kau')
     ) {
-      return 'KAU'
+      return
     } else if (
       this.props.selectedConnection.kag.name.toLowerCase().includes('mainnet') &&
       this.props.selectedConnection.kag.currency.toLowerCase().includes('kag')
     ) {
-      return 'KAG'
+      return
     } else if (
       this.props.selectedConnection.kau.name.toLowerCase().includes('testnet') &&
       this.props.selectedConnection.kau.currency.toLowerCase().includes('kau')
     ) {
-      return 'TKAU'
+      return
     } else if (
       this.props.selectedConnection.kag.name.toLowerCase().includes('testnet') &&
       this.props.selectedConnection.kag.currency.toLowerCase().includes('kag')
     ) {
-      return 'TKAG'
+      return
     }
-}
+  }
+  // connectionSelector(): string {
+  //   if ((Number(localStorage.getItem('selectedConnection')) === 1)) {
+  //   if ( this.props.accountKag ===undefined)
+  //     {
+  //       console.log("kau")
+  //       return 'TKAU'
+  //     }
+  //     if ( this.props.accountKau ===undefined)
+  //     {
+  //       console.log("kag")
+  //       return 'TKAG'
+  //     }
+  //   }
 
+  // }
   render() {
     const { accountKag } = this.props
     const { showLoadMore, operations } = this.state
+    const KagValue = this.props.accountKag?._links?.data?.href
+    const KauValue = this.props.accountKau?._links?.data?.href.slice(8, 11)
+    //  console.log(KagValue, 'KAG...'  )
     return (
       <div className='tile is-ancestor'>
         <div className='tile is-vertical'>
@@ -378,6 +404,7 @@ export class AccountInfo extends React.Component<Props, State> {
             <OperationList
               operations={operations}
               conn={this.connectionSelector()}
+              // conn={(this.props.accountKau?._links?.data?.href.slice(8,11)) ? "TKAU" : "TKAG"  }
               selectedConnection={this.props.selectedConnection}
             />
             {showLoadMore && (
