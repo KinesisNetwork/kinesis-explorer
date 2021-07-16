@@ -62,6 +62,7 @@ export class AccountInfo extends React.Component<Props, State> {
       : undefined
 
     showLoadMore = operations.records.length ? operations.records.length === limit : !cursor
+    // const showLoadMore = transactions.length ? transactions.length === limit : !cursor
     const originalRecordSet = this.state[operations] ? this.state[operations].records : []
     // Simple de-duping
 
@@ -313,29 +314,29 @@ export class AccountInfo extends React.Component<Props, State> {
   renderSignersKey = () => {
     this.setState({ isSignersOpen: !this.state.isSignersOpen })
   }
-  //   connectionSelector(): string {
-  //     if (
-  //       this.props.selectedConnection.kau.name.toLowerCase().includes('mainnet') &&
-  //       this.props.selectedConnection.kau.currency.toLowerCase().includes('kau')
-  //     ) {
-  //       return 'KAU'
-  //     } else if (
-  //       this.props.selectedConnection.kag.name.toLowerCase().includes('mainnet') &&
-  //       this.props.selectedConnection.kag.currency.toLowerCase().includes('kag')
-  //     ) {
-  //       return 'KAG'
-  //     } else if (
-  //       this.props.selectedConnection.kau.name.toLowerCase().includes('testnet') &&
-  //       this.props.selectedConnection.kau.currency.toLowerCase().includes('kau')
-  //     ) {
-  //       return 'TKAU'
-  //     } else if (
-  //       this.props.selectedConnection.kag.name.toLowerCase().includes('testnet') &&
-  //       this.props.selectedConnection.kag.currency.toLowerCase().includes('kag')
-  //     ) {
-  //       return 'TKAG'
-  //     }
-  // }
+  connectionSelector(): string {
+    if (
+      this.props.selectedConnection.kau.name.toLowerCase().includes('mainnet') &&
+      this.props.selectedConnection.kau.currency.toLowerCase().includes('kau')
+    ) {
+      return
+    } else if (
+      this.props.selectedConnection.kag.name.toLowerCase().includes('mainnet') &&
+      this.props.selectedConnection.kag.currency.toLowerCase().includes('kag')
+    ) {
+      return
+    } else if (
+      this.props.selectedConnection.kau.name.toLowerCase().includes('testnet') &&
+      this.props.selectedConnection.kau.currency.toLowerCase().includes('kau')
+    ) {
+      return
+    } else if (
+      this.props.selectedConnection.kag.name.toLowerCase().includes('testnet') &&
+      this.props.selectedConnection.kag.currency.toLowerCase().includes('kag')
+    ) {
+      return
+    }
+  }
   // connectionSelector(): string {
   //   if ((Number(localStorage.getItem('selectedConnection')) === 1)) {
   //   if ( this.props.accountKag ===undefined)
@@ -400,37 +401,12 @@ export class AccountInfo extends React.Component<Props, State> {
             </div>
           </div> */}
           <div className='tile is-parent is-vertical'>
-            {/* {((Number(localStorage.getItem('selectedConnection')) === 1)) ?(
             <OperationList
               operations={operations}
-              // conn={this.connectionSelector()}
-              conn={(this.props.accountKau?._links?.data?.href.slice(8,11)) ? "TKAU" : "TKAG"  }
-               selectedConnection={this.props.selectedConnection}
+              conn={this.connectionSelector()}
+              // conn={(this.props.accountKau?._links?.data?.href.slice(8,11)) ? "TKAU" : "TKAG"  }
+              selectedConnection={this.props.selectedConnection}
             />
-            ) : (
-              <OperationList
-              operations={operations}
-              // conn={this.connectionSelector()}
-              conn={(this.props.accountKag?._links?.data?.href.slice(8,11))? 'KAU': 'KAG'  }
-               selectedConnection={this.props.selectedConnection}
-
-            />
-              )}     */}
-            {Number(localStorage.getItem('selectedConnection')) === 1 ? (
-              <OperationList
-                operations={operations}
-                // conn={this.connectionSelector()}
-                conn={this.props.accountKau ? 'TKAU' : 'TKAG'}
-                selectedConnection={this.props.selectedConnection}
-              />
-            ) : (
-              <OperationList
-                operations={operations}
-                // conn={this.connectionSelector()}
-                conn={this.props.accountKag ? 'KAG' : 'KAU'}
-                selectedConnection={this.props.selectedConnection}
-              />
-            )}
             {showLoadMore && (
               <button className='button' onClick={this.onClickLoadMore}>
                 Load more
