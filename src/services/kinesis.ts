@@ -114,21 +114,30 @@ export async function getTransactions(
   let records
   const Kag: any = await outputKag.then((result) => result)
   // const recordsKag = await getRecords(transactionsPromise.kag, limit)
-   console.log('output1', recordsKag)
   records = [...Kau, ...Kag]
   // records.sort(function(a,b){
-    // Turn your strings into dates, and then subtract them
-    // to get a value that is either negative, positive, or zero.
-    
+  // Turn your strings into dates, and then subtract them
+  // to get a value that is either negative, positive, or zero.
 
   // });
-  records.sort((a,b) => (moment(a.created_at).valueOf()< moment(b.created_at).valueOf()) ? 1 : ((moment(b.created_at).valueOf()< moment(a.created_at).valueOf()) ? -1 : 0))
-  // records.sort((a,b) => ((moment(b.created_at).utc().format("hhmmss")) > (moment(a.created_at).utc().format("hhmmss"))) ? 1 : (((moment(a.created_at).utc().format("hhmmss"))>(moment(b.created_at).utc().format("hhmmss"))) ? -1 : 0))
-console.log(records[0].created_at )
-for (let index = 0; index < records.length; index++) {
-  const element = records[index].created_at
-  console.log(moment(records[index]?.created_at).utc().format("hh"), 'value', records[index]?.created_at)
-}
+  records.sort((a, b) =>
+    moment(a.created_at).valueOf() < moment(b.created_at).valueOf()
+      ? 1
+      : moment(b.created_at).valueOf() < moment(a.created_at).valueOf()
+      ? -1
+      : 0,
+  )
+  // records.sort((a, b) =>
+  //   moment(b.created_at).utc().format('hhmmss') > moment(a.created_at).utc().format('hhmmss')
+  //     ? 1
+  //     : moment(a.created_at).utc().format('hhmmss') > moment(b.created_at).utc().format('hhmmss')
+  //     ? -1
+  //     : 0,
+  // )
+  // for (let index = 0; index < records.length; index++) {
+  //   const element = records[index].created_at
+  //   console.log(moment(records[index]?.created_at).utc().format("hh"), 'value', records[index]?.created_at)
+  // }
   return records
   // console.log('getTransactionsRecords', records)
   // return records.length > 0
