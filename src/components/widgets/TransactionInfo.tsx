@@ -6,13 +6,14 @@ import { renderAmount } from '../../utils'
 import { HorizontalLabelledField } from '../shared'
 import { OperationList } from './OperationList'
 
+let currConn: string
 interface KemFee extends TransactionRecord {
   fee_charged?: 0
 }
 
 interface Props {
-  transaction: KemFee,
-  conn?: string,
+  transaction: KemFee
+  conn?: string
   selectedConnection: any
 }
 interface State {
@@ -81,6 +82,8 @@ export class TransactionInfo extends React.Component<Props, State> {
     const { transaction, conn } = this.props
     const feePaid = transaction.fee_paid || Number(transaction.fee_charged)
     const precision = conn === 'KEM' ? 7 : 5
+    const networkType = this.state.operations?.records[0]?._links?.self?.href.slice(12, 19) === 'testnet' ? 'T' : ''
+    currConn = networkType + this.state.operations?.records[0]?._links?.self?.href.slice(8, 11).toUpperCase()
     return (
       <div className='tile is-ancestor'>
         <div className='tile is-vertical is-parent'>
@@ -104,7 +107,7 @@ export class TransactionInfo extends React.Component<Props, State> {
             <HorizontalLabelledField
               label='Fee'
               value={renderAmount(convertStroopsToKinesis(feePaid), precision)}
-              appendCurr={conn}
+              appendCurr={currConn}
             />
             <HorizontalLabelledField
               label='Ledger'

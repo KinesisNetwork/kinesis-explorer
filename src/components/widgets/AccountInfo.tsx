@@ -61,7 +61,7 @@ export class AccountInfo extends React.Component<Props, State> {
       ? operations.records[operations.records.length - 1].paging_token
       : undefined
 
-    showLoadMore = operations.length ? operations.length === limit : !cursor
+    showLoadMore = operations.records.length ? operations.records.length === limit : !cursor
     // const showLoadMore = transactions.length ? transactions.length === limit : !cursor
     const originalRecordSet = this.state[operations] ? this.state[operations].records : []
     // Simple de-duping
@@ -172,11 +172,11 @@ export class AccountInfo extends React.Component<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    if (prevProps.accountKag?.account_id !== this.props.accountKag?.account_id) {
-      this.handleOperations(this.props.accountKag)
-    } else if (prevProps.accountKau?.account_id !== this.props.accountKau?.account_id) {
-      this.handleOperations(this.props.accountKau)
-    }
+    // if (prevProps.accountKag?.account_id !== this.props.accountKag?.account_id) {
+    //   this.handleOperations(this.props.accountKag)
+    // } else if (prevProps.accountKau?.account_id !== this.props.accountKau?.account_id) {
+    //   this.handleOperations(this.props.accountKau)
+    // }
   }
 
   componentDidMount() {
