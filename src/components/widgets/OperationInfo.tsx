@@ -32,7 +32,7 @@ const FORMAT_VALUE: { [key: string]: (value: string) => string | number | React.
     `${value.slice(8, 10)}/${value.slice(5, 7)}/${value.slice(0, 4)} ${value.slice(11, 14)}${value.slice(
       14,
       17,
-    )}${value.slice(17, 19)}`,
+    )}${value.slice(17, 19)} UTC`,
   source_account: (value) => <Link to={`/account/${value}`}>{value}</Link>,
   funder: (value) => <Link to={`/account/${value}`}>{value}</Link>,
   account: (value) => <Link to={`/account/${value}`}>{value}</Link>,
