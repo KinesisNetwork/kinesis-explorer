@@ -4,9 +4,12 @@ import { Redirect, RouteComponentProps } from 'react-router-dom'
 
 interface Props extends RouteComponentProps<{ search: string }> { }
 export class SearchRedirect extends React.Component<Props> {
+
   render() {
     const { search } = this.props.match.params
     const curr = localStorage.getItem('selectedConnection')
+    console.log(this.props.match, 'match...............')
+    console.log(this.props.match.params, 'params...............')
     const getConn = () => {
       if (curr === '0') {
         return 'KAU'
@@ -22,6 +25,8 @@ export class SearchRedirect extends React.Component<Props> {
       return <Redirect to={`/ledger/${search}`} />
     } else if (!isNaN(parseInt(search, 16))) {
       return <Redirect to={`/transaction/${getConn()}/${search}`} />
+    } else if (!isNaN(parseInt(search, 16))) {
+      return <Redirect to={`/memo/${getConn()}/${search}`} />
     } else {
       return <Redirect to={`/account/${search}`} />
     }

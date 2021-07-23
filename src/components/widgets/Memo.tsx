@@ -19,69 +19,21 @@ interface State {
   selectedConnectionName: Connection | undefined
 }
 
-class TransactionPage extends React.Component<Props, State> {
+class MemoPage extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
     this.state = { transaction: null, invalidTransaction: false, conn: undefined, selectedConnectionName: undefined }
   }
 
-  getId = (val: string) => {
-    if (val === 'KAU') {
-      return 0
-    } else if (val === 'KAG') {
-      return 1
-    } else if (val === 'TKAU') {
-      return 2
-    } else if (val === 'TKAG') {
-      return 3
-    }
-  }
 
-  loadTransaction = async () => {
-    try {
-      const element =   this.props.selectedConnection
-      try {
-          const value = await getTransaction(element, this.props.match.params.id)
-          this.setState({ transaction: value, selectedConnectionName: element })
-        } catch (err) {
-          // tslint:disable-next-line:no-console
-          console.error(err)
-        }
-    } catch (e) {
-      this.setState({ invalidTransaction: true })
-    }
-  }
-
-  componentDidMount() {
-    this.loadTransaction()
-  }
-
-  componentDidUpdate(prevProps: Props) {
-    if (prevProps.match.params.id !== this.props.match.params.id) {
-      this.loadTransaction()
-    }
-  }
+  
 
   render() {
-    if (this.state.invalidTransaction) {
-      return
-    }
+   console.log(this.state.transaction, 'transaction..........')
     return (
-      <section className='section'>
-        <div className='container'>
-          <h1 className='title'>Transaction</h1>
-          {console.log('memo is' , this.state.transaction?.memo)}
-          <h2 className='subtitle'>{this.props.match.params.id}</h2>
-          {!this.state.transaction ? (
-            <div />
-          ) : (
-            <TransactionInfo
-             transaction={this.state.transaction}
-             conn={this.props.match.params.connection}
-             selectedConnection={this.props.selectedConnection}
-            />
-          )}
-  {/* <section className='section'>
+     
+       
+  <section className='section'>
         <div className='container'>
         {!this.state.transaction?.memo ? (
             <div />
@@ -104,9 +56,8 @@ class TransactionPage extends React.Component<Props, State> {
 
         </div>
         
-        </section> */}
-        </div>
-      </section>
+        </section> 
+      
     )
   }
 }
@@ -115,7 +66,7 @@ class ConnectedTransaction extends React.Component<ConnectedTransactionProps> {
   render() {
     return (
       <Subscribe to={[ConnectionContainer]}>
-        {({ state }: ConnectionContainer) => <TransactionPage {...this.props} {...state} />}
+        {({ state }: ConnectionContainer) => <MemoPage {...this.props} {...state} />}
       </Subscribe>
     )
   }
