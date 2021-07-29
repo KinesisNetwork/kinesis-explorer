@@ -7,7 +7,7 @@ import { getAccount, validateAccount } from '../../services/kinesis'
 import { createEmptyBalanceAccountRecord } from '../../utils'
 import { AccountInfo } from '../widgets/AccountInfo'
 
-interface ConnectedAccountProps extends RouteComponentProps<{ id: string }> { }
+interface ConnectedAccountProps extends RouteComponentProps<{ id: string, search: string }> { }
 interface Props extends ConnectedAccountProps, ConnectionContext { }
 
 interface State {
@@ -15,6 +15,7 @@ interface State {
   accountKag: AccountRecord | null
   accountKau: AccountRecord | null
   invalidAccount: boolean
+  query: string
 }
 
 class AccountPage extends React.Component<Props, State> {
@@ -25,6 +26,7 @@ class AccountPage extends React.Component<Props, State> {
       accountKag: null,
       accountKau: null,
       invalidAccount: false,
+      query: '',
     }
   }
   loadAccount = async () => {
@@ -82,15 +84,40 @@ class AccountPage extends React.Component<Props, State> {
       this.loadAccount()
     }
   }
-
+  // createQuery = () => {
+  //   const query = window.location.pathname.split('/')
+  //   if (query[1] === 'memo') return query[3].replaceAll('-', ' ').replace('_', '#')
+  //   return query[2]
+  // }
+  createQuery = () => {
+    const query = window.location.pathname.split('/')
+    if (query[1] === 'memo') return query[3].replaceAll('-', ' ').replace('_', '#')
+    return query[2]
+  }
   render() {
     const { match, selectedConnection } = this.props
     const { accountKau, accountKag } = this.state
-
-    const accountId = match.params.id
-    if (this.state.invalidAccount) {
-      return <Redirect to={`/404`} />
+    const { search } = this.props.match.params
+    const query = this.createQuery()
+    const curr = localStorage.getItem('selectedConnection')
+    const getConn = () => {
+      if (curr === '0') {
+        return 'KAU'
+      } else if (curr === '1') {
+        return 'KAG'
+      } else if (curr === '2') {
+        return 'TKAU'
+      } else if (curr === '3') {
+        return 'TKAG'
+      }
     }
+    const accountId = match.params.id
+    
+    if(this.state.invalidAccount){
+  
+      return <Redirect to={`/memo/${getConn()}/${query}`} /> 
+    
+  }
     return (
       <section className='section'>
         <h1 className='title'>Account</h1>

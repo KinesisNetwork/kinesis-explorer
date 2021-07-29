@@ -7,7 +7,7 @@ import { ConnectionContainer, ConnectionContext } from '../../services/connectio
 import { getTransaction } from '../../services/kinesis'
 import { Connection } from '../../types'
 import { TransactionInfo } from '../widgets/TransactionInfo'
-import { TransactionMemo } from '../widgets/TransactionMemo'
+// import { TransactionMemo } from '../widgets/TransactionMemo'
 
 interface ConnectedTransactionProps extends RouteComponentProps<{ id: string; connection: string }> {}
 interface Props extends ConnectedTransactionProps, ConnectionContext {}
@@ -61,10 +61,27 @@ class TransactionPage extends React.Component<Props, State> {
       this.loadTransaction()
     }
   }
-
+  createQuery = () => {
+    const query = window.location.pathname.split('/')
+    if (query[1] === 'memo') return query[3].replaceAll('-', ' ').replace('_', '#')
+    return query[2]
+  }
   render() {
+    const query = this.createQuery()
+    const curr = localStorage.getItem('selectedConnection')
+    const getConn = () => {
+      if (curr === '0') {
+        return 'KAU'
+      } else if (curr === '1') {
+        return 'KAG'
+      } else if (curr === '2') {
+        return 'TKAU'
+      } else if (curr === '3') {
+        return 'TKAG'
+      }
+    }
     if (this.state.invalidTransaction) {
-      return
+      return <Redirect to={`/memo/${getConn()}/${query}`} /> 
     }
     return (
       <section className='section'>

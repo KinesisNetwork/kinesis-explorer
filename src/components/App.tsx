@@ -11,7 +11,7 @@ import NotFound from './layout/NotFound'
 import TransactionPage from './layout/Transaction'
 import ConnectionGate from './widgets/ConnectionGate'
 import { SearchRedirect } from './widgets/SearchRedirect'
-import MemoPage  from './widgets/Memo'
+import MemoPage  from './layout/Memo'
 
 export default class App extends React.Component {
   render() {
