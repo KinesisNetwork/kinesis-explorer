@@ -7,8 +7,8 @@ import { getAccount, validateAccount } from '../../services/kinesis'
 import { createEmptyBalanceAccountRecord } from '../../utils'
 import { AccountInfo } from '../widgets/AccountInfo'
 
-interface ConnectedAccountProps extends RouteComponentProps<{ id: string, search: string }> { }
-interface Props extends ConnectedAccountProps, ConnectionContext { }
+interface ConnectedAccountProps extends RouteComponentProps<{ id: string; search: string }> {}
+interface Props extends ConnectedAccountProps, ConnectionContext {}
 
 interface State {
   accountId: string | null
@@ -36,10 +36,9 @@ class AccountPage extends React.Component<Props, State> {
       const isAccountAddressValid: boolean = await validateAccount(accountId)
       if (!isAccountAddressValid) {
         return this.setState({ invalidAccount: true })
-      } else  {
+      } else {
         // In the scenario required, should add /transactions to URI to access deactivated account
         await this.getAccountDetailsOrUseEmptyBalanceAccount(accountId)
-
       }
     } catch (e) {
       this.setState({ invalidAccount: true })
@@ -57,17 +56,17 @@ class AccountPage extends React.Component<Props, State> {
           accountKag: createEmptyBalanceAccountRecord(accountId),
         })
         if (accountKau === undefined) {
+          this.setState({
+            accountKau: createEmptyBalanceAccountRecord(accountId),
+          })
+        }
+      } else if (accountKau === undefined) {
         this.setState({
           accountKau: createEmptyBalanceAccountRecord(accountId),
         })
+      } else {
+        this.setState({ accountKag, accountKau })
       }
-    } else if (accountKau === undefined ) {
-      this.setState({
-        accountKau: createEmptyBalanceAccountRecord(accountId),
-      })
-    } else {
-        this.setState({accountKag, accountKau})
-       }
     } catch (e) {
       this.setState({
         accountKau: createEmptyBalanceAccountRecord(accountId),
@@ -91,7 +90,9 @@ class AccountPage extends React.Component<Props, State> {
   // }
   createQuery = () => {
     const query = window.location.pathname.split('/')
-    if (query[1] === 'memo') return query[3].replaceAll('-', ' ').replace('_', '#')
+    if (query[1] === 'memo') {
+      return query[3].replaceAll('-', ' ').replace('_', '#')
+    }
     return query[2]
   }
   render() {
@@ -112,26 +113,24 @@ class AccountPage extends React.Component<Props, State> {
       }
     }
     const accountId = match.params.id
-    
-    if(this.state.invalidAccount){
-  
-      return <Redirect to={`/memo/${getConn()}/${query}`} /> 
-    
-  }
+
+    if (this.state.invalidAccount) {
+      return <Redirect to={`/memo/${getConn()}/${query}`} />
+    }
     return (
       <section className='section'>
         <h1 className='title'>Account</h1>
         <h2 className='subtitle'>{accountId}</h2>
         {!accountKag && !accountKau ? (
           <div />
-       ) : (
-            <AccountInfo
-              accountId={accountId}
-              accountKag={accountKag ? accountKag : undefined}
-              accountKau={accountKau ? accountKau : undefined}
-              selectedConnection={selectedConnection}
-            />
-           )}
+        ) : (
+          <AccountInfo
+            accountId={accountId}
+            accountKag={accountKag ? accountKag : undefined}
+            accountKau={accountKau ? accountKau : undefined}
+            selectedConnection={selectedConnection}
+          />
+        )}
       </section>
     )
   }
