@@ -18,8 +18,11 @@ interface State {
   selectedConnectionName: Connection | undefined
   operations: CollectionPage<OperationRecord> | null
   data: any[]
+  data1: any[]
   dataKau: any[]
   dataKag: any[]
+  dataKau1: any[]
+  dataKag1: any[]
   value: string
   // query : string
   transLimit: number
@@ -34,8 +37,11 @@ class MemoPage extends React.Component<Props, State> {
       conn: undefined,
       selectedConnectionName: undefined,
       data: [],
+      data1: [],
       dataKau: [],
       dataKag: [],
+      dataKau1: [],
+      dataKag1: [],
       operations: null,
       value: '',
       //  query: ''
@@ -48,8 +54,10 @@ class MemoPage extends React.Component<Props, State> {
     // console.log(query, 'Qu...........')
     const valKau = this.props.selectedConnection.kau.horizonURL
     const searchUrl = `${valKau}/transactions?limit=100&order=desc&q=${query} `
+    const searchUrl1 = `${valKau}/transactions?limit=100&order=desc&q=${query} `
     const valKag = this.props.selectedConnection.kag.horizonURL
     const searchLink = `${valKag}/transactions?limit=100&order=desc&q=${query} `
+    const searchLink1 = `${valKag}/transactions?limit=100&order=desc&q=${query} `
 
     let dataKau = [...this.state.dataKau]
     let dataKag = [...this.state.dataKag]
@@ -100,13 +108,13 @@ class MemoPage extends React.Component<Props, State> {
       })
     // console.log(dataKau, dataKag, 'THIS IS DATA.........')
     this.setState({ dataKau, dataKag })
-
-    this.doRecursiveRequest(searchUrl)
-    this.doRecursive(searchLink)
+    
+    this.doRecursiveRequest(searchUrl1)
+    this.doRecursive(searchLink1)
   }
 
   doRecursiveRequest = async (searchUrl) => {
-    let dataKau = [...this.state.dataKau]
+    let dataKau1 = [...this.state.dataKau1]
     return fetch(searchUrl).then(async (res) => {
       const currentResult = await res.json()
       // console.log(currentResult, 'currentResult.......')
@@ -128,18 +136,18 @@ class MemoPage extends React.Component<Props, State> {
           //  console.log('Data Kau.............', dataKau)
           // console.log('false..........')
         })
-        dataKau = [...data, ...dataKau]
-        this.setState({ dataKau })
+        dataKau1 = [...data, ...dataKau1]
+        this.setState({ dataKau1 })
         // console.log('Kau............', dataKau)
         // console.log('data.....', data)
-        return this.doRecursiveRequest(currentResult._links.next.href)
+        return this.doRecursiveRequest(currentResult._links.next.href  )
       } else {
         return this.doRecursiveRequest(currentResult._links.next.href)
       }
     })
   }
   doRecursive = async (searchLink) => {
-    let dataKag = [...this.state.dataKag]
+    let dataKag1 = [...this.state.dataKag1]
     await fetch(searchLink).then(async (res) => {
       const Result = await res.json()
       if (Result && Result._embedded && Result._embedded.records && Result._embedded.records.length) {
@@ -155,8 +163,8 @@ class MemoPage extends React.Component<Props, State> {
           //   return e.memo.toLowerCase().includes(this.state.query.toLowerCase())
           // }
         })
-        dataKag = [...data, ...dataKag]
-        this.setState({ dataKag })
+        dataKag1 = [...data, ...dataKag1]
+        this.setState({ dataKag1 })
         // console.log('Kag............', dataKag)
         return this.doRecursive(Result._links.next.href)
       } else {
@@ -164,7 +172,7 @@ class MemoPage extends React.Component<Props, State> {
       }
     })
     // console.log(dataKag, 'datakag......')
-    this.setState({ dataKag })
+    this.setState({ dataKag1 })
   }
 
   componentDidMount() {
@@ -187,13 +195,10 @@ class MemoPage extends React.Component<Props, State> {
     this.setState((old) => {
       return { transLimit: old.transLimit + 10 }
     })
+    
   }
   render() {
-    // console.log(this.state.data, 'transaction..........')
 
-    const networkType = this.state.dataKau[0]?._links?.self?.href.slice(11, 18) === 'testnet' ? 'T' : ''
-    currConn = networkType + this.state.dataKau[0]?._links?.self?.href.slice(7, 10).toUpperCase()
-    // console.log(currConn, 'DATAKAU')
     return (
       <section className='section'>
         <div className='container'>
@@ -202,7 +207,9 @@ class MemoPage extends React.Component<Props, State> {
               <p className='title  is-child box' style={{ marginBottom: '1.0rem' }}>
                 Transactions
               </p>
-              {[...this.state.dataKau, ...this.state.dataKag].slice(0, this.state.transLimit).map((record) => {
+              {[...this.state.dataKau, ...this.state.dataKag, ...this.state.dataKau1, ...this.state.dataKag1 ].slice(0, this.state.transLimit).map((record) => {
+                 const networkType = record._links.self.href.slice(11, 18) === 'testnet' ? 'T' : ''
+                 currConn = networkType + record._links.self.href.slice(7, 10).toUpperCase()
                 return (
                   <div className='box memo-card-margin' key={record}>
                     <p className='subtitle'>Summary</p>
@@ -227,7 +234,7 @@ class MemoPage extends React.Component<Props, State> {
                     <HorizontalLabelledField
                       label='Fee'
                       value={record.fee_paid}
-                      appendCurr={record._links.self.href.slice(7, 10).toUpperCase()}
+                      appendCurr={currConn}
                     />{' '}
                     {/* {console.log(record.fee_paid, 'record...')} */}
                     <HorizontalLabelledField
@@ -244,7 +251,7 @@ class MemoPage extends React.Component<Props, State> {
                   // </div>
                 )
               })}
-
+              
               <button
                 className='button'
                 onClick={() => this.moreTxs()}
