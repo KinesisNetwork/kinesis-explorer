@@ -150,9 +150,11 @@
 .padding-left-50 {
   padding-left: 45px !important;
 }
+
 .width-105 {
-    width: 10;
+  width: 10;
 }
+
 .field-label-info {
   flex-grow: 1 !important;
   flex-shrink: 0 !important;
@@ -160,6 +162,7 @@
   text-align: right !important;
   margin-top: 6px;
 }
+
 .down-arrow {
   height: 30px !important;
   text-align: right !important;
@@ -172,10 +175,10 @@
   padding-bottom: 8px;
   margin-left: 5px;
 }
-.drop-down-arrow{
+
+.drop-down-arrow {
   background: none;
   border: none;
-
   height: 30px !important;
   text-align: right !important;
   /* position: relative; */
@@ -184,10 +187,12 @@
   background: transparent !important;
   padding-bottom: 0px;
 }
-.is-statistics{
+
+.is-statistics {
   flex: none !important;
   width: 22.33333% !important;
 }
+
 .field-label-statistics {
   flex-grow: 1 !important;
   flex-shrink: 0 !important;
@@ -195,16 +200,24 @@
   text-align: right !important;
   margin-top: 6px;
 }
+
 .flex-n {
   flex: none;
 }
-.w-80{
+
+.w-80 {
   width: 80%
 }
+
 .w-100 {
-width: 100%
+  width: 100%
 }
-.info-table{
-table-layout: fixed;
-width: 65%
+
+.info-table {
+  table-layout: fixed;
+  width: 65%
+}
+
+.memo-card-margin {
+  margin-bottom: 1 rem !important;
 }

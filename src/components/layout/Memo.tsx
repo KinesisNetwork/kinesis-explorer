@@ -199,12 +199,12 @@ class MemoPage extends React.Component<Props, State> {
         <div className='container'>
           <div className='tile is-vertical is-parent'>
             <article className='tile is-child'>
-              <p className='title  is-child box' style={{ marginBottom: '0.3rem' }}>
+              <p className='title  is-child box' style={{ marginBottom: '1.0rem' }}>
                 Transactions
               </p>
               {[...this.state.dataKau, ...this.state.dataKag].slice(0, this.state.transLimit).map((record) => {
                 return (
-                  <div className='tile is-child box' key={record}>
+                  <div className='box memo-card-margin' key={record}>
                     <p className='subtitle'>Summary</p>
                     {/* <div onChange={this.handleChange}> */}
                     <HorizontalLabelledField
