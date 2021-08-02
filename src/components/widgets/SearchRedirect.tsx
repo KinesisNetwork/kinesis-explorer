@@ -38,11 +38,7 @@ export class SearchRedirect extends React.Component<Props, State> {
     const { search } = this.props.match.params
     const { query, query1 } = this.state
     const curr = localStorage.getItem('selectedConnection')
-    // console.log(this.props.match, 'match...............')
-    // console.log(this.props.match.params, 'params...............')
-    // console.log(search, 'search......')
-    // console.log(this.state.query, '......')
-    // console.log(this.props.transactions.fee_paid, "trans memo.......")
+
     const getConn = () => {
       if (curr === '0') {
         return 'KAU'
@@ -58,8 +54,6 @@ export class SearchRedirect extends React.Component<Props, State> {
       return <Redirect to={`/ledger/${search}`} />
     } else if (!isNaN(parseInt(search, 16))) {
       return <Redirect to={`/transaction/${getConn()}/${search}`} />
-      // } else if  (search.toLowerCase().includes(query)) {
-      //   return  <Redirect to={`/memo/${getConn()}/${search}`} />
     } else {
       return <Redirect to={`/account/${search}`} />
     }

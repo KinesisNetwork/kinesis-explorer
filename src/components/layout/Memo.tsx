@@ -1,6 +1,6 @@
 import { CollectionPage, OperationRecord, TransactionRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
-import { Redirect, RouteComponentProps } from 'react-router'
+import { RouteComponentProps } from 'react-router'
 import { Link } from 'react-router-dom'
 import { Subscribe } from 'unstated'
 import { ConnectionContainer, ConnectionContext } from '../../services/connections'
@@ -23,10 +23,9 @@ interface State {
   data1: any[]
   dataKau: any[]
   dataKag: any[]
-  dataKau1: any[]
-  dataKag1: any[]
+  dataKauRecursive: any[]
+  dataKagRecursive: any[]
   value: string
-  // query : string
   transLimit: number
 }
 
@@ -42,18 +41,16 @@ class MemoPage extends React.Component<Props, State> {
       data1: [],
       dataKau: [],
       dataKag: [],
-      dataKau1: [],
-      dataKag1: [],
+      dataKauRecursive: [],
+      dataKagRecursive: [],
       operations: null,
       value: '',
-      //  query: ''
       transLimit: 10,
     }
     this.moreTxs = this.moreTxs.bind(this)
   }
 
   fetchSearch = async (query) => {
-    // console.log(query, 'Qu...........')
     const valKau = this.props.selectedConnection.kau.horizonURL
     const searchUrl = `${valKau}/transactions?limit=100&order=desc&q=${query} `
     const valKag = this.props.selectedConnection.kag.horizonURL
@@ -63,9 +60,6 @@ class MemoPage extends React.Component<Props, State> {
     let dataKag = [...this.state.dataKag]
 
     await fetch(searchUrl)
-      // .then(async function(response) {
-      //   return await response.json()
-      // })
       .then((response) => {
         return response.json()
       })
@@ -73,18 +67,15 @@ class MemoPage extends React.Component<Props, State> {
       .then((response) => {
         const data = response._embedded.records.filter((e) => {
           if (e.memo) {
-            // console.log(e.memo, 'MEMO.......', query.toLowerCase())
             return e.memo.toLowerCase().includes(query.toLowerCase())
           }
-          // console.log('Data Kau.............', dataKau, query, response)
         })
         dataKau = [...data, ...dataKau]
-        // console.log(dataKau, query.toLowerCase(), data.memo, 'datakau.........')
       })
 
       .catch((error) => {
         if (error) {
-          // console.log(dataKau, query.toLowerCase(), data.memo, 'datakau.........')
+          // console.log("error");
         }
       })
     await fetch(searchLink)
@@ -94,51 +85,39 @@ class MemoPage extends React.Component<Props, State> {
       .then((response) => {
         const data = response._embedded.records.filter((e) => {
           if (e.memo) {
-            // console.log(e.memo, 'MEMO.......', query.toLowerCase())
             return e.memo.toLowerCase().includes(query.toLowerCase())
           }
-          // console.log('Data Kag.............', dataKag)
         })
         dataKag = [...data, ...dataKag]
       })
       .catch((error) => {
         if (error) {
-          // console.log('Data Kag.............', dataKag)
+          // console.log("error");
         }
       })
-    // console.log(dataKau, dataKag, 'THIS IS DATA.........')
     this.setState({ dataKau, dataKag })
     this.doRecursiveRequest(searchUrl)
     this.doRecursive(searchLink)
   }
 
   doRecursiveRequest = async (searchUrl) => {
-    let dataKau1 = [...this.state.dataKau1]
+    let dataKauRecursive = [...this.state.dataKauRecursive]
     return fetch(searchUrl).then(async (res) => {
       const currentResult = await res.json()
-      // console.log(currentResult, 'currentResult.......')
       if (
         currentResult &&
         currentResult._embedded &&
         currentResult._embedded.records &&
         currentResult._embedded.records.length
       ) {
-        // console.log('true..........')
         const query = this.createQuery()
         const data = currentResult._embedded.records.filter((e) => {
-          // console.log(currentResult._embedded.records.next, 'e.....')
           if (e.memo) {
-            // console.log(e.memo, 'MEMO.......', query.toLowerCase())
-
             return e.memo.toLowerCase().includes(query.toLowerCase())
           }
-          //  console.log('Data Kau.............', dataKau)
-          // console.log('false..........')
         })
-        dataKau1 = [...data, ...dataKau1]
-        this.setState({ dataKau1 })
-        // console.log('Kau............', dataKau)
-        // console.log('data.....', data)
+        dataKauRecursive = [...data, ...dataKauRecursive]
+        this.setState({ dataKauRecursive })
         return this.doRecursiveRequest(currentResult._links.next.href)
       } else {
         return this.doRecursiveRequest(currentResult._links.next.href)
@@ -146,41 +125,29 @@ class MemoPage extends React.Component<Props, State> {
     })
   }
   doRecursive = async (searchLink) => {
-    let dataKag1 = [...this.state.dataKag1]
+    let dataKagRecursive = [...this.state.dataKagRecursive]
     await fetch(searchLink).then(async (res) => {
       const Result = await res.json()
       if (Result && Result._embedded && Result._embedded.records && Result._embedded.records.length) {
         const query = this.createQuery()
         const data = Result._embedded.records.filter((e) => {
           if (e.memo) {
-            // console.log(e.memo, 'MEMO.......', query.toLowerCase())
             return e.memo.toLowerCase().includes(query.toLowerCase())
           }
-          // console.log('Data Kag.............', dataKag)
-
-          // if (e.memo) {
-          //   return e.memo.toLowerCase().includes(this.state.query.toLowerCase())
-          // }
         })
-        dataKag1 = [...data, ...dataKag1]
-        this.setState({ dataKag1 })
-        // console.log('Kag............', dataKag)
+        dataKagRecursive = [...data, ...dataKagRecursive]
+        this.setState({ dataKagRecursive })
         return this.doRecursive(Result._links.next.href)
       } else {
         return this.doRecursive(Result._links.next.href)
       }
     })
-    // console.log(dataKag, 'datakag......')
-    this.setState({ dataKag1 })
+    this.setState({ dataKagRecursive })
   }
 
   componentDidMount() {
-    // const {query} = this.state
-
     const query = this.createQuery()
     this.fetchSearch(query)
-    // console.log(query, 'qu.......')
-    // console.log(query[3],query, 'Query......')
   }
   createQuery = () => {
     const query = window.location.pathname.split('/')
@@ -204,7 +171,12 @@ class MemoPage extends React.Component<Props, State> {
               <p className='title  is-child box' style={{ marginBottom: '1.0rem' }}>
                 Transactions
               </p>
-              {[...this.state.dataKau, ...this.state.dataKag, ...this.state.dataKau1, ...this.state.dataKag1]
+              {[
+                ...this.state.dataKau,
+                ...this.state.dataKag,
+                ...this.state.dataKauRecursive,
+                ...this.state.dataKagRecursive,
+              ]
                 .slice(0, this.state.transLimit)
                 .map((record) => {
                   const networkType = record._links.self.href.slice(11, 18) === 'testnet' ? 'T' : ''
@@ -214,7 +186,6 @@ class MemoPage extends React.Component<Props, State> {
                   return (
                     <div className='box memo-card-margin' key={record}>
                       <p className='subtitle'>Summary</p>
-                      {/* <div onChange={this.handleChange}> */}
                       <HorizontalLabelledField
                         label='Created At'
                         value={
@@ -237,7 +208,6 @@ class MemoPage extends React.Component<Props, State> {
                         value={renderAmount(convertStroopsToKinesis(feePaid), precision)}
                         appendCurr={currConn}
                       />{' '}
-                      {/* {console.log(record.fee_paid, 'record...')} */}
                       <HorizontalLabelledField
                         label='Ledger'
                         value={<Link to={`/ledger/${record.ledger}`}>{record.ledger}</Link>}
@@ -249,7 +219,6 @@ class MemoPage extends React.Component<Props, State> {
                         value={<Link to={`/account/${record.source_account}`}>{record.source_account}</Link>}
                       />
                     </div>
-                    // </div>
                   )
                 })}
 

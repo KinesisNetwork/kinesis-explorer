@@ -49,7 +49,6 @@ class AccountPage extends React.Component<Props, State> {
     try {
       const accountKau = await getAccount(this.props.selectedConnection.kau, accountId)
       const accountKag = await getAccount(this.props.selectedConnection.kag, accountId)
-      //  console.log('accountKag1', accountKag, accountKau)
       this.setState({ accountKag, accountKau })
       if (accountKag === undefined) {
         this.setState({
@@ -83,11 +82,7 @@ class AccountPage extends React.Component<Props, State> {
       this.loadAccount()
     }
   }
-  // createQuery = () => {
-  //   const query = window.location.pathname.split('/')
-  //   if (query[1] === 'memo') return query[3].replaceAll('-', ' ').replace('_', '#')
-  //   return query[2]
-  // }
+
   createQuery = () => {
     const query = window.location.pathname.split('/')
     if (query[1] === 'memo') {
