@@ -4,7 +4,9 @@ import { Redirect, RouteComponentProps } from 'react-router'
 import { Link } from 'react-router-dom'
 import { Subscribe } from 'unstated'
 import { ConnectionContainer, ConnectionContext } from '../../services/connections'
+import { convertStroopsToKinesis } from '../../services/kinesis'
 import { Connection } from '../../types'
+import { renderAmount } from '../../utils'
 import { HorizontalLabelledField } from '../shared'
 
 let currConn: string
@@ -54,10 +56,8 @@ class MemoPage extends React.Component<Props, State> {
     // console.log(query, 'Qu...........')
     const valKau = this.props.selectedConnection.kau.horizonURL
     const searchUrl = `${valKau}/transactions?limit=100&order=desc&q=${query} `
-    const searchUrl1 = `${valKau}/transactions?limit=100&order=desc&q=${query} `
     const valKag = this.props.selectedConnection.kag.horizonURL
     const searchLink = `${valKag}/transactions?limit=100&order=desc&q=${query} `
-    const searchLink1 = `${valKag}/transactions?limit=100&order=desc&q=${query} `
 
     let dataKau = [...this.state.dataKau]
     let dataKag = [...this.state.dataKag]
@@ -78,7 +78,7 @@ class MemoPage extends React.Component<Props, State> {
           }
           // console.log('Data Kau.............', dataKau, query, response)
         })
-        dataKau = [...data]
+        dataKau = [...data, ...dataKau]
         // console.log(dataKau, query.toLowerCase(), data.memo, 'datakau.........')
       })
 
@@ -88,9 +88,9 @@ class MemoPage extends React.Component<Props, State> {
         }
       })
     await fetch(searchLink)
-    .then((response) => {
-      return response.json()
-    })
+      .then((response) => {
+        return response.json()
+      })
       .then((response) => {
         const data = response._embedded.records.filter((e) => {
           if (e.memo) {
@@ -99,7 +99,7 @@ class MemoPage extends React.Component<Props, State> {
           }
           // console.log('Data Kag.............', dataKag)
         })
-        dataKag = [...data]
+        dataKag = [...data, ...dataKag]
       })
       .catch((error) => {
         if (error) {
@@ -108,9 +108,8 @@ class MemoPage extends React.Component<Props, State> {
       })
     // console.log(dataKau, dataKag, 'THIS IS DATA.........')
     this.setState({ dataKau, dataKag })
-    
-    this.doRecursiveRequest(searchUrl1)
-    this.doRecursive(searchLink1)
+    this.doRecursiveRequest(searchUrl)
+    this.doRecursive(searchLink)
   }
 
   doRecursiveRequest = async (searchUrl) => {
@@ -140,7 +139,7 @@ class MemoPage extends React.Component<Props, State> {
         this.setState({ dataKau1 })
         // console.log('Kau............', dataKau)
         // console.log('data.....', data)
-        return this.doRecursiveRequest(currentResult._links.next.href  )
+        return this.doRecursiveRequest(currentResult._links.next.href)
       } else {
         return this.doRecursiveRequest(currentResult._links.next.href)
       }
@@ -195,10 +194,8 @@ class MemoPage extends React.Component<Props, State> {
     this.setState((old) => {
       return { transLimit: old.transLimit + 10 }
     })
-    
   }
   render() {
-
     return (
       <section className='section'>
         <div className='container'>
@@ -207,51 +204,55 @@ class MemoPage extends React.Component<Props, State> {
               <p className='title  is-child box' style={{ marginBottom: '1.0rem' }}>
                 Transactions
               </p>
-              {[...this.state.dataKau, ...this.state.dataKag, ...this.state.dataKau1, ...this.state.dataKag1 ].slice(0, this.state.transLimit).map((record) => {
-                 const networkType = record._links.self.href.slice(11, 18) === 'testnet' ? 'T' : ''
-                 currConn = networkType + record._links.self.href.slice(7, 10).toUpperCase()
-                return (
-                  <div className='box memo-card-margin' key={record}>
-                    <p className='subtitle'>Summary</p>
-                    {/* <div onChange={this.handleChange}> */}
-                    <HorizontalLabelledField
-                      label='Created At'
-                      value={
-                        record.created_at.slice(8, 10) +
-                        '/' +
-                        record.created_at.slice(5, 7) +
-                        '/' +
-                        record.created_at.slice(0, 4) +
-                        ' ' +
-                        record.created_at.slice(11, 14) +
-                        record.created_at.slice(14, 17) +
-                        record.created_at.slice(17, 19) +
-                        ' ' +
-                        'UTC'
-                      }
-                    />
-                    <Link to={`/search/${this.state.value}`} />
-                    <HorizontalLabelledField
-                      label='Fee'
-                      value={record.fee_paid}
-                      appendCurr={currConn}
-                    />{' '}
-                    {/* {console.log(record.fee_paid, 'record...')} */}
-                    <HorizontalLabelledField
-                      label='Ledger'
-                      value={<Link to={`/ledger/${record.ledger}`}>{record.ledger}</Link>}
-                    />
-                    <HorizontalLabelledField label='Operation Count' value={record.operation_count} />
-                    <HorizontalLabelledField label='Memo' value={record.memo} />
-                    <HorizontalLabelledField
-                      label='Source Account'
-                      value={<Link to={`/account/${record.source_account}`}>{record.source_account}</Link>}
-                    />
-                  </div>
-                  // </div>
-                )
-              })}
-              
+              {[...this.state.dataKau, ...this.state.dataKag, ...this.state.dataKau1, ...this.state.dataKag1]
+                .slice(0, this.state.transLimit)
+                .map((record) => {
+                  const networkType = record._links.self.href.slice(11, 18) === 'testnet' ? 'T' : ''
+                  currConn = networkType + record._links.self.href.slice(7, 10).toUpperCase()
+                  const feePaid = record.fee_paid || Number(record.fee_charged)
+                  const precision = currConn === 'KEM' ? 7 : 5
+                  return (
+                    <div className='box memo-card-margin' key={record}>
+                      <p className='subtitle'>Summary</p>
+                      {/* <div onChange={this.handleChange}> */}
+                      <HorizontalLabelledField
+                        label='Created At'
+                        value={
+                          record.created_at.slice(8, 10) +
+                          '/' +
+                          record.created_at.slice(5, 7) +
+                          '/' +
+                          record.created_at.slice(0, 4) +
+                          ' ' +
+                          record.created_at.slice(11, 14) +
+                          record.created_at.slice(14, 17) +
+                          record.created_at.slice(17, 19) +
+                          ' ' +
+                          'UTC'
+                        }
+                      />
+                      <Link to={`/search/${this.state.value}`} />
+                      <HorizontalLabelledField
+                        label='Fee'
+                        value={renderAmount(convertStroopsToKinesis(feePaid), precision)}
+                        appendCurr={currConn}
+                      />{' '}
+                      {/* {console.log(record.fee_paid, 'record...')} */}
+                      <HorizontalLabelledField
+                        label='Ledger'
+                        value={<Link to={`/ledger/${record.ledger}`}>{record.ledger}</Link>}
+                      />
+                      <HorizontalLabelledField label='Operation Count' value={record.operation_count} />
+                      <HorizontalLabelledField label='Memo' value={record.memo} />
+                      <HorizontalLabelledField
+                        label='Source Account'
+                        value={<Link to={`/account/${record.source_account}`}>{record.source_account}</Link>}
+                      />
+                    </div>
+                    // </div>
+                  )
+                })}
+
               <button
                 className='button'
                 onClick={() => this.moreTxs()}
