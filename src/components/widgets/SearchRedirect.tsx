@@ -10,7 +10,7 @@ interface Props extends RouteComponentProps<{ search: string }> {
 interface State {
   transactions: TransactionRecord[]
   conn: string | undefined
-  query: string
+  // query: string
   query1: string
   data: any[]
   dataKau: any[]
@@ -24,7 +24,7 @@ export class SearchRedirect extends React.Component<Props, State> {
     this.state = {
       transactions: [],
       conn: '',
-      query: '',
+      // query: '',
       data: [],
       dataKau: [],
       dataKag: [],
@@ -33,10 +33,17 @@ export class SearchRedirect extends React.Component<Props, State> {
       query1: '',
     }
   }
-
+  createQuery = () => {
+    const query = window.location.pathname.split('/')
+    if (query[1] === 'memo') {
+      return query[3].replaceAll('-', ' ').replace('_', '#')
+    }
+    return query[2]
+  }
   render() {
     const { search } = this.props.match.params
-    const { query, query1 } = this.state
+    // const { query, query1 } = this.state
+    const query = this.createQuery()
     const curr = localStorage.getItem('selectedConnection')
 
     const getConn = () => {
@@ -51,7 +58,7 @@ export class SearchRedirect extends React.Component<Props, State> {
       }
     }
     if (parseInt(search, 10).toString() === search.toLowerCase()) {
-      return <Redirect to={`/ledger/${search}`} />
+      return  <Redirect to={`/memo/${getConn()}/${query}`} />
     } else if (!isNaN(parseInt(search, 16))) {
       return <Redirect to={`/transaction/${getConn()}/${search}`} />
     } else {

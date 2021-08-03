@@ -1,11 +1,12 @@
 import { CollectionPage, OperationRecord, TransactionRecord } from 'js-kinesis-sdk'
+import moment from 'moment'
 import * as React from 'react'
 import { RouteComponentProps } from 'react-router'
 import { Link } from 'react-router-dom'
 import { Subscribe } from 'unstated'
 import { ConnectionContainer, ConnectionContext } from '../../services/connections'
 import { convertStroopsToKinesis } from '../../services/kinesis'
-import { Connection } from '../../types'
+import { Connection } from '../../types'  
 import { renderAmount } from '../../utils'
 import { HorizontalLabelledField } from '../shared'
 
@@ -18,7 +19,7 @@ interface State {
   invalidTransaction: boolean
   conn: string | undefined
   selectedConnectionName: Connection | undefined
-  operations: CollectionPage<OperationRecord> | null
+  operations: any []
   data: any[]
   data1: any[]
   dataKau: any[]
@@ -43,7 +44,7 @@ class MemoPage extends React.Component<Props, State> {
       dataKag: [],
       dataKauRecursive: [],
       dataKagRecursive: [],
-      operations: null,
+      operations: [],
       value: '',
       transLimit: 10,
     }
@@ -58,7 +59,7 @@ class MemoPage extends React.Component<Props, State> {
 
     let dataKau = [...this.state.dataKau]
     let dataKag = [...this.state.dataKag]
-
+    
     await fetch(searchUrl)
       .then((response) => {
         return response.json()
@@ -98,6 +99,8 @@ class MemoPage extends React.Component<Props, State> {
     this.setState({ dataKau, dataKag })
     this.doRecursiveRequest(searchUrl)
     this.doRecursive(searchLink)
+  
+
   }
 
   doRecursiveRequest = async (searchUrl) => {
@@ -145,9 +148,53 @@ class MemoPage extends React.Component<Props, State> {
     this.setState({ dataKagRecursive })
   }
 
+  fetchDestinationAccount = async (query) => {
+    const responseUrl = this.props.selectedConnection.kau.horizonURL
+    const searchUrl = `${responseUrl}/transactions?limit=100&order=desc&q=${query}/operations`
+    await fetch(searchUrl)
+      .then((response) => {
+        console.log(response, 'Search....')
+        return response.json()
+      })
+  }
+  getFetchDestinationAccount = async (getMergedDatas) => {
+
+    const getMergedData = [
+      ...this.state.dataKau,
+      ...this.state.dataKag,
+      ...this.state.dataKauRecursive,
+      ...this.state.dataKagRecursive,
+    ]
+  
+    for (const operationsData of getMergedData) {
+      
+      const data = operationsData
+      
+        const getMemoOperationUrl = data?._links.operations?.href
+        console.log(getMemoOperationUrl, 'getMemoOperationUrl')
+        const getResponseUrl = getMemoOperationUrl.slice(0,123)
+        console.log(getResponseUrl, 'getResponseUrl')
+        const response = await fetch(`${getResponseUrl}?order=desc`, {
+          headers: {
+            'Access-Control-Allow-Origin': "*",
+            'Access-Control-Allow-Headers': "*",
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        })
+         console.log(response, 'response.....')
+        const url = await response.json()
+        // const getAccountMergeAmount = url?._embedded?.records[2]?.amount
+        // operation['amount'] = getAccountMergeAmount
+        console.log(url, 'URL........')
+      
+    }
+    return getMergedDatas
+  }
   componentDidMount() {
     const query = this.createQuery()
     this.fetchSearch(query)
+    
   }
   createQuery = () => {
     const query = window.location.pathname.split('/')
@@ -163,13 +210,17 @@ class MemoPage extends React.Component<Props, State> {
     })
   }
   render() {
+    const query = this.createQuery()
+    
+    const data =  this.getFetchDestinationAccount(this.state.operations)
+    console.log
     return (
       <section className='section'>
         <div className='container'>
           <div className='tile is-vertical is-parent'>
             <article className='tile is-child'>
               <p className='title  is-child box' style={{ marginBottom: '1.0rem' }}>
-                Transactions
+                Search Results For : "{query}"
               </p>
               {[
                 ...this.state.dataKau,
@@ -184,41 +235,70 @@ class MemoPage extends React.Component<Props, State> {
                   const feePaid = record.fee_paid || Number(record.fee_charged)
                   const precision = currConn === 'KEM' ? 7 : 5
                   return (
-                    <div className='box memo-card-margin' key={record}>
-                      <p className='subtitle'>Summary</p>
-                      <HorizontalLabelledField
-                        label='Created At'
-                        value={
-                          record.created_at.slice(8, 10) +
-                          '/' +
-                          record.created_at.slice(5, 7) +
-                          '/' +
-                          record.created_at.slice(0, 4) +
-                          ' ' +
-                          record.created_at.slice(11, 14) +
-                          record.created_at.slice(14, 17) +
-                          record.created_at.slice(17, 19) +
-                          ' ' +
-                          'UTC'
-                        }
-                      />
-                      <Link to={`/search/${this.state.value}`} />
-                      <HorizontalLabelledField
-                        label='Fee'
-                        value={renderAmount(convertStroopsToKinesis(feePaid), precision)}
-                        appendCurr={currConn}
-                      />{' '}
-                      <HorizontalLabelledField
-                        label='Ledger'
-                        value={<Link to={`/ledger/${record.ledger}`}>{record.ledger}</Link>}
-                      />
-                      <HorizontalLabelledField label='Operation Count' value={record.operation_count} />
-                      <HorizontalLabelledField label='Memo' value={record.memo} />
-                      <HorizontalLabelledField
-                        label='Source Account'
-                        value={<Link to={`/account/${record.source_account}`}>{record.source_account}</Link>}
-                      />
-                    </div>
+                    // <div className='box memo-card-margin' key={record}>
+                    //   <p className='subtitle'>Summary</p>
+                    //   <HorizontalLabelledField
+                    //     label='Created At'
+                    //     value={
+                    //       record.created_at.slice(8, 10) +
+                    //       '/' +
+                    //       record.created_at.slice(5, 7) +
+                    //       '/' +
+                    //       record.created_at.slice(0, 4) +
+                    //       ' ' +
+                    //       record.created_at.slice(11, 14) +
+                    //       record.created_at.slice(14, 17) +
+                    //       record.created_at.slice(17, 19) +
+                    //       ' ' +
+                    //       'UTC'
+                    //     }
+                    //   />
+                    //   <Link to={`/search/${this.state.value}`} />
+                    //   <HorizontalLabelledField
+                    //     label='Fee'
+                    //     value={renderAmount(convertStroopsToKinesis(feePaid), precision)}
+                    //     appendCurr={currConn}
+                    //   />{' '}
+                    //   <HorizontalLabelledField
+                    //     label='Ledger'
+                    //     value={<Link to={`/ledger/${record.ledger}`}>{record.ledger}</Link>}
+                    //   />
+                    //   <HorizontalLabelledField label='Operation Count' value={record.operation_count} />
+                    //   <HorizontalLabelledField label='Memo' value={record.memo} />
+                    //   <HorizontalLabelledField
+                    //     label='Source Account'
+                    //     value={<Link to={`/account/${record.source_account}`}>{record.source_account}</Link>}
+                    //   />
+                    // </div>
+                    <table className='table is-bordered is-striped is-fullwidth'>
+                    <thead className='thead'>
+                      <tr className='tr'>
+                        <th className='th'>Date & Time (UTC)</th>
+                        <th className='th'>Hash</th>
+                        <th className='th'>From</th>
+                        <th className='th'>To</th>
+                        <th className='th'>Type</th>
+                        <th className='th'>Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody className='tbody'>
+                    <tr key={record.id} className='tr'>
+      <td className='td'>
+        {record.created_at.slice(8, 10)}/{record.created_at.slice(5, 7)}/{record.created_at.slice(0, 4)}&nbsp;
+        {record.created_at.slice(11, 14)}
+        {record.created_at.slice(14, 17)}
+        {record.created_at.slice(17, 19)}
+     </td>
+      <td className='td'>
+        {record.hash.slice(0, 4)}.....{record.hash.substr(record.hash.length - 4)} 
+     </td>
+     <td className='td'>
+        {record.source_account.slice(0, 4)}.....{record.source_account.substr(record.source_account.length - 4)} 
+     </td>
+     
+     </tr>
+                    </tbody>
+                  </table>
                   )
                 })}
 
