@@ -22,14 +22,13 @@ interface State {
   selectedConnectionName: Connection | undefined
   operations: any[]
   data: any[]
-  data1: any[]
   dataKau: any[]
   dataKag: any[]
   dataKauRecursive: any[]
   dataKagRecursive: any[]
   value: string
   transLimit: number
-  dataAmount: any[]
+  dataAmount: any
 }
 
 class MemoPage extends React.Component<Props, State> {
@@ -41,7 +40,6 @@ class MemoPage extends React.Component<Props, State> {
       conn: undefined,
       selectedConnectionName: undefined,
       data: [],
-      data1: [],
       dataKau: [],
       dataKag: [],
       dataKauRecursive: [],
@@ -79,9 +77,9 @@ class MemoPage extends React.Component<Props, State> {
 
       .catch((error) => {
         if (error) {
-          // console.log("error");
         }
       })
+      
     await fetch(searchLink)
       .then((response) => {
         return response.json()
@@ -96,7 +94,6 @@ class MemoPage extends React.Component<Props, State> {
       })
       .catch((error) => {
         if (error) {
-          // console.log("error");
         }
       })
     this.setState({ dataKau, dataKag })
@@ -149,59 +146,26 @@ class MemoPage extends React.Component<Props, State> {
     this.setState({ dataKagRecursive })
   }
 
-  fetchDestinationAccount = async (query) => {
-    const responseUrl = this.props.selectedConnection.kau.horizonURL
-    const searchUrl = `${responseUrl}/transactions?limit=100&order=desc&q=${query}/operations`
-    await fetch(searchUrl).then((response) => {
-      console.log(response, 'Search....')
-      return response.json()
-    })
-  }
   getFetchDestinationAccount = async (getMergedDatas) => {
     const getMergedData = [
-      ...this.state.dataKau,
-      ...this.state.dataKag,
+    //  ...this.state.dataKau,
+    //  ...this.state.dataKag,
       ...this.state.dataKauRecursive,
       ...this.state.dataKagRecursive,
     ]
-
-    for (const operationsData of getMergedData) {
-      let dataAmount = [...this.state.dataAmount]
-      const data = operationsData
-
-      const getMemoOperationUrl = data?._links.operations?.href
-      console.log(getMemoOperationUrl, 'getMemoOperationUrl')
+    let dataArray = []
+     for (let index = 0; index < getMergedData.length; index++) {
+       const data = getMergedData[index]
+       const getMemoOperationUrl = data?._links.operations?.href
       const getResponseUrl = getMemoOperationUrl.slice(0, 123)
-      console.log(getResponseUrl, 'getResponseUrl')
-      await fetch(getResponseUrl)
-      const response = await fetch(`${getResponseUrl}?order=desc`, {})
+      const response = await fetch(`${getResponseUrl}?order=desc`)
       const url = await response.json()
-      console.log(url, 'URL...')
-
-      const embeddedRecord = url?._embedded.records
-      dataAmount = [...embeddedRecord, ...dataAmount]
-      console.log(dataAmount, 'RE....')
-      this.setState({ dataAmount })
-
-      //          for (let index = 0; index < embeddedRecord.records.length; index++) {
-      //            const recordsData = embeddedRecord.records[index];
-      //            console.log(recordsData, 'data....')
-      // return recordsData
-
-      //          }
-
-      // for (const recordsData of embeddedRecord?.records) {
-      //   const getMergeDatas = recordsData
-      //   console.log(recordsData, 'data....')
-      // }
-
-      //   const getAccountMergeAmount = url?._embedded?.records[0]?.account
-      //   console.log(getAccountMergeAmount, 'TO.....')
-      //  return getAccountMergeAmount
-      //  const details = records
-    }
-
-    return getMergedDatas
+      const embeddedRecord = url?._embedded.records[index]
+      const destinationAccount = {...data, ...embeddedRecord}
+       dataArray.push(destinationAccount)
+       this.setState({dataAmount:dataArray})
+      return dataArray
+     }
   }
   componentDidMount() {
     const query = this.createQuery()
@@ -220,24 +184,28 @@ class MemoPage extends React.Component<Props, State> {
       return { transLimit: old.transLimit + 10 }
     })
   }
+
   render() {
     const query = this.createQuery()
-
+let to = [] 
     const data = this.getFetchDestinationAccount(this.state.operations)
-    console.log(this.state.dataAmount, 'TO....')
+    console.log(this.state.dataAmount, 'this.state.dataAmount....')
+    console.log(this.state.dataKau, 'this.state.dataAmount....')
+
     return (
       <section className="section">
         <div className="container">
           <div className="tile is-vertical is-parent">
             <article className="tile is-child">
               <p className="title  is-child box" style={{ marginBottom: '1.0rem' }}>
-                Searched By : {query}
+               Showing results for <b>{query}</b>
               </p>
               {[
                 ...this.state.dataKau,
                 ...this.state.dataKag,
                 ...this.state.dataKauRecursive,
                 ...this.state.dataKagRecursive,
+                
               ]
                 .slice(0, this.state.transLimit)
                 .map((record) => {
@@ -245,14 +213,6 @@ class MemoPage extends React.Component<Props, State> {
                   currConn = networkType + record._links.self.href.slice(7, 10).toUpperCase()
                   const feePaid = record.fee_paid || Number(record.fee_charged)
                   const precision = currConn === 'KEM' ? 7 : 5
-                  // const destinationAccountAddressNetwork = record._links.operations.href.slice(0,123)
-                  // const response =  fetch(`${destinationAccountAddressNetwork}?order=desc`, {
-                  //   headers: {
-                  //     'Content-Type': 'text/plain',
-                  //     'Accept': 'application/json',
-                  //   },
-                  // })
-                  //  console.log(response, 'response.....')
                   return (
                     // <div className='box memo-card-margin' key={record}>
                     //   <p className='subtitle'>Summary</p>
@@ -304,6 +264,7 @@ class MemoPage extends React.Component<Props, State> {
                       <tbody className="tbody">
                         <tr key={record.id} className="tr">
                           <td className="td">
+                            
                             {record.created_at.slice(8, 10)}/{record.created_at.slice(5, 7)}/
                             {record.created_at.slice(0, 4)}&nbsp;
                             {record.created_at.slice(11, 14)}
@@ -311,24 +272,71 @@ class MemoPage extends React.Component<Props, State> {
                             {record.created_at.slice(17, 19)}
                           </td>
                           <td className="td">
+                          <Link to={`/transaction/${currConn}/${record.hash}`}>
                             {record.hash.slice(0, 4)}.....{record.hash.substr(record.hash.length - 4)}
+                            </Link>
                           </td>
                           <td className="td">
                             {record.source_account.slice(0, 4)}.....
                             {record.source_account.substr(record.source_account.length - 4)}
                           </td>
                           <td className="td">
-                            {this.state.dataAmount.map((record, Key) => {
+                             {this.state.dataAmount.map((record, Key) => {
+                              if(record.account){
+                                let existing =  to.findIndex(item => item === record.account)
+                                console.log(existing, 'Existing.....')
+                                let account = ''
+                                if(existing === -1) {
+                                  to.push(record.account)
+                                  account = record.account
+                                }
+                                // else {
+                                //   account= to[existing]
+                                // }
                               return (
-                                <tr>
-                                  <td>{record.account}</td>
-
-                                  <td>{record.amount}</td>
-                                </tr>
+                                  <div> {account.slice(0,4)}.....
+                                  {account.substr(account.length - 4)}</div>
                               )
-                            })}
+                              }
+                              else if(record.to){
+                                let existing =  to.findIndex(item => item === record.to)
+                                console.log(existing, 'Existing.....')
+                                let account = ''
+                                if(existing === -1) {
+                                  to.push(record.to)
+                                  account = record.to
+                                }
+                              //   // else {
+                              //   //   account= to[existing]
+                              //   // }
+                                
+                                return (   
+                                    <div>{account.slice(0,4)}.....
+                                    {account.substr(account.length - 4)}</div>                                  
+                                )
+                                }
+                              //   else if(record.into){
+                              //     let existing =  to.findIndex(item => item === record.into)
+                              //     console.log(existing, 'Existing.....')
+                              //     let account = ''
+                              //     if(existing === -1) {
+                              //       to.push(record.into)
+                              //       account = record.into
+                              //     }
+                              //     // else {
+                              //     //   account= to[existing]
+                              //     // }
+                                  
+                              //     return (   
+                              //         <div>{account.slice(0,4)}.....
+                              //         {account.substr(account.length - 4)}</div>                                  
+                              //     )
+                              //     }
+                            })} 
+                            {}
                           </td>
-                          <td className="td"></td>
+                          <td></td>
+                          {/* <td className="td">{record.account}</td> */}
                           <td className="td">
                             {renderAmount(convertStroopsToKinesis(feePaid), precision)} {currConn}
                           </td>
