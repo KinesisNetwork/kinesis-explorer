@@ -29,6 +29,8 @@ interface State {
   value: string
   transLimit: number
   dataAmount: any
+  dataAmount1: any
+  dataAmountKag: any
 }
 
 class MemoPage extends React.Component<Props, State> {
@@ -48,6 +50,8 @@ class MemoPage extends React.Component<Props, State> {
       value: '',
       transLimit: 10,
       dataAmount: [],
+      dataAmount1: [],
+      dataAmountKag: [],
     }
     this.moreTxs = this.moreTxs.bind(this)
   }
@@ -60,7 +64,8 @@ class MemoPage extends React.Component<Props, State> {
 
     let dataKau = [...this.state.dataKau]
     let dataKag = [...this.state.dataKag]
-
+    let dataArray1 = []
+    let Array = ''
     await fetch(searchUrl)
       .then((response) => {
         return response.json()
@@ -79,7 +84,25 @@ class MemoPage extends React.Component<Props, State> {
         if (error) {
         }
       })
-      
+    for (let index = 0; index < dataKau.length; index++) {
+      const data = dataKau[index]
+      const getMemoOperationUrl = data?._links.operations?.href
+      Array = getMemoOperationUrl
+      const getResponseUrl = Array.slice(0, 123)
+      // console.log(getResponseUrl, 'response.....')
+
+      const response = await fetch(`${getResponseUrl}?order=desc`)
+      const url = await response.json()
+      const embeddedRecord = url?._embedded.records
+      // console.log(embeddedRecord, 'embeddedRecord')
+      const destinationAccount = [...embeddedRecord]
+      // console.log(destinationAccount, 'destinationAccount')
+      dataArray1.push(destinationAccount)
+      //  console.log(dataArray, 'dataArray')
+      this.setState({ dataAmount1: dataArray1 })
+      //  console.log(this.state.dataAmount, 'AMM')
+    }
+
     await fetch(searchLink)
       .then((response) => {
         return response.json()
@@ -92,10 +115,29 @@ class MemoPage extends React.Component<Props, State> {
         })
         dataKag = [...data, ...dataKag]
       })
+
       .catch((error) => {
         if (error) {
         }
       })
+    for (let index = 0; index < dataKag.length; index++) {
+      const data = dataKag[index]
+      const getMemoOperationUrl = data?._links.operations?.href
+      Array = getMemoOperationUrl
+      const getResponseUrl = Array.slice(0, 123)
+      // console.log(getResponseUrl, 'response.....')
+
+      const response = await fetch(`${getResponseUrl}?order=desc`)
+      const url = await response.json()
+      const embeddedRecord = url?._embedded.records
+      // console.log(embeddedRecord, 'embeddedRecord')
+      const destinationAccount = [...embeddedRecord]
+      // console.log(destinationAccount, 'destinationAccount')
+      dataArray1.push(destinationAccount)
+      //  console.log(dataArray, 'dataArray')
+      this.setState({ dataAmountKag: dataArray1 })
+      //  console.log(this.state.dataAmount, 'AMM')
+    }
     this.setState({ dataKau, dataKag })
     this.doRecursiveRequest(searchUrl)
     this.doRecursive(searchLink)
@@ -187,10 +229,10 @@ class MemoPage extends React.Component<Props, State> {
 
   render() {
     const query = this.createQuery()
-let to = [] 
-    const data = this.getFetchDestinationAccount(this.state.operations)
-    console.log(this.state.dataAmount, 'this.state.dataAmount....')
-    console.log(this.state.dataKau, 'this.state.dataAmount....')
+    let to = []
+    // const data = this.getFetchDestinationAccount(this.state.operations)
+    console.log(this.state.dataAmount1, 'this.state.dataAmount1....')
+    // console.log(this.state.dataKau, 'this.state.dataAmount....')
 
     return (
       <section className="section">
@@ -198,73 +240,37 @@ let to = []
           <div className="tile is-vertical is-parent">
             <article className="tile is-child">
               <p className="title  is-child box" style={{ marginBottom: '1.0rem' }}>
-               Showing results for <b>{query}</b>
+                Showing results for <b>{query}</b>
               </p>
-              {[
-                ...this.state.dataKau,
-                ...this.state.dataKag,
-                ...this.state.dataKauRecursive,
-                ...this.state.dataKagRecursive,
-                
-              ]
-                .slice(0, this.state.transLimit)
-                .map((record) => {
-                  const networkType = record._links.self.href.slice(11, 18) === 'testnet' ? 'T' : ''
-                  currConn = networkType + record._links.self.href.slice(7, 10).toUpperCase()
-                  const feePaid = record.fee_paid || Number(record.fee_charged)
-                  const precision = currConn === 'KEM' ? 7 : 5
-                  return (
-                    // <div className='box memo-card-margin' key={record}>
-                    //   <p className='subtitle'>Summary</p>
-                    //   <HorizontalLabelledField
-                    //     label='Created At'
-                    //     value={
-                    //       record.created_at.slice(8, 10) +
-                    //       '/' +
-                    //       record.created_at.slice(5, 7) +
-                    //       '/' +
-                    //       record.created_at.slice(0, 4) +
-                    //       ' ' +
-                    //       record.created_at.slice(11, 14) +
-                    //       record.created_at.slice(14, 17) +
-                    //       record.created_at.slice(17, 19) +
-                    //       ' ' +
-                    //       'UTC'
-                    //     }
-                    //   />
-                    //   <Link to={`/search/${this.state.value}`} />
-                    //   <HorizontalLabelledField
-                    //     label='Fee'
-                    //     value={renderAmount(convertStroopsToKinesis(feePaid), precision)}
-                    //     appendCurr={currConn}
-                    //   />{' '}
-                    //   <HorizontalLabelledField
-                    //     label='Ledger'
-                    //     value={<Link to={`/ledger/${record.ledger}`}>{record.ledger}</Link>}
-                    //   />
-                    //   <HorizontalLabelledField label='Operation Count' value={record.operation_count} />
-                    //   <HorizontalLabelledField label='Memo' value={record.memo} />
-                    //   <HorizontalLabelledField
-                    //     label='Source Account'
-                    //     value={<Link to={`/account/${record.source_account}`}>{record.source_account}</Link>}
-                    //   />
-                    // </div>
-                    <table className="table is-bordered is-striped is-fullwidth">
-                      <thead className="thead">
-                        <tr className="tr">
-                          <th className="th">Date & Time (UTC)</th>
-                          <th className="th">Hash</th>
-                          <th className="th">From</th>
-                          <th className="th">To</th>
-                          <th className="th">Amount</th>
-                          <th className="th">Fee</th>
-                          <th className="th">Memo</th>
-                        </tr>
-                      </thead>
+              <table className="table is-bordered is-striped is-fullwidth">
+                <thead className="thead">
+                  <tr className="tr">
+                    <th className="th">Date & Time (UTC)</th>
+                    <th className="th">Hash</th>
+                    <th className="th">From</th>
+                    <th className="th">To</th>
+                    <th className="th">Amount</th>
+                    <th className="th">Fee</th>
+                    <th className="th">Memo</th>
+                  </tr>
+                </thead>
+
+                {[
+                  ...this.state.dataKau,
+                  ...this.state.dataKag,
+                  ...this.state.dataKauRecursive,
+                  ...this.state.dataKagRecursive,
+                ]
+                  .slice(0, this.state.transLimit)
+                  .map((record) => {
+                    const networkType = record._links.self.href.slice(11, 18) === 'testnet' ? 'T' : ''
+                    currConn = networkType + record._links.self.href.slice(7, 10).toUpperCase()
+                    const feePaid = record.fee_paid || Number(record.fee_charged)
+                    const precision = currConn === 'KEM' ? 7 : 5
+                    return (
                       <tbody className="tbody">
                         <tr key={record.id} className="tr">
                           <td className="td">
-                            
                             {record.created_at.slice(8, 10)}/{record.created_at.slice(5, 7)}/
                             {record.created_at.slice(0, 4)}&nbsp;
                             {record.created_at.slice(11, 14)}
@@ -272,8 +278,8 @@ let to = []
                             {record.created_at.slice(17, 19)}
                           </td>
                           <td className="td">
-                          <Link to={`/transaction/${currConn}/${record.hash}`}>
-                            {record.hash.slice(0, 4)}.....{record.hash.substr(record.hash.length - 4)}
+                            <Link to={`/transaction/${currConn}/${record.hash}`}>
+                              {record.hash.slice(0, 4)}.....{record.hash.substr(record.hash.length - 4)}
                             </Link>
                           </td>
                           <td className="td">
@@ -281,40 +287,65 @@ let to = []
                             {record.source_account.substr(record.source_account.length - 4)}
                           </td>
                           <td className="td">
-                             {this.state.dataAmount.map((record, Key) => {
-                              if(record.account){
-                                let existing =  to.findIndex(item => item === record.account)
+                            {[...this.state.dataAmount1, ...this.state.dataAmountKag]?.map((record, Key) => {
+                              if (record[0].account) {
+                                return (
+                                  <tr>
+                                    {record[0].account.slice(0, 4)}.....
+                                    {record[0].account.substr(record[0].account.length - 4)}
+                                  </tr>
+                                )
+                              } else if (record[0].to)
+                                return (
+                                  <tr>
+                                    {record[0].to.slice(0, 4)}.....{record[0].to.substr(record[0].to.length - 4)}
+                                  </tr>
+                                )
+                              else if (record[0].into)
+                                return (
+                                  <tr>
+                                    {record[0].into.slice(0, 4)}.....{record[0].into.substr(record[0].into.length - 4)}
+                                  </tr>
+                                )
+                            })}
+                            {this.state.dataAmount.map((record, Key) => {
+                              if (record.account) {
+                                let existing = to.findIndex((item) => item === record.account)
                                 console.log(existing, 'Existing.....')
                                 let account = ''
-                                if(existing === -1) {
+                                if (existing === -1) {
                                   to.push(record.account)
                                   account = record.account
                                 }
                                 // else {
                                 //   account= to[existing]
                                 // }
-                              return (
-                                  <div> {account.slice(0,4)}.....
-                                  {account.substr(account.length - 4)}</div>
-                              )
-                              }
-                              else if(record.to){
-                                let existing =  to.findIndex(item => item === record.to)
+                                return (
+                                  <div>
+                                    {' '}
+                                    {account.slice(0, 4)}.....
+                                    {account.substr(account.length - 4)}
+                                  </div>
+                                )
+                              } else if (record.to) {
+                                let existing = to.findIndex((item) => item === record.to)
                                 console.log(existing, 'Existing.....')
                                 let account = ''
-                                if(existing === -1) {
+                                if (existing === -1) {
                                   to.push(record.to)
                                   account = record.to
                                 }
-                              //   // else {
-                              //   //   account= to[existing]
-                              //   // }
-                                
-                                return (   
-                                    <div>{account.slice(0,4)}.....
-                                    {account.substr(account.length - 4)}</div>                                  
+                                //   // else {
+                                //   //   account= to[existing]
+                                //   // }
+
+                                return (
+                                  <div>
+                                    {account.slice(0, 4)}.....
+                                    {account.substr(account.length - 4)}
+                                  </div>
                                 )
-                                }
+                              }
                               //   else if(record.into){
                               //     let existing =  to.findIndex(item => item === record.into)
                               //     console.log(existing, 'Existing.....')
@@ -326,27 +357,33 @@ let to = []
                               //     // else {
                               //     //   account= to[existing]
                               //     // }
-                                  
-                              //     return (   
+
+                              //     return (
                               //         <div>{account.slice(0,4)}.....
-                              //         {account.substr(account.length - 4)}</div>                                  
+                              //         {account.substr(account.length - 4)}</div>
                               //     )
                               //     }
-                            })} 
+                            })}
                             {}
                           </td>
-                          <td></td>
-                          {/* <td className="td">{record.account}</td> */}
+                          <td>
+                            {[...this.state.dataAmount1, ...this.state.dataAmountKag]?.map((record, Key) => {
+                              if (record[0].starting_balance) {
+                                return <tr>{record[0].starting_balance}&nbsp;Starting Balance</tr>
+                              } else if (record[0].to) {
+                                return <tr>{record[0].amount}&nbsp;Amount</tr>
+                              }
+                            })}
+                          </td>
                           <td className="td">
                             {renderAmount(convertStroopsToKinesis(feePaid), precision)} {currConn}
                           </td>
                           <td className="td">{record.memo}</td>
                         </tr>
                       </tbody>
-                    </table>
-                  )
-                })}
-
+                    )
+                  })}
+              </table>
               <button
                 className="button"
                 onClick={() => this.moreTxs()}
