@@ -29,8 +29,9 @@ interface State {
   value: string
   transLimit: number
   dataAmount: any
-  dataAmount1: any
+  dataAmountKau: any
   dataAmountKag: any
+  dataAll: any
 }
 
 class MemoPage extends React.Component<Props, State> {
@@ -50,8 +51,9 @@ class MemoPage extends React.Component<Props, State> {
       value: '',
       transLimit: 10,
       dataAmount: [],
-      dataAmount1: [],
+      dataAmountKau: [],
       dataAmountKag: [],
+      dataAll: []
     }
     this.moreTxs = this.moreTxs.bind(this)
   }
@@ -99,7 +101,7 @@ class MemoPage extends React.Component<Props, State> {
       // console.log(destinationAccount, 'destinationAccount')
       dataArray1.push(destinationAccount)
       //  console.log(dataArray, 'dataArray')
-      this.setState({ dataAmount1: dataArray1 })
+      this.setState({ dataAmountKau: dataArray1 })
       //  console.log(this.state.dataAmount, 'AMM')
     }
 
@@ -212,6 +214,11 @@ class MemoPage extends React.Component<Props, State> {
   componentDidMount() {
     const query = this.createQuery()
     this.fetchSearch(query)
+    // this.setState({ dataAll:  [...this.state.dataKau,
+    //   ...this.state.dataKag,
+    //   ...this.state.dataKauRecursive,
+    //   ...this.state.dataKagRecursive,
+    //   ...this.state.dataAmountKau, ...this.state.dataAmountKag] })
   }
   createQuery = () => {
     const query = window.location.pathname.split('/')
@@ -230,8 +237,15 @@ class MemoPage extends React.Component<Props, State> {
   render() {
     const query = this.createQuery()
     let to = []
-    // const data = this.getFetchDestinationAccount(this.state.operations)
-    console.log(this.state.dataAmount1, 'this.state.dataAmount1....')
+    // let dataNew = [...this.state.dataKau,
+    //   ...this.state.dataKag,
+    //   ...this.state.dataKauRecursive,
+    //   ...this.state.dataKagRecursive,
+    //   ...this.state.dataAmountKau, ...this.state.dataAmountKag]
+    // // const data = this.getFetchDestinationAccount(this.state.operations)
+    console.log(this.state.dataAmountKau, 'this.state.dataAmountKau....')
+    // console.log(dataNew, 'dataNew....')
+
     // console.log(this.state.dataKau, 'this.state.dataAmount....')
 
     return (
@@ -260,55 +274,67 @@ class MemoPage extends React.Component<Props, State> {
                   ...this.state.dataKag,
                   ...this.state.dataKauRecursive,
                   ...this.state.dataKagRecursive,
+                  ...this.state.dataAmountKau,
+                  ...this.state.dataAmountKag
                 ]
                   .slice(0, this.state.transLimit)
                   .map((record) => {
-                    const networkType = record._links.self.href.slice(11, 18) === 'testnet' ? 'T' : ''
-                    currConn = networkType + record._links.self.href.slice(7, 10).toUpperCase()
-                    const feePaid = record.fee_paid || Number(record.fee_charged)
+                    const networkType = record?._links?.self?.href?.slice(11, 18) === 'testnet' ? 'T' : ''
+                    currConn = networkType + record?._links?.self?.href?.slice(7, 10).toUpperCase()
+                    const feePaid = record?.fee_paid || Number(record?.fee_charged)
                     const precision = currConn === 'KEM' ? 7 : 5
+                    if (record[0]?.account) {
+                      <td className="td">
+                      {record[0]?.account?.slice(0, 4)}.....
+                      {record[0]?.account?.substr(record[0]?.account?.length - 4)}
+                       </td>
+                    }else
                     return (
                       <tbody className="tbody">
-                        <tr key={record.id} className="tr">
+                        <tr className="tr">
                           <td className="td">
-                            {record.created_at.slice(8, 10)}/{record.created_at.slice(5, 7)}/
-                            {record.created_at.slice(0, 4)}&nbsp;
-                            {record.created_at.slice(11, 14)}
-                            {record.created_at.slice(14, 17)}
-                            {record.created_at.slice(17, 19)}
+                            {record.created_at?.slice(8, 10)}/{record.created_at?.slice(5, 7)}/
+                            {record.created_at?.slice(0, 4)}&nbsp;
+                            {record.created_at?.slice(11, 14)}
+                            {record.created_at?.slice(14, 17)}
+                            {record.created_at?.slice(17, 19)}
                           </td>
                           <td className="td">
-                            <Link to={`/transaction/${currConn}/${record.hash}`}>
-                              {record.hash.slice(0, 4)}.....{record.hash.substr(record.hash.length - 4)}
+                            <Link to={`/transaction/${currConn}/${record?.hash}`}>
+                              {record?.hash?.slice(0, 4)}.....{record?.hash?.substr(record?.hash?.length - 4)}
                             </Link>
                           </td>
                           <td className="td">
-                            {record.source_account.slice(0, 4)}.....
-                            {record.source_account.substr(record.source_account.length - 4)}
+                            {record?.source_account?.slice(0, 4)}.....
+                            {record?.source_account?.substr(record?.source_account?.length - 4)}
                           </td>
                           <td className="td">
-                            {[...this.state.dataAmount1, ...this.state.dataAmountKag]?.map((record, Key) => {
+                                    {record[0]?.account?.slice(0, 4)}.....
+                                    {record[0]?.account?.substr(record[0]?.account?.length - 4)}
+                          </td>
+                          {/* <td className="td"> */}
+                            {/* {[...this.state.dataAmountKau, ...this.state.dataAmountKag]?.map((record, Key) => {
                               if (record[0].account) {
                                 return (
-                                  <tr>
+                                  <tr key={record.id} className="tr">
                                     {record[0].account.slice(0, 4)}.....
                                     {record[0].account.substr(record[0].account.length - 4)}
                                   </tr>
                                 )
                               } else if (record[0].to)
                                 return (
-                                  <tr>
+                                  <tr key={record.id} className="tr">
                                     {record[0].to.slice(0, 4)}.....{record[0].to.substr(record[0].to.length - 4)}
                                   </tr>
                                 )
                               else if (record[0].into)
                                 return (
-                                  <tr>
+                                  <tr key={record.id} className="tr">
                                     {record[0].into.slice(0, 4)}.....{record[0].into.substr(record[0].into.length - 4)}
                                   </tr>
                                 )
-                            })}
-                            {this.state.dataAmount.map((record, Key) => {
+                            })} */}
+                            {/* {this.state.dataAmount.map((record, Key) => {
                               if (record.account) {
                                 let existing = to.findIndex((item) => item === record.account)
                                 console.log(existing, 'Existing.....')
@@ -363,26 +389,28 @@ class MemoPage extends React.Component<Props, State> {
                               //         {account.substr(account.length - 4)}</div>
                               //     )
                               //     }
-                            })}
+                            })} */}
                             {}
-                          </td>
+                          {/* </td> */}
                           <td>
-                            {[...this.state.dataAmount1, ...this.state.dataAmountKag]?.map((record, Key) => {
+                            {/* {[...this.state.dataAmountKau, ...this.state.dataAmountKag]?.map((record, Key) => {
                               if (record[0].starting_balance) {
                                 return <tr>{record[0].starting_balance}&nbsp;Starting Balance</tr>
                               } else if (record[0].to) {
                                 return <tr>{record[0].amount}&nbsp;Amount</tr>
                               }
-                            })}
+                            })} */}
                           </td>
                           <td className="td">
                             {renderAmount(convertStroopsToKinesis(feePaid), precision)} {currConn}
                           </td>
-                          <td className="td">{record.memo}</td>
+                          <td className="td">{record?.memo}</td>
                         </tr>
                       </tbody>
                     )
+                          // }
                   })}
+                  
               </table>
               <button
                 className="button"
