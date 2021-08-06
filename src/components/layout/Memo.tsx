@@ -1,4 +1,5 @@
 import { CollectionPage, OperationRecord, TransactionRecord } from 'js-kinesis-sdk'
+import moment from 'moment'
 import * as React from 'react'
 import { RouteComponentProps } from 'react-router'
 import { Link } from 'react-router-dom'
@@ -8,6 +9,7 @@ import { convertStroopsToKinesis } from '../../services/kinesis'
 import { Connection } from '../../types'
 import { renderAmount } from '../../utils'
 import { HorizontalLabelledField } from '../shared'
+import OperationValue from '../widgets/OperationValue'
 
 let currConn: string
 interface ConnectedTransactionProps extends RouteComponentProps<{ id: string; connection: string }> {}
@@ -18,15 +20,20 @@ interface State {
   invalidTransaction: boolean
   conn: string | undefined
   selectedConnectionName: Connection | undefined
-  operations: CollectionPage<OperationRecord> | null
+  operations: any[]
   data: any[]
-  data1: any[]
   dataKau: any[]
   dataKag: any[]
   dataKauRecursive: any[]
   dataKagRecursive: any[]
   value: string
   transLimit: number
+  dataAmount: any
+  dataAmount1: any
+  dataAmountKag: any
+  dataKauKag: any
+  dataKauDetailsRecursive: any
+  dataKagDetailsRecursive: any
 }
 
 class MemoPage extends React.Component<Props, State> {
@@ -38,14 +45,19 @@ class MemoPage extends React.Component<Props, State> {
       conn: undefined,
       selectedConnectionName: undefined,
       data: [],
-      data1: [],
       dataKau: [],
       dataKag: [],
       dataKauRecursive: [],
       dataKagRecursive: [],
-      operations: null,
+      operations: [],
       value: '',
       transLimit: 10,
+      dataAmount: [],
+      dataAmount1: [],
+      dataAmountKag: [],
+      dataKauKag: [],
+      dataKauDetailsRecursive: [],
+      dataKagDetailsRecursive: [],
     }
     this.moreTxs = this.moreTxs.bind(this)
   }
@@ -55,7 +67,6 @@ class MemoPage extends React.Component<Props, State> {
     const searchUrl = `${valKau}/transactions?limit=100&order=desc&q=${query} `
     const valKag = this.props.selectedConnection.kag.horizonURL
     const searchLink = `${valKag}/transactions?limit=100&order=desc&q=${query} `
-
     let dataKau = [...this.state.dataKau]
     let dataKag = [...this.state.dataKag]
 
@@ -75,7 +86,7 @@ class MemoPage extends React.Component<Props, State> {
 
       .catch((error) => {
         if (error) {
-          // console.log("error");
+              // console.log('error')
         }
       })
     await fetch(searchLink)
@@ -90,14 +101,16 @@ class MemoPage extends React.Component<Props, State> {
         })
         dataKag = [...data, ...dataKag]
       })
+
       .catch((error) => {
         if (error) {
-          // console.log("error");
+              // console.log('error')
         }
       })
-    this.setState({ dataKau, dataKag })
+    await this.setState({ dataKau, dataKag })
     this.doRecursiveRequest(searchUrl)
     this.doRecursive(searchLink)
+    this.addOperationsToTransactionArray([...this.state.dataKau, ...this.state.dataKag])
   }
 
   doRecursiveRequest = async (searchUrl) => {
@@ -118,6 +131,7 @@ class MemoPage extends React.Component<Props, State> {
         })
         dataKauRecursive = [...data, ...dataKauRecursive]
         this.setState({ dataKauRecursive })
+        this.addOperationsToKauRecursive([...this.state.dataKauRecursive])
         return this.doRecursiveRequest(currentResult._links.next.href)
       } else {
         return this.doRecursiveRequest(currentResult._links.next.href)
@@ -137,6 +151,7 @@ class MemoPage extends React.Component<Props, State> {
         })
         dataKagRecursive = [...data, ...dataKagRecursive]
         this.setState({ dataKagRecursive })
+        this.addOperationsToKagRecursive([...this.state.dataKagRecursive])
         return this.doRecursive(Result._links.next.href)
       } else {
         return this.doRecursive(Result._links.next.href)
@@ -144,7 +159,45 @@ class MemoPage extends React.Component<Props, State> {
     })
     this.setState({ dataKagRecursive })
   }
-
+  async addOperationsToTransactionArray(transactionArray) {
+    // console.log(transactionArray, 'transactionArray....')
+    const dataMixed = await Promise.all(
+      transactionArray.map((transactionRecord) => {
+        const operationUrl = transactionRecord._links.operations.href.slice(0, 123)
+        return fetch(operationUrl)
+          .then((res) => res.json())
+          .then((response) => ({ ...transactionRecord, operations: response._embedded.records[0] }))
+      }),
+    )
+    // console.log(dataMixed, 'dataMixed...')
+    this.setState({ dataKauKag: dataMixed })
+  }
+  async addOperationsToKauRecursive(transactionArray) {
+    // console.log(transactionArray, 'transactionArray....')
+    const dataMixedRecursive = await Promise.all(
+      transactionArray.map((transactionRecord) => {
+        const operationUrl = transactionRecord._links.operations.href.slice(0, 123)
+        return fetch(operationUrl)
+          .then((res) => res.json())
+          .then((response) => ({ ...transactionRecord, operations: response._embedded.records[0] }))
+      }),
+    )
+    // console.log(dataMixedRecursive, 'dataMixed...')
+    this.setState({ dataKauDetailsRecursive: dataMixedRecursive })
+  }
+  async addOperationsToKagRecursive(transactionArray) {
+    // console.log(transactionArray, 'transactionArray....')
+    const dataMixedKagRecursive = await Promise.all(
+      transactionArray.map((transactionRecord) => {
+        const operationUrl = transactionRecord._links.operations.href.slice(0, 123)
+        return fetch(operationUrl)
+          .then((res) => res.json())
+          .then((response) => ({ ...transactionRecord, operations: response._embedded.records[0] }))
+      }),
+    )
+    // console.log(dataMixedKagRecursive, 'dataMixed...')
+    this.setState({ dataKagDetailsRecursive: dataMixedKagRecursive })
+  }
   componentDidMount() {
     const query = this.createQuery()
     this.fetchSearch(query)
@@ -162,66 +215,102 @@ class MemoPage extends React.Component<Props, State> {
       return { transLimit: old.transLimit + 10 }
     })
   }
+
   render() {
+    const query = this.createQuery()
+    // console.log(this.state.dataKauKag, 'this.state.dataMixed....')
+
     return (
       <section className='section'>
         <div className='container'>
           <div className='tile is-vertical is-parent'>
             <article className='tile is-child'>
               <p className='title  is-child box' style={{ marginBottom: '1.0rem' }}>
-                Transactions
+                Showing results for <b>{query}</b>
               </p>
-              {[
-                ...this.state.dataKau,
-                ...this.state.dataKag,
-                ...this.state.dataKauRecursive,
-                ...this.state.dataKagRecursive,
-              ]
-                .slice(0, this.state.transLimit)
-                .map((record) => {
-                  const networkType = record._links.self.href.slice(11, 18) === 'testnet' ? 'T' : ''
-                  currConn = networkType + record._links.self.href.slice(7, 10).toUpperCase()
-                  const feePaid = record.fee_paid || Number(record.fee_charged)
-                  const precision = currConn === 'KEM' ? 7 : 5
-                  return (
-                    <div className='box memo-card-margin' key={record}>
-                      <p className='subtitle'>Summary</p>
-                      <HorizontalLabelledField
-                        label='Created At'
-                        value={
-                          record.created_at.slice(8, 10) +
-                          '/' +
-                          record.created_at.slice(5, 7) +
-                          '/' +
-                          record.created_at.slice(0, 4) +
-                          ' ' +
-                          record.created_at.slice(11, 14) +
-                          record.created_at.slice(14, 17) +
-                          record.created_at.slice(17, 19) +
-                          ' ' +
-                          'UTC'
-                        }
-                      />
-                      <Link to={`/search/${this.state.value}`} />
-                      <HorizontalLabelledField
-                        label='Fee'
-                        value={renderAmount(convertStroopsToKinesis(feePaid), precision)}
-                        appendCurr={currConn}
-                      />{' '}
-                      <HorizontalLabelledField
-                        label='Ledger'
-                        value={<Link to={`/ledger/${record.ledger}`}>{record.ledger}</Link>}
-                      />
-                      <HorizontalLabelledField label='Operation Count' value={record.operation_count} />
-                      <HorizontalLabelledField label='Memo' value={record.memo} />
-                      <HorizontalLabelledField
-                        label='Source Account'
-                        value={<Link to={`/account/${record.source_account}`}>{record.source_account}</Link>}
-                      />
-                    </div>
-                  )
-                })}
+              <table className='table is-bordered is-striped is-fullwidth'>
+                <thead className='thead'>
+                  <tr className='tr'>
+                    <th className='th'>Date & Time (UTC)</th>
+                    <th className='th'>Hash</th>
+                    <th className='th'>From</th>
+                    <th className='th'>To</th>
+                    <th className='th'>Amount</th>
+                    <th className='th'>Fee</th>
+                    <th className='th'>Memo</th>
+                  </tr>
+                </thead>
 
+                {[
+                  ...this.state.dataKauKag,
+                  ...this.state.dataKauDetailsRecursive,
+                  ...this.state.dataKagDetailsRecursive,
+                ]
+                  .slice(0, this.state.transLimit)
+                  .map((record) => {
+                    const networkType = record._links.self.href.slice(11, 18) === 'testnet' ? 'T' : ''
+                    currConn = networkType + record._links.self.href.slice(7, 10).toUpperCase()
+                    const feePaid = record.fee_paid || Number(record.fee_charged)
+                    const precision = currConn === 'KEM' ? 7 : 5
+                    this.state.dataKauKag.sort((a, b) =>
+                    moment(a.created_at).valueOf() < moment(b.created_at).valueOf()
+                      ? 1
+                      : moment(b.created_at).valueOf() < moment(a.created_at).valueOf()
+                      ? -1
+                      : 0,
+                  )
+                    return (
+                      <tbody key={record.id} className='tbody'>
+                        <tr key={record.id} className='tr'>
+                          <td className='td'>
+                            {record.created_at.slice(8, 10)}/{record.created_at.slice(5, 7)}/
+                            {record.created_at.slice(0, 4)}&nbsp;
+                            {record.created_at.slice(11, 14)}
+                            {record.created_at.slice(14, 17)}
+                            {record.created_at.slice(17, 19)}
+                          </td>
+                          <td className='td'>
+                            <Link to={`/transaction/${currConn}/${record.hash}`}>
+                              {record.hash.slice(0, 4)}.....{record.hash.substr(record.hash.length - 4)}
+                            </Link>
+                          </td>
+                          <td className='td'>
+                            <Link to={`/account/${record.source_account}`}>
+                              {record.source_account.slice(0, 4)}.....
+                              {record.source_account.substr(record.source_account.length - 4)}
+                            </Link>
+                          </td>
+                          <td className='td'>
+                            {record.operations?.to ? (
+                              <Link to={`/account/${record.operations?.to}`}>
+                                {' '}
+                                {record.operations?.to.slice(0, 4) +
+                                  '.....' +
+                                  record.operations?.to.substr(record.operations?.to.length - 4)}{' '}
+                              </Link>
+                            ) : (
+                              <Link to={`/account/${record.operations?.account}`}>
+                                {record.operations?.account.slice(0, 4) +
+                                  '.....' +
+                                  record.operations?.account.substr(record.operations?.account.length - 4)}
+                              </Link>
+                            )}
+                          </td>
+                          <td>
+                            {record.operations?.starting_balance
+                              ? record.operations?.starting_balance
+                              : record.operations?.amount}
+                            &nbsp; {currConn}
+                          </td>
+                          <td className='td'>
+                            {renderAmount(convertStroopsToKinesis(feePaid), precision)} {currConn}
+                          </td>
+                          <td className='td'>{record.memo}</td>
+                        </tr>
+                      </tbody>
+                    )
+                  })}
+              </table>
               <button
                 className='button'
                 onClick={() => this.moreTxs()}
