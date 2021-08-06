@@ -252,7 +252,13 @@ class MemoPage extends React.Component<Props, State> {
                     currConn = networkType + record._links.self.href.slice(7, 10).toUpperCase()
                     const feePaid = record.fee_paid || Number(record.fee_charged)
                     const precision = currConn === 'KEM' ? 7 : 5
-
+                    this.state.dataKauKag.sort((a, b) =>
+                    moment(a.created_at).valueOf() < moment(b.created_at).valueOf()
+                      ? 1
+                      : moment(b.created_at).valueOf() < moment(a.created_at).valueOf()
+                      ? -1
+                      : 0,
+                  )
                     return (
                       <tbody key={record.id} className='tbody'>
                         <tr key={record.id} className='tr'>
