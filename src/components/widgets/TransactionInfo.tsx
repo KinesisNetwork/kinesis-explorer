@@ -1,4 +1,10 @@
-import { CollectionPage, OperationRecord, TransactionRecord } from 'js-kinesis-sdk'
+import {
+  BaseOperationRecord,
+  CollectionPage,
+  CreateAccountOperationRecord,
+  OperationRecord,
+  TransactionRecord,
+} from 'js-kinesis-sdk'
 import * as React from 'react'
 import { Link } from 'react-router-dom'
 import { convertStroopsToKinesis } from '../../services/kinesis'
@@ -8,18 +14,10 @@ import { OperationList1 } from './OperationList1'
 
 let currConn: string
 interface KemFee extends TransactionRecord {
-  amount: any
   fee_charged?: 0
 }
-
-interface amount extends TransactionRecord {
-  amount: any
-}
-
 interface Props {
-  transaction: KemFee 
-  transactions: amount
-
+  transaction: KemFee
   conn?: string
   selectedConnection: any
 }
@@ -41,7 +39,6 @@ export class TransactionInfo extends React.Component<Props, State> {
   }
   loadOperations = async (operations?: any) => {
     operations = await this.props.transaction.operations()
-    // this.setState({ operations })
     return [operations]
   }
   handleOperations = async (transaction?: any) => {
@@ -216,7 +213,7 @@ export class TransactionInfo extends React.Component<Props, State> {
     const Amount = this.addOperationsToTransactionArray(transaction)
     // const Am = this.addOperationsToTransaction(transaction)
     // const Amo = this.addOperations(transaction)
-    const data = `${renderAmount(transaction.amount)}`
+    const data = `${renderAmount(this.props.transaction['amount'])}`
     // console.log(data, 'data..')
 
     return (
@@ -255,10 +252,11 @@ export class TransactionInfo extends React.Component<Props, State> {
             />
             <HorizontalLabelledField
               label="To"
-              value={<Link to={`/account/${transaction.account}`}>{transaction.account}</Link>}
+              value={
+                <Link to={`/account/${this.props.transaction['account']}`}>{this.props.transaction['account']}</Link>
+              }
             />
           </div>
-          <div className="tile is-child"></div>
         </div>
       </div>
     )

@@ -66,9 +66,9 @@ export class SearchBar extends React.Component<OperationProps> {
         
           <Link
             // to={`/search/${this.state.query?.replaceAll('#', '_').replaceAll(' ', '-')}`}
-            to = {!this.state.query.replaceAll(' ', '')? window.location.pathname  : `/search/${this.state.query?.replaceAll('#', '_').replaceAll(' ', '-')}`  }
+            to = {!this.state.query.replaceAll(' ', '')? window.location.pathname  : `/search/${this.state.query?.replaceAll('#', '_').replaceAll(' ', '-')}`}
             className='button'
-            // disabled = {!this.state.query.replaceAll(' ', '')?window.location.pathname : !this.state.query }
+            //  disabled = {!this.state.query.replaceAll(' ', '')?window.location.pathname : !this.state.query }
             onClick={this.clearInput}
           >
             Search

@@ -1,7 +1,9 @@
 import * as React from 'react'
 
-import { CollectionPage, OperationRecord, TransactionRecord } from 'js-kinesis-sdk'
-import { OperationInfo1 } from './OperaionInfo1'
+import {
+  CollectionPage,
+  OperationRecord,
+} from 'js-kinesis-sdk'
 import { HorizontalLabelledField } from '../shared'
 import { Link } from 'react-router-dom'
 import { startCase } from 'lodash'
@@ -16,20 +18,25 @@ export class OperationList1 extends React.Component<Props> {
   constructor(props: Props) {
     super(props)
   }
+  async addOperationsToTransactionArray(transactionArray) {
+    let Array = ''
+    const getMemoOperationUrl = this.props.operations.records[0]
+    console.log(getMemoOperationUrl, 'new response.....')
+    const getInflationDestinationAccount = this.props.operations.records[0]?.['source_account']
+    this.props.operations['account'] = getInflationDestinationAccount
+  }
 
   render() {
-    // const operations = this.props.operations
-    // const operations = this.inflationOperation(this.props.operations)
-    // let operations = this.state.operations
     const operations = this.props.operations
+    const op = this.addOperationsToTransactionArray(operations)
     const conn = this.props.selectedConnection === undefined ? 'KAU' : this.props.conn
     console.log(operations?.records[0]?.type)
-    // const name = 'From'
     if (operations?.records[0]?.type === 'inflation') {
       const name = 'Source Account'
     } else {
       const name = 'To'
     }
+
     return (
       <React.Fragment>
         {operations && operations.records && operations.records.length
@@ -45,7 +52,9 @@ export class OperationList1 extends React.Component<Props> {
                 />
                 <HorizontalLabelledField
                   label={operation?.type === 'inflation' ? 'Source Account' : 'From'}
-                  value={<Link to={`/account/${operation.source_account}`}>{operation.source_account}</Link>}
+                  value={
+                    <Link to={`/account/${this.props.operations['account']}`}>{this.props.operations['account']}</Link>
+                  }
                 />
               </div>
             ))
