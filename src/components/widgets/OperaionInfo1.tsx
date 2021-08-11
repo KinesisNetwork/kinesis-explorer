@@ -43,7 +43,7 @@ const FORMAT_VALUE: { [key: string]: (value: string) => string | number | React.
   amount: (value) => `${renderAmount(value)} ${currConn}`,
 }
 
-export const OperationInfo: React.SFC<{
+export const OperationInfo1: React.SFC<{
   selectedConnection: any,
   operation: OperationRecord | null,
   conn: string,
@@ -68,7 +68,7 @@ export const OperationInfo: React.SFC<{
     : []
 
   return (
-    <div className='tile is-child box'>
+    <div >
       <p className='subtitle is-marginless'>{operation ? startCase(operation.type) : ''}</p>
       {fields} {field}
     </div>

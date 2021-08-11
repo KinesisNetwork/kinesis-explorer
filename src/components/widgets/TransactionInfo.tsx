@@ -4,26 +4,39 @@ import { Link } from 'react-router-dom'
 import { convertStroopsToKinesis } from '../../services/kinesis'
 import { renderAmount } from '../../utils'
 import { HorizontalLabelledField } from '../shared'
-import { OperationList } from './OperationList'
+import { OperationList1 } from './OperationList1'
 
 let currConn: string
 interface KemFee extends TransactionRecord {
+  amount: any
   fee_charged?: 0
 }
 
+interface amount extends TransactionRecord {
+  amount: any
+}
+
 interface Props {
-  transaction: KemFee
+  transaction: KemFee 
+  transactions: amount
+
   conn?: string
   selectedConnection: any
 }
 interface State {
   operations: CollectionPage<OperationRecord> | null
+  dataKauKag: any
+  dataKauKagAccount: any
+  amount: any
 }
 export class TransactionInfo extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
     this.state = {
       operations: null,
+      dataKauKag: [],
+      dataKauKagAccount: [],
+      amount: [],
     }
   }
   loadOperations = async (operations?: any) => {
@@ -41,6 +54,7 @@ export class TransactionInfo extends React.Component<Props, State> {
       if (this.state.operations && Object.keys(this.state.operations) && Object.keys(this.state.operations).length) {
         operations = await this.getAccountMergedAmount(operations)
         operation['records'] = [...operations.records, ...operation['records']]
+        await this.addOperationsToTransactionArray
       } else {
         operations = await this.getAccountMergedAmount(operations)
         operation = operations
@@ -58,7 +72,7 @@ export class TransactionInfo extends React.Component<Props, State> {
         const response = await fetch(`${AmountMergeAddressNetwork}?order=desc`, {
           headers: {
             'Content-Type': 'application/json',
-            'Accept': 'application/json',
+            Accept: 'application/json',
           },
         })
         const url = await response.json()
@@ -68,6 +82,120 @@ export class TransactionInfo extends React.Component<Props, State> {
     }
     return operations
   }
+  async addOperationsToTransactionArray(transactionArray) {
+    let Array = ''
+
+    // console.log(operation.slice(0,121), 'tran')
+    const getMemoOperationUrl = this.props.transaction?._links.effects?.href
+    Array = getMemoOperationUrl
+    const getResponseUrl = Array.slice(0, 121)
+    console.log(getResponseUrl, 'response.....')
+
+    const response = await fetch(`${getResponseUrl}?order=desc`, {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+    })
+    const url = await response.json()
+    console.log(url, 'URL....')
+    if (url?._embedded?.records[2]?.type === 'account_debited') {
+      const getAccountMergeAmount = url?._embedded?.records[2]?.amount
+      console.log(getAccountMergeAmount, 'Merge Account AMOUNT....')
+      this.props.transaction['amount'] = getAccountMergeAmount
+    }
+    if (url?._embedded?.records[1]?.type === 'account_debited') {
+      const getAccountMergeAmount = url?._embedded?.records[1]?.amount
+      console.log(getAccountMergeAmount, 'Create Account Amount....')
+      this.props.transaction['amount'] = getAccountMergeAmount
+    }
+    if (url?._embedded?.records[0]?.type === 'account_debited') {
+      const getAccountMergeAmount = url?._embedded?.records[1]?.amount
+      console.log(getAccountMergeAmount, 'PAYMENT ACCOUNT AMOUNT....')
+      this.props.transaction['amount'] = getAccountMergeAmount
+    }
+    if (url?._embedded?.records[0]?.type === 'account_credited') {
+      const getAccountMergeAmount = url?._embedded?.records[0]?.amount
+      console.log(getAccountMergeAmount, 'Inflation Account AMOUNT....')
+      this.props.transaction['amount'] = getAccountMergeAmount
+    }
+    if (url?._embedded?.records[1]?.type === 'account_credited') {
+      const getAccountMergeAccount = url?._embedded?.records[1]?.account
+      console.log(getAccountMergeAccount, 'Destination Account type Payment....')
+      this.props.transaction['account'] = getAccountMergeAccount
+    }
+    if (url?._embedded?.records[0]?.type === 'signer_created') {
+      const getCreateAccountDestination = url?._embedded?.records[0]?.account
+      console.log(getCreateAccountDestination, 'Create Account type Destination....')
+      this.props.transaction['account'] = getCreateAccountDestination
+    }
+    if (url?._embedded?.records[0]?.type === 'account_credited') {
+      const getInflationDestinationAccount = url?._embedded?.records[0]?.account
+      console.log(getInflationDestinationAccount, 'Inflation Destination Account ....')
+      this.props.transaction['account'] = getInflationDestinationAccount
+    }
+    this.setState({ dataKauKag: this.props.transaction })
+    return transactionArray
+  }
+  // async addOperationsToTransaction(transactionArray) {
+  //   // console.log(transactionArray, 'transactionArray....')
+  //   // const operation = this.props.transaction?._links.effects?.href
+  //   let Array = ''
+  //   // console.log(operation.slice(0,121), 'tran')
+  //   const getMemoOperationUrl = this.props.transaction?._links.effects?.href
+  //   Array = getMemoOperationUrl
+  //   const getResponseUrl = Array.slice(0, 121)
+  //   console.log(getResponseUrl, 'response.....')
+
+  //   const response = await fetch(`${getResponseUrl}?order=desc`, {
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       Accept: 'application/json',
+  //     },
+  //   })
+  //   const url = await response.json()
+  //   console.log(url, 'URL....')
+  //   // if (url?._embedded?.records[1]?.type === 'account_debited') {
+  //   //   const getAccountMergeAmount = url?._embedded?.records[1]?.amount
+  //   //   console.log(getAccountMergeAmount, 'Create Account Amount....')
+  //   //   this.props.transaction['amount'] = getAccountMergeAmount
+  //   // }
+  //   if (url?._embedded?.records[0]?.type === 'signer_created') {
+  //     const getCreateAccountDestination = url?._embedded?.records[0]?.account
+  //     console.log(getCreateAccountDestination, 'Create Account Destination....')
+  //     this.props.transaction['account'] = getCreateAccountDestination
+  //   }
+
+  //   this.setState({ dataKauKagAccount: this.props.transaction })
+  //   // this.setState({ dataKauKag: this.props.transaction })
+  //   return transactionArray
+  // }
+  // async addOperations(transactionArray) {
+  //   // console.log(transactionArray, 'transactionArray....')
+  //   // const operation = this.props.transaction?._links.effects?.href
+  //   let Array = ''
+  //   // console.log(operation.slice(0,121), 'tran')
+  //   const getMemoOperationUrl = this.props.transaction?._links.effects?.href
+  //   Array = getMemoOperationUrl
+  //   const getResponseUrl = Array.slice(0, 121)
+  //   console.log(getResponseUrl, 'response.....')
+
+  //   const response = await fetch(`${getResponseUrl}?order=desc`, {
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       Accept: 'application/json',
+  //     },
+  //   })
+  //   const url = await response.json()
+  //   console.log(url, 'URL....')
+  //   // if (url?._embedded?.records[0]?.type === 'account_debited') {
+  //   //   const getAccountMergeAmount = url?._embedded?.records[1]?.amount
+  //   //   console.log(getAccountMergeAmount, 'A....')
+  //   //   this.props.transaction['amount'] = getAccountMergeAmount
+  //   // }
+  //   //  this.setState({dataKauKag: this.props.transaction})
+  //   return transactionArray
+  // }
   componentDidMount() {
     this.handleOperations(this.props.transaction)
   }
@@ -81,60 +209,56 @@ export class TransactionInfo extends React.Component<Props, State> {
   render() {
     const { transaction, conn } = this.props
     const feePaid = transaction.fee_paid || Number(transaction.fee_charged)
+    // const amount = transaction.amount
     const precision = conn === 'KEM' ? 7 : 5
     const networkType = this.state.operations?.records[0]?._links?.self?.href.slice(12, 19) === 'testnet' ? 'T' : ''
     currConn = networkType + this.state.operations?.records[0]?._links?.self?.href.slice(8, 11).toUpperCase()
+    const Amount = this.addOperationsToTransactionArray(transaction)
+    // const Am = this.addOperationsToTransaction(transaction)
+    // const Amo = this.addOperations(transaction)
+    const data = `${renderAmount(transaction.amount)}`
+    // console.log(data, 'data..')
+
     return (
-      <div className='tile is-ancestor'>
-        <div className='tile is-vertical is-parent'>
-          <div className='tile is-child box'>
-            <p className='subtitle'>Summary</p>
+      <div className="tile is-ancestor">
+        <div className="tile is-vertical is-parent">
+          <div className="tile is-child box">
+            <p className="subtitle">Summary</p>
 
             <HorizontalLabelledField
-              label='Created At'
+              label="Created At"
               value={
                 transaction.created_at.slice(8, 10) +
                 '/' +
                 transaction.created_at.slice(5, 7) +
                 '/' +
                 transaction.created_at.slice(0, 4) +
-               ' ' +
+                ' ' +
                 transaction.created_at.slice(11, 14) +
                 transaction.created_at.slice(14, 17) +
                 transaction.created_at.slice(17, 19) +
-                 ' ' +
-                 'UTC'
+                ' ' +
+                'UTC'
               }
             />
+            <HorizontalLabelledField label="Amount" value={data} appendCurr={currConn} />
             <HorizontalLabelledField
-              label='Fee'
+              label="Fee"
               value={renderAmount(convertStroopsToKinesis(feePaid), precision)}
               appendCurr={currConn}
             />
-            <HorizontalLabelledField
-              label='Ledger'
-              value={<Link to={`/ledger/${transaction.ledger_attr}`}>{transaction.ledger_attr}</Link>}
-            />
-            <HorizontalLabelledField label='Operation Count' value={transaction.operation_count} />
-            <HorizontalLabelledField label='Memo' value={transaction.memo} />
-            <HorizontalLabelledField
-              label='Source Account'
-              value={<Link to={`/account/${transaction.source_account}`}>{transaction.source_account}</Link>}
-            />
-          </div>
-          <div className='tile is-child'>
-            <OperationList
+            <HorizontalLabelledField label="Memo" value={transaction.memo} />
+            <OperationList1
               operations={this.state.operations}
               conn={conn}
               selectedConnection={this.props.selectedConnection}
             />
+            <HorizontalLabelledField
+              label="To"
+              value={<Link to={`/account/${transaction.account}`}>{transaction.account}</Link>}
+            />
           </div>
-          <div className='tile is-child box'>
-            <p className='subtitle'>Signatures</p>
-            {transaction.signatures.map((sig, i) => (
-              <HorizontalLabelledField key={i} label='' value={sig} />
-            ))}
-          </div>
+          <div className="tile is-child"></div>
         </div>
       </div>
     )
