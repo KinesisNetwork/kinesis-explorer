@@ -71,7 +71,6 @@ class OperationValue extends React.Component<OperationProps> {
     return operations
   }
 
-
   getDestinationAccount = async (operations) => {
     for (const operationData of operations?.records) {
       const operation = operationData
@@ -84,8 +83,8 @@ class OperationValue extends React.Component<OperationProps> {
           },
         })
         const url = await response.json()
-        let getAccount = ""
-       if (operation?.type === 'inflation') {
+        let getAccount = ''
+        if (operation?.type === 'inflation') {
           getAccount = url?._embedded?.records[0]?.account
         }
         operation['destination_account'] = getAccount
@@ -93,7 +92,6 @@ class OperationValue extends React.Component<OperationProps> {
     }
     return operations
   }
-
 
   render() {
     const operationType = this.state.operations[0]?.type
