@@ -29,6 +29,7 @@ class OperationValue extends React.Component<OperationProps> {
   async getOperations() {
     let operationRecord = await this.server.operations().limit(this.props.translimit).order('desc').call()
     operationRecord = await this.getAccountMergedAmount(operationRecord)
+    operationRecord = await this.getDestinationAccount(operationRecord)
     this.setState({ operations: operationRecord.records })
     // this.setState({ operations: operationRecord.records },
     //    () => {
@@ -70,6 +71,30 @@ class OperationValue extends React.Component<OperationProps> {
     return operations
   }
 
+
+  getDestinationAccount = async (operations) => {
+    for (const operationData of operations?.records) {
+      const operation = operationData
+      if (operation?.type === 'inflation') {
+        const AmountMergeAddressNetwork = operation?._links?.effects?.href
+        const response = await fetch(`${AmountMergeAddressNetwork}?order=desc`, {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        })
+        const url = await response.json()
+        let getAccount = ""
+       if (operation?.type === 'inflation') {
+          getAccount = url?._embedded?.records[0]?.account
+        }
+        operation['destination_account'] = getAccount
+      }
+    }
+    return operations
+  }
+
+
   render() {
     const operationType = this.state.operations[0]?.type
     let destinationAccount
@@ -82,7 +107,9 @@ class OperationValue extends React.Component<OperationProps> {
     if (operationType === 'payment') {
       destinationAccount = this.state.operations[0]?.to
     }
-
+    if (operationType === 'inflation') {
+      destinationAccount = this.state.operations[0]?.destination_account
+    }
     let operationAmount
     if (operationType === 'account_merge') {
       operationAmount = this.state.operations[0]?.amount
