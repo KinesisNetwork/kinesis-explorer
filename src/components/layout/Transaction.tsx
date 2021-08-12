@@ -2,14 +2,14 @@ import { TransactionRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
 import { Redirect, RouteComponentProps } from 'react-router'
 import { Link } from 'react-router-dom'
+import ReactTooltip from 'react-tooltip'
 import { Subscribe } from 'unstated'
+import icon from '../../../icon.svg'
 import { ConnectionContainer, ConnectionContext } from '../../services/connections'
 import { getTransaction } from '../../services/kinesis'
 import { Connection } from '../../types'
-import { TransactionInfo } from '../widgets/TransactionInfo'
-import ReactTooltip from 'react-tooltip'
 import Logo from '../css/images/copy.svg'
-import icon from '../../../icon.svg'
+import { TransactionInfo } from '../widgets/TransactionInfo'
 
 // import { TransactionMemo } from '../widgets/TransactionMemo'
 
@@ -37,7 +37,7 @@ class TransactionPage extends React.Component<Props, State> {
       selectedConnectionName: undefined,
       copySuccess: false,
       tool_tip_content: '',
-      amount: null
+      amount: null,
     }
   }
 
@@ -115,9 +115,9 @@ class TransactionPage extends React.Component<Props, State> {
       return <Redirect to={`/memo/${getConn()}/${query}`} />
     }
     return (
-      <section className="section">
-        <div className="container">
-          <h1 className="title">Transaction</h1>
+      <section className='section'>
+        <div className='container'>
+          <h1 className='title'>Transaction</h1>
           {/* {console.log('memo is' , this.state.transaction?.memo)} */}
           {/* <h2 className="subtitle" ref={(textarea) => (this.textArea = textarea)}>
             {this.props.match.params.id}
@@ -143,7 +143,7 @@ class TransactionPage extends React.Component<Props, State> {
                 <ReactTooltip backgroundColor={'#017DE8'} />{' '}
               </button>
             )} */}
-            <h2 className="subtitle">
+            <h2 className='subtitle'>
             {this.props.match.params.id}
           </h2>
 

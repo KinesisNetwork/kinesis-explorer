@@ -38,7 +38,7 @@ export class SearchBar extends React.Component<OperationProps> {
 
   handleKeypress = (e) => {
     if (e.key === 'Enter') {
-      top.location.href = !this.state.query.replaceAll(' ', '')? '': `/search/${this.state.query?.replaceAll('#', '_').replaceAll(' ', '-')}` 
+      top.location.href = !this.state.query.replaceAll(' ', '') ? '' : `/search/${this.state.query?.replaceAll('#', '_').replaceAll(' ', '-')}`
     }
   }
   render() {
@@ -60,7 +60,7 @@ export class SearchBar extends React.Component<OperationProps> {
         </div>
         <div className='control'>
           <Link
-            to={!this.state.query.replaceAll(' ', '')? window.location.pathname  : `/search/${this.state.query?.replaceAll('#', '_').replaceAll(' ', '-')}`}
+            to={!this.state.query.replaceAll(' ', '') ? window.location.pathname  : `/search/${this.state.query?.replaceAll('#', '_').replaceAll(' ', '-')}`}
             className='button'
             onClick={this.clearInput}
           >

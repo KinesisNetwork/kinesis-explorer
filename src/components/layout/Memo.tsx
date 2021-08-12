@@ -110,7 +110,7 @@ class MemoPage extends React.Component<Props, State> {
     await this.setState({ dataKau, dataKag })
     this.doRecursiveRequest(searchUrl)
     this.doRecursive(searchLink)
-    this.addOperationsToTransactionArray([...this.state.dataKau, ...this.state.dataKag, ...this.state.dataKauRecursive, ...this.state.dataKagRecursive])
+    this.addOperationsToTransactionArray([...this.state.dataKau, ...this.state.dataKag])
   }
 
   doRecursiveRequest = async (searchUrl) => {
@@ -131,7 +131,7 @@ class MemoPage extends React.Component<Props, State> {
         })
         dataKauRecursive = [...data, ...dataKauRecursive]
         this.setState({ dataKauRecursive })
-        // this.addOperationsToKauRecursive([...this.state.dataKauRecursive])
+        this.addOperationsToKauRecursive([...this.state.dataKauRecursive])
         return this.doRecursiveRequest(currentResult._links.next.href)
       } else {
         return this.doRecursiveRequest(currentResult._links.next.href)
@@ -151,7 +151,7 @@ class MemoPage extends React.Component<Props, State> {
         })
         dataKagRecursive = [...data, ...dataKagRecursive]
         this.setState({ dataKagRecursive })
-        // this.addOperationsToKagRecursive([...this.state.dataKagRecursive])
+        this.addOperationsToKagRecursive([...this.state.dataKagRecursive])
         return this.doRecursive(Result._links.next.href)
       } else {
         return this.doRecursive(Result._links.next.href)

@@ -69,7 +69,7 @@ export class TransactionInfo extends React.Component<Props, State> {
         const response = await fetch(`${AmountMergeAddressNetwork}?order=desc`, {
           headers: {
             'Content-Type': 'application/json',
-            Accept: 'application/json',
+            'Accept': 'application/json',
           },
         })
         const url = await response.json()
@@ -91,7 +91,7 @@ export class TransactionInfo extends React.Component<Props, State> {
     const response = await fetch(`${getResponseUrl}?order=desc`, {
       headers: {
         'Content-Type': 'application/json',
-        Accept: 'application/json',
+        'Accept': 'application/json',
       },
     })
     const url = await response.json()
@@ -217,13 +217,13 @@ export class TransactionInfo extends React.Component<Props, State> {
     // console.log(data, 'data..')
 
     return (
-      <div className="tile is-ancestor">
-        <div className="tile is-vertical is-parent">
-          <div className="tile is-child box">
-            <p className="subtitle">Summary</p>
+      <div className='tile is-ancestor'>
+        <div className='tile is-vertical is-parent'>
+          <div className='tile is-child box'>
+            <p className='subtitle'>Summary</p>
 
             <HorizontalLabelledField
-              label="Created At"
+              label='Created At'
               value={
                 transaction.created_at.slice(8, 10) +
                 '/' +
@@ -238,23 +238,22 @@ export class TransactionInfo extends React.Component<Props, State> {
                 'UTC'
               }
             />
-            <HorizontalLabelledField label="Amount" value={data} appendCurr={currConn} />
+            <HorizontalLabelledField label='Amount' value={data} appendCurr={currConn} />
             <HorizontalLabelledField
-              label="Fee"
+              label='Fee'
               value={renderAmount(convertStroopsToKinesis(feePaid), precision)}
               appendCurr={currConn}
             />
-            <HorizontalLabelledField label="Memo" value={transaction.memo} />
+            <HorizontalLabelledField label='Memo' value={transaction.memo} />
             <OperationList1
               operations={this.state.operations}
               conn={conn}
               selectedConnection={this.props.selectedConnection}
             />
             <HorizontalLabelledField
-              label="To"
+              label='To'
               value={
-                <Link to={`/account/${this.props.transaction['account']}`}>{this.props.transaction['account']}</Link>
-              }
+                <Link to={`/account/${this.props.transaction['account']}`}>{this.props.transaction['account']}</Link>}
             />
           </div>
         </div>
