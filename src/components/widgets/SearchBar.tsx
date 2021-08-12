@@ -1,17 +1,15 @@
 import { TransactionRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
-import { Link, LinkProps } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { Connection } from '../../types'
 interface State {
   transaction: TransactionRecord | null
   invalidTransaction: boolean
   conn: string | undefined
 }
-interface OperationProps extends LinkProps {
+interface OperationProps {
   selectedConnection: Connection
-  disabled? : boolean|string;
 }
-
 
 export class SearchBar extends React.Component<OperationProps> {
   state = {
@@ -26,7 +24,6 @@ export class SearchBar extends React.Component<OperationProps> {
     selectedConnection: '',
     data: [],
     redirectUrl: '/search/memo',
-    disabled: ''
   }
   handleChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
     this.setState({ value: event.currentTarget.value })
@@ -46,7 +43,6 @@ export class SearchBar extends React.Component<OperationProps> {
   }
   render() {
     const { query } = this.state
-   
     return (
       <div className='field has-addons'>
         <div className='control has-icons-right'>
@@ -63,12 +59,9 @@ export class SearchBar extends React.Component<OperationProps> {
           </span>
         </div>
         <div className='control'>
-        
           <Link
-            // to={`/search/${this.state.query?.replaceAll('#', '_').replaceAll(' ', '-')}`}
-            to = {!this.state.query.replaceAll(' ', '')? window.location.pathname  : `/search/${this.state.query?.replaceAll('#', '_').replaceAll(' ', '-')}`}
+            to={!this.state.query.replaceAll(' ', '')? window.location.pathname  : `/search/${this.state.query?.replaceAll('#', '_').replaceAll(' ', '-')}`}
             className='button'
-            //  disabled = {!this.state.query.replaceAll(' ', '')?window.location.pathname : !this.state.query }
             onClick={this.clearInput}
           >
             Search
