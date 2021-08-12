@@ -81,7 +81,7 @@ class MemoPage extends React.Component<Props, State> {
             return e.memo.toLowerCase().includes(query.toLowerCase())
           }
         })
-        dataKau = [...data, ...dataKau]
+        dataKau = [...dataKau]
       })
 
       .catch((error) => {
@@ -99,7 +99,7 @@ class MemoPage extends React.Component<Props, State> {
             return e.memo.toLowerCase().includes(query.toLowerCase())
           }
         })
-        dataKag = [...data, ...dataKag]
+        dataKag = [...dataKag]
       })
 
       .catch((error) => {
@@ -215,7 +215,6 @@ class MemoPage extends React.Component<Props, State> {
       return { transLimit: old.transLimit + 10 }
     })
   }
-
   render() {
     const query = this.createQuery()
     // console.log(this.state.dataKauKag, 'this.state.dataMixed....')
