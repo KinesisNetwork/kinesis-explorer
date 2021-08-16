@@ -10,7 +10,7 @@ import { Connection } from '../../types'
 import { renderAmount } from '../../utils'
 import { HorizontalLabelledField } from '../shared'
 import OperationValue from '../widgets/OperationValue'
-
+import Logo from '../css/images/copy.svg'
 let currConn: string
 interface ConnectedTransactionProps extends RouteComponentProps<{ id: string; connection: string }> {}
 interface Props extends ConnectedTransactionProps, ConnectionContext {}
@@ -34,6 +34,7 @@ interface State {
   dataKauKag: any
   dataKauDetailsRecursive: any
   dataKagDetailsRecursive: any
+  sortType: any
 }
 
 class MemoPage extends React.Component<Props, State> {
@@ -58,8 +59,10 @@ class MemoPage extends React.Component<Props, State> {
       dataKauKag: [],
       dataKauDetailsRecursive: [],
       dataKagDetailsRecursive: [],
+      sortType: 'desc',
     }
     this.moreTxs = this.moreTxs.bind(this)
+    //  this.imageClick = this.imageClick.bind(this)
   }
 
   fetchSearch = async (query) => {
@@ -86,7 +89,7 @@ class MemoPage extends React.Component<Props, State> {
 
       .catch((error) => {
         if (error) {
-              // console.log('error')
+          // console.log('error')
         }
       })
     await fetch(searchLink)
@@ -104,7 +107,7 @@ class MemoPage extends React.Component<Props, State> {
 
       .catch((error) => {
         if (error) {
-              // console.log('error')
+          // console.log('error')
         }
       })
     await this.setState({ dataKau, dataKag })
@@ -215,71 +218,97 @@ class MemoPage extends React.Component<Props, State> {
       return { transLimit: old.transLimit + 10 }
     })
   }
+  // onSort = sortType => {
+
+  //   this.setState({sortType})
+  // }
+  // sortByField(field) {
+  //   if (field == 'created_at') {
+  //     const datas = [...this.state.dataKauDetailsRecursive, ...this.state.dataKagDetailsRecursive]
+  //     datas.sort((a,b) => (Number(a.created_at) > Number(b.created_at)) ? 1 : ((Number(b.created_at) > Number(a.created_at)) ? -1 : 0));
+  //   } else if (field == 'starting_balance'? field == 'starting_balance' : field == 'amount') {
+  //     const datas = [...this.state.dataKauDetailsRecursive, ...this.state.dataKagDetailsRecursive]
+  //     datas.sort((a,b) => (a.starting_balance? a.starting_balance: a.amount > b.starting_balance? b.starting_balance: b.amount) ? 1 : ((b.starting_balance? b.starting_balance: b.amount > a.starting_balance? a.starting_balance: a.amount) ? -1 : 0));
+  //   }
+  //   console.log('triggered....')
+  //   }
   render() {
     const query = this.createQuery()
+    const { sortType } = this.state
+    // const records = this.sortedData()
     // console.log(this.state.dataKauKag, 'this.state.dataMixed....')
-
+    const datas = [...this.state.dataKauDetailsRecursive, ...this.state.dataKagDetailsRecursive]
+    const sorted = datas.sort((a, b) => {
+      const isReversed = sortType === 'asc' ? 1 : -1
+      return isReversed * a.created_at.localeCompare(b.created_at)
+    })
     return (
-      <section className='section'>
-        <div className='container'>
-          <div className='tile is-vertical is-parent'>
-            <article className='tile is-child'>
-              <p className='title  is-child box' style={{ marginBottom: '1.0rem' }}>
+      <section className="section">
+        <div className="container">
+          <div className="tile is-vertical is-parent">
+            <article className="tile is-child">
+              <p className="title  is-child box" style={{ marginBottom: '1.0rem' }}>
                 Showing results for <b>{query}</b>
               </p>
-              <table className='table is-bordered is-striped is-fullwidth'>
-                <thead className='thead'>
-                  <tr className='tr'>
-                    <th className='th'>Date & Time (UTC)</th>
-                    <th className='th'>Hash</th>
-                    <th className='th'>From</th>
-                    <th className='th'>To</th>
-                    <th className='th'>Amount</th>
-                    <th className='th'>Fee</th>
-                    <th className='th'>Memo</th>
+              <table className="table is-bordered is-striped is-fullwidth">
+                <thead className="thead">
+                  <tr className="tr">
+                    <th className="th">
+                      Date & Time (UTC)
+                      {/* <button className = 'button' onClick={() => this.onSort('asc')} >Sort by Asc</button>  
+                       <button className = 'button' onClick={() => this.onSort('desc')} >Sort by desc</button>   */}
+                    </th>
+                    <th className="th">Hash</th>
+                    <th className="th">From</th>
+                    <th className="th">To</th>
+                    <th className="th">Amount</th>
+                    <th className="th">Fee</th>
+                    <th className="th">Memo</th>
                   </tr>
                 </thead>
 
-                {[
-                  ...this.state.dataKauKag,
-                  ...this.state.dataKauDetailsRecursive,
-                  ...this.state.dataKagDetailsRecursive,
-                ]
-                  .slice(0, this.state.transLimit)
-                  .map((record) => {
+                {
+                  // [
+                  //   ...this.state.dataKauKag,
+                  //   // ...this.state.dataKauDetailsRecursive,
+                  //   // ...this.state.dataKagDetailsRecursive,
+                  //   ...datas
+
+                  // ]
+                  sorted.slice(0, this.state.transLimit).map((record) => {
                     const networkType = record._links.self.href.slice(11, 18) === 'testnet' ? 'T' : ''
                     currConn = networkType + record._links.self.href.slice(7, 10).toUpperCase()
                     const feePaid = record.fee_paid || Number(record.fee_charged)
                     const precision = currConn === 'KEM' ? 7 : 5
-                    this.state.dataKauKag.sort((a, b) =>
-                    moment(a.created_at).valueOf() < moment(b.created_at).valueOf()
-                      ? 1
-                      : moment(b.created_at).valueOf() < moment(a.created_at).valueOf()
-                      ? -1
-                      : 0,
-                  )
+                    //   this.state.dataKauKag.sort((a, b) =>
+                    //   moment(a.created_at).valueOf() < moment(b.created_at).valueOf()
+                    //     ? 1
+                    //     : moment(b.created_at).valueOf() < moment(a.created_at).valueOf()
+                    //     ? -1
+                    //     : 0,
+                    // )
                     return (
-                      <tbody key={record.id} className='tbody'>
-                        <tr key={record.id} className='tr'>
-                          <td className='td'>
+                      <tbody key={record.id} className="tbody">
+                        <tr key={record.id} className="tr">
+                          <td className="td">
                             {record.created_at.slice(8, 10)}/{record.created_at.slice(5, 7)}/
                             {record.created_at.slice(0, 4)}&nbsp;
                             {record.created_at.slice(11, 14)}
                             {record.created_at.slice(14, 17)}
                             {record.created_at.slice(17, 19)}
                           </td>
-                          <td className='td'>
+                          <td className="td">
                             <Link to={`/transaction/${currConn}/${record.hash}`}>
                               {record.hash.slice(0, 4)}.....{record.hash.substr(record.hash.length - 4)}
                             </Link>
                           </td>
-                          <td className='td'>
+                          <td className="td">
                             <Link to={`/account/${record.source_account}`}>
                               {record.source_account.slice(0, 4)}.....
                               {record.source_account.substr(record.source_account.length - 4)}
                             </Link>
                           </td>
-                          <td className='td'>
+                          <td className="td">
                             {record.operations?.to ? (
                               <Link to={`/account/${record.operations?.to}`}>
                                 {' '}
@@ -301,17 +330,18 @@ class MemoPage extends React.Component<Props, State> {
                               : record.operations?.amount}
                             &nbsp; {currConn}
                           </td>
-                          <td className='td'>
+                          <td className="td">
                             {renderAmount(convertStroopsToKinesis(feePaid), precision)} {currConn}
                           </td>
-                          <td className='td'>{record.memo}</td>
+                          <td className="td">{record.memo}</td>
                         </tr>
                       </tbody>
                     )
-                  })}
+                  })
+                }
               </table>
               <button
-                className='button'
+                className="button"
                 onClick={() => this.moreTxs()}
                 style={{ width: '100%', marginTop: '3px', overflowAnchor: 'none' }}
               >

@@ -36,14 +36,49 @@ export class OperationList1 extends React.Component<Props> {
     } else {
       const name = 'To'
     }
-
+//     const styles= {
+//       color: 'green',
+//       marginLeft: '-55%',
+//       marginTop: '-24px'
+      
+      
+//   };
+//   const styles1= {
+//     color: 'orange',
+//    marginLeft: '-58%'
+    
+// };
+// const styles2= {
+//   color: 'purple',
+//  marginLeft: '-55%'
+  
+// };
+// const styles3= {
+//   color: 'black',
+//  marginLeft: '-59%'
+  
+// };
+// const styles4= {
+//   color: 'black',
+//  marginLeft: '-57%'
+  
+// };
+    
+    
     return (
       <React.Fragment>
+      
         {operations && operations.records && operations.records.length
           ? operations.records.map((operation, i) => (
               <div>
+                
                 {/* <div><b>{operation.type.toUpperCase().replace('_', ' ')} </b></div> */}
-                <HorizontalLabelledField label='Type' value={startCase(operation.type)} />
+             <HorizontalLabelledField label='Type'  value={startCase(operation.type)} />
+              {/* <h1 style={styles}>{startCase(operation.type ==='account_merge'?operation.type: '')}</h1>
+              <h1 style={styles1}>{startCase(operation.type ==='payment'?operation.type: '')}</h1> 
+              <h1 style={styles2}>{startCase(operation.type ==='create_account'?operation.type: '')}</h1> 
+              <h1 style={styles3}>{startCase(operation.type ==='inflation'?operation.type: '')}</h1> 
+              <h1 style={styles4}>{startCase(operation.type ==='set_options'?operation.type: '')}</h1>  */}
                 <HorizontalLabelledField
                   label='Transaction Hash'
                   value={
