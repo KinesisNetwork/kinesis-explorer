@@ -57,10 +57,17 @@ export class SearchRedirect extends React.Component<Props, State> {
         return 'TKAG'
       }
     }
+
+    let searchTransaction
+    if (search.length === 64 && !isNaN(parseInt(search, 16))) {
+      searchTransaction = search
+      return <Redirect to={`/transaction/${getConn()}/${searchTransaction}`} />
+    }
+
     if (parseInt(search, 10).toString() === search.toLowerCase()) {
-      return  <Redirect to={`/memo/${getConn()}/${query}`} />
-    } else if (!isNaN(parseInt(search, 16))) {
-      return <Redirect to={`/transaction/${getConn()}/${search}`} />
+      return <Redirect to={`/memo/${getConn()}/${query}`} />
+    } else if (!isNaN(parseInt(searchTransaction, 16))) {
+      // return <Redirect to={`/transaction/${getConn()}/${search}`} />
     } else {
       return <Redirect to={`/account/${search}`} />
     }
