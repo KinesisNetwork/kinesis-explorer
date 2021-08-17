@@ -81,12 +81,12 @@ class MemoPage extends React.Component<Props, State> {
             return e.memo.toLowerCase().includes(query.toLowerCase())
           }
         })
-        dataKau = [...data, ...dataKau]
+        dataKau = [...dataKau]
       })
 
       .catch((error) => {
         if (error) {
-              // console.log('error')
+          // console.log('error')
         }
       })
     await fetch(searchLink)
@@ -99,12 +99,12 @@ class MemoPage extends React.Component<Props, State> {
             return e.memo.toLowerCase().includes(query.toLowerCase())
           }
         })
-        dataKag = [...data, ...dataKag]
+        dataKag = [...dataKag]
       })
 
       .catch((error) => {
         if (error) {
-              // console.log('error')
+          // console.log('error')
         }
       })
     await this.setState({ dataKau, dataKag })
@@ -215,9 +215,16 @@ class MemoPage extends React.Component<Props, State> {
       return { transLimit: old.transLimit + 10 }
     })
   }
-
   render() {
     const query = this.createQuery()
+    const datas = [...this.state.dataKauDetailsRecursive, ...this.state.dataKagDetailsRecursive]
+    datas.sort((a, b) =>
+      moment(a.created_at).valueOf() < moment(b.created_at).valueOf()
+        ? 1
+        : moment(b.created_at).valueOf() < moment(a.created_at).valueOf()
+        ? -1
+        : 0,
+    )
     // console.log(this.state.dataKauKag, 'this.state.dataMixed....')
 
     return (
@@ -243,8 +250,9 @@ class MemoPage extends React.Component<Props, State> {
 
                 {[
                   ...this.state.dataKauKag,
-                  ...this.state.dataKauDetailsRecursive,
-                  ...this.state.dataKagDetailsRecursive,
+                  // ...this.state.dataKauDetailsRecursive,
+                  // ...this.state.dataKagDetailsRecursive,
+                  ...datas,
                 ]
                   .slice(0, this.state.transLimit)
                   .map((record) => {
@@ -253,12 +261,12 @@ class MemoPage extends React.Component<Props, State> {
                     const feePaid = record.fee_paid || Number(record.fee_charged)
                     const precision = currConn === 'KEM' ? 7 : 5
                     this.state.dataKauKag.sort((a, b) =>
-                    moment(a.created_at).valueOf() < moment(b.created_at).valueOf()
-                      ? 1
-                      : moment(b.created_at).valueOf() < moment(a.created_at).valueOf()
-                      ? -1
-                      : 0,
-                  )
+                      moment(a.created_at).valueOf() < moment(b.created_at).valueOf()
+                        ? 1
+                        : moment(b.created_at).valueOf() < moment(a.created_at).valueOf()
+                        ? -1
+                        : 0,
+                    )
                     return (
                       <tbody key={record.id} className='tbody'>
                         <tr key={record.id} className='tr'>
