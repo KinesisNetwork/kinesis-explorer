@@ -153,14 +153,13 @@ export class TransactionInfo extends React.Component<Props, State> {
       const getSignerKey = url?._embedded?.records[1]?.signer_key
       this.props.transaction['signer_key'] = getSignerKey
     }
-
-   
     else if (url?._embedded?.records[0]?.type === 'set_options') {
       const getSignerLabel = url?._embedded?.records[0]?.type
     this.props.transaction['type'] = getSignerLabel
       const getSignerValue = url?._embedded?.records[0]?.signer_key
       this.props.transaction['signer_key'] = getSignerValue
     }
+    
   }
   componentDidMount() {
     this.handleOperations(this.props.transaction)

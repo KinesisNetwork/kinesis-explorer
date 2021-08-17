@@ -15,11 +15,18 @@ export class OperationListTransaction extends React.Component<Props> {
   constructor(props: Props) {
     super(props)
   }
-
+  async addOperationsToTransactionArray(transactionArray) {
+    const Array = ''
+    const getMemoOperationUrl = this.props.operations.records[0]
+    console.log(getMemoOperationUrl, 'new response.....')
+    const getInflationDestinationAccount = this.props.operations.records[0]?.['source_account']
+    this.props.operations['account'] = getInflationDestinationAccount
+  }
   render() {
     const operations = this.props.operations
     const conn = this.props.selectedConnection === undefined ? 'KAU' : this.props.conn
     // console.log(operations?.records[0]?.type)
+    const op = this.addOperationsToTransactionArray(operations)
     if (operations?.records[0]?.type === 'inflation') {
       const name = 'Source Account'
     } else {
