@@ -259,6 +259,10 @@ class MemoPage extends React.Component<Props, State> {
                     const networkType = record._links.self.href.slice(11, 18) === 'testnet' ? 'T' : ''
                     currConn = networkType + record._links.self.href.slice(7, 10).toUpperCase()
                     const feePaid = record.fee_paid || Number(record.fee_charged)
+                    const operationBalance =
+                      record.operations?.starting_balance && parseFloat(record.operations?.starting_balance).toFixed(5)
+                    const operationAmount =
+                      record.operations?.amount && parseFloat(record.operations?.amount).toFixed(5)
                     const precision = currConn === 'KEM' ? 7 : 5
                     this.state.dataKauKag.sort((a, b) =>
                       moment(a.created_at).valueOf() < moment(b.created_at).valueOf()
@@ -305,9 +309,7 @@ class MemoPage extends React.Component<Props, State> {
                             )}
                           </td>
                           <td>
-                            {record.operations?.starting_balance
-                              ? record.operations?.starting_balance
-                              : record.operations?.amount}
+                            {record.operations?.starting_balance ? operationBalance : operationAmount}
                             &nbsp; {currConn}
                           </td>
                           <td className='td'>
