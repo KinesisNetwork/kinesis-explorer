@@ -10,8 +10,7 @@ import { Link } from 'react-router-dom'
 import { convertStroopsToKinesis } from '../../services/kinesis'
 import { renderAmount } from '../../utils'
 import { HorizontalLabelledField } from '../shared'
-import { OperationList1 } from './OperationList1'
-
+import { OperationListTransaction } from './OperationListTransaction'
 let currConn: string
 interface KemFee extends TransactionRecord {
   fee_charged?: 0
@@ -20,6 +19,7 @@ interface Props {
   transaction: KemFee
   conn?: string
   selectedConnection: any
+ 
 }
 interface State {
   operations: CollectionPage<OperationRecord> | null
@@ -35,6 +35,7 @@ export class TransactionInfo extends React.Component<Props, State> {
       dataKauKag: [],
       dataKauKagAccount: [],
       amount: [],
+     
     }
   }
   loadOperations = async (operations?: any) => {
@@ -54,12 +55,13 @@ export class TransactionInfo extends React.Component<Props, State> {
         await this.addOperationsToTransactionArray
       } else {
         operations = await this.getAccountMergedAmount(operations)
-        operation = operations
+        operation = operations  
       }
     }
     this.setState({
       operations: operation,
     })
+
   }
   getAccountMergedAmount = async (operations) => {
     for (const operationsData of operations?.records) {
@@ -81,12 +83,9 @@ export class TransactionInfo extends React.Component<Props, State> {
   }
   async addOperationsToTransactionArray(transactionArray) {
     let Array = ''
-
-    // console.log(operation.slice(0,121), 'tran')
     const getMemoOperationUrl = this.props.transaction?._links.effects?.href
     Array = getMemoOperationUrl
     const getResponseUrl = Array.slice(0, 121)
-    console.log(getResponseUrl, 'response.....')
 
     const response = await fetch(`${getResponseUrl}?order=desc`, {
       headers: {
@@ -94,8 +93,7 @@ export class TransactionInfo extends React.Component<Props, State> {
         'Accept': 'application/json',
       },
     })
-    const url = await response.json()
-    console.log(url, 'URL....')
+    const url = await response.json()    
     if (url?._embedded?.records[2]?.type === 'account_debited') {
       const getAccountMergeAmount = url?._embedded?.records[2]?.amount
       console.log(getAccountMergeAmount, 'Merge Account AMOUNT....')
@@ -134,65 +132,36 @@ export class TransactionInfo extends React.Component<Props, State> {
     this.setState({ dataKauKag: this.props.transaction })
     return transactionArray
   }
-  // async addOperationsToTransaction(transactionArray) {
-  //   // console.log(transactionArray, 'transactionArray....')
-  //   // const operation = this.props.transaction?._links.effects?.href
-  //   let Array = ''
-  //   // console.log(operation.slice(0,121), 'tran')
-  //   const getMemoOperationUrl = this.props.transaction?._links.effects?.href
-  //   Array = getMemoOperationUrl
-  //   const getResponseUrl = Array.slice(0, 121)
-  //   console.log(getResponseUrl, 'response.....')
+  async addOperationsToTransaction(transactionArray) {
+    let Array = ''
 
-  //   const response = await fetch(`${getResponseUrl}?order=desc`, {
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       Accept: 'application/json',
-  //     },
-  //   })
-  //   const url = await response.json()
-  //   console.log(url, 'URL....')
-  //   // if (url?._embedded?.records[1]?.type === 'account_debited') {
-  //   //   const getAccountMergeAmount = url?._embedded?.records[1]?.amount
-  //   //   console.log(getAccountMergeAmount, 'Create Account Amount....')
-  //   //   this.props.transaction['amount'] = getAccountMergeAmount
-  //   // }
-  //   if (url?._embedded?.records[0]?.type === 'signer_created') {
-  //     const getCreateAccountDestination = url?._embedded?.records[0]?.account
-  //     console.log(getCreateAccountDestination, 'Create Account Destination....')
-  //     this.props.transaction['account'] = getCreateAccountDestination
-  //   }
+    // console.log(operation.slice(0,121), 'tran')
+    const getMemoOperationUrl = this.props.transaction?._links.operations?.href
+     Array = getMemoOperationUrl
+     const getResponseUrl = Array.slice(0,124)
+    const response = await fetch(`${getResponseUrl}?order=desc`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    })
+    const url = await response.json()
+    console.log(url, 'URL1....')
+    const getSignerLabel = url?._embedded?.records[1]?.type
+    this.props.transaction['type'] = getSignerLabel
+    if (url?._embedded?.records[1]?.type === 'set_options') {
+      const getSignerKey = url?._embedded?.records[1]?.signer_key
+      this.props.transaction['signer_key'] = getSignerKey
+    }
 
-  //   this.setState({ dataKauKagAccount: this.props.transaction })
-  //   // this.setState({ dataKauKag: this.props.transaction })
-  //   return transactionArray
-  // }
-  // async addOperations(transactionArray) {
-  //   // console.log(transactionArray, 'transactionArray....')
-  //   // const operation = this.props.transaction?._links.effects?.href
-  //   let Array = ''
-  //   // console.log(operation.slice(0,121), 'tran')
-  //   const getMemoOperationUrl = this.props.transaction?._links.effects?.href
-  //   Array = getMemoOperationUrl
-  //   const getResponseUrl = Array.slice(0, 121)
-  //   console.log(getResponseUrl, 'response.....')
-
-  //   const response = await fetch(`${getResponseUrl}?order=desc`, {
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       Accept: 'application/json',
-  //     },
-  //   })
-  //   const url = await response.json()
-  //   console.log(url, 'URL....')
-  //   // if (url?._embedded?.records[0]?.type === 'account_debited') {
-  //   //   const getAccountMergeAmount = url?._embedded?.records[1]?.amount
-  //   //   console.log(getAccountMergeAmount, 'A....')
-  //   //   this.props.transaction['amount'] = getAccountMergeAmount
-  //   // }
-  //   //  this.setState({dataKauKag: this.props.transaction})
-  //   return transactionArray
-  // }
+   
+    else if (url?._embedded?.records[0]?.type === 'set_options') {
+      const getSignerLabel = url?._embedded?.records[0]?.type
+    this.props.transaction['type'] = getSignerLabel
+      const getSignerValue = url?._embedded?.records[0]?.signer_key
+      this.props.transaction['signer_key'] = getSignerValue
+    }
+  }
   componentDidMount() {
     this.handleOperations(this.props.transaction)
   }
@@ -206,16 +175,12 @@ export class TransactionInfo extends React.Component<Props, State> {
   render() {
     const { transaction, conn } = this.props
     const feePaid = transaction.fee_paid || Number(transaction.fee_charged)
-    // const amount = transaction.amount
     const precision = conn === 'KEM' ? 7 : 5
     const networkType = this.state.operations?.records[0]?._links?.self?.href.slice(12, 19) === 'testnet' ? 'T' : ''
     currConn = networkType + this.state.operations?.records[0]?._links?.self?.href.slice(8, 11).toUpperCase()
     const Amount = this.addOperationsToTransactionArray(transaction)
-    // const Am = this.addOperationsToTransaction(transaction)
-    // const Amo = this.addOperations(transaction)
+    const SignerKey = this.addOperationsToTransaction(transaction)
     const data = `${renderAmount(this.props.transaction['amount'])}`
-    // console.log(data, 'data..')
-
     return (
       <div className='tile is-ancestor'>
         <div className='tile is-vertical is-parent'>
@@ -245,7 +210,7 @@ export class TransactionInfo extends React.Component<Props, State> {
               appendCurr={currConn}
             />
             <HorizontalLabelledField label='Memo' value={transaction.memo} />
-            <OperationList1
+            <OperationListTransaction
               operations={this.state.operations}
               conn={conn}
               selectedConnection={this.props.selectedConnection}
@@ -255,6 +220,11 @@ export class TransactionInfo extends React.Component<Props, State> {
               value={
                 <Link to={`/account/${this.props.transaction['account']}`}>{this.props.transaction['account']}</Link>}
             />
+            <HorizontalLabelledField
+                  label={this.props.transaction['type'] === 'set_options' ? 'Signer Key' : ''}
+                  value={
+                  this.props.transaction['signer_key'] }
+                />
           </div>
         </div>
       </div>
