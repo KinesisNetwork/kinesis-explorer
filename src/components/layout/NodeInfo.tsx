@@ -12,6 +12,7 @@ const REGION_ERROR = { error: 'Region Offline' }
 
 const S3_URL = 'https://kinesis-config.s3-ap-southeast-2.amazonaws.com/kinesis-explorer-uat.json'
 
+
 function getInfo(ep: string) {
   return axios
     .get(ep)
