@@ -24,7 +24,9 @@ export class ConnectionContainer extends Container<ConnectionContext> {
     const connections = await fetchConnections()
     this.setState({
       connections,
+
       selectedConnection: connections[Number(localStorage.getItem('selectedConnection')) || this.state.connectionId],
+
     })
   }
 

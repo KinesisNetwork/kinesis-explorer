@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="88px" height="88px" viewBox="0 0 88 88" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>KEM_Midnight90%BG</title>
+    <g id="1---Atoms" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="KEM_Midnight90%BG">
+            <circle id="Oval" fill="#2B3D50" cx="44" cy="44" r="44"></circle>
+            <g id="Group-80" transform="translate(13.000000, 26.000000)" stroke="#00ACA9" stroke-width="0.924770641">
+                <polygon id="Path" stroke-linejoin="round" points="13.233567 20.1004596 48.5211798 20.1004596 30.8813615 44.5359551"></polygon>
+                <polygon id="Path" stroke-linejoin="round" points="30.8813615 44.5359551 -4.156675e-14 13.3953688 13.233567 20.1004596"></polygon>
+                <polygon id="Path" stroke-linejoin="round" transform="translate(46.433708, 28.965662) scale(-1, 1) translate(-46.433708, -28.965662) " points="61.8743887 44.5359551 30.9930273 13.3953688 44.2265943 20.1004596"></polygon>
+                <polyline id="Path" stroke-linejoin="round" points="13.233567 20.1004596 17.4181954 7.56081742 6.88284495 3.43316147 -1.79056769e-13 13.3953688"></polyline>
+                <polyline id="Path" stroke-linejoin="round" transform="translate(53.172697, 11.766811) scale(-1, 1) translate(-53.172697, -11.766811) " points="57.6971667 20.1004596 61.881795 7.56081742 51.3464445 3.43316147 44.4635995 13.3953688"></polyline>
+                <line x1="17.4181954" y1="7.56081743" x2="44.4636" y2="7.56081743" id="Path"></line>
+                <polygon id="Path" fill="#00ACA9" fill-rule="nonzero" stroke-linejoin="round" transform="translate(30.910418, 3.780409) scale(-1, 1) translate(-30.910418, -3.780409) " points="6.8828454 3.43316147 19.8429445 -1.34292577e-13 41.9778913 -1.34292577e-13 54.9379903 3.43316147 44.4026399 7.56081742 17.3572353 7.56081742"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

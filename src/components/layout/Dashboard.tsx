@@ -2,20 +2,12 @@ import { LedgerRecord, TransactionRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
 import { RouteComponentProps } from 'react-router'
 import { Subscribe } from 'unstated'
-import {
-  ConnectionContainer,
-  ConnectionContext,
-} from '../../services/connections'
-import {
-  getLedgers,
-  getLedgerStream,
-  getTransactions,
-  getTransactionStream,
-} from '../../services/kinesis'
+import { ConnectionContainer, ConnectionContext } from '../../services/connections'
+import { getLedgers, getLedgerStream, getTransactions, getTransactionStream } from '../../services/kinesis'
 import { Converter, Ledgers, Statistics, Transactions } from '../widgets'
 
-interface ConnectedDashboardProps extends RouteComponentProps<undefined> { }
-interface DashboardProps extends ConnectedDashboardProps, ConnectionContext { }
+interface ConnectedDashboardProps extends RouteComponentProps<undefined> {}
+interface DashboardProps extends ConnectedDashboardProps, ConnectionContext {}
 
 interface DashboardState {
   ledgers: LedgerRecord[]
@@ -38,22 +30,30 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     transactions: [],
     isLoading: false,
     ledgerLimit: 10,
-    transLimit: 10,
+    transLimit: 20,
   }
 
   closeLedgerStream!: () => void
-  closeTransactionStream!: () => void
+  closeTransactionStreamKag!: () => void
+  closeTransactionStreamKau!: () => void
 
   componentDidMount() {
     this.fetchData()
   }
 
   componentDidUpdate(prevProps: DashboardProps, prevState: DashboardState) {
-    if (prevProps.selectedConnection !== this.props.selectedConnection) {
+  //  console.log('prevProps.selectedConnection.kau', prevProps.selectedConnection.kau)
+  //  console.log('this.props.selectedConnection.kau', this.props.selectedConnection.kau)
+
+   if (prevProps.selectedConnection.kau !== this.props.selectedConnection.kau) {
       this.handleConnectionChange()
     }
-    if (prevState.transLimit !== this.state.transLimit || prevState.ledgerLimit !== this.state.ledgerLimit) {
-      this.closeTransactionStream()
+   if (prevProps.selectedConnection.kag !== this.props.selectedConnection.kag) {
+      this.handleConnectionChange()
+    }
+   if (prevState.transLimit !== this.state.transLimit || prevState.ledgerLimit !== this.state.ledgerLimit) {
+      this.closeTransactionStreamKag()
+      this.closeTransactionStreamKau()
       this.updateTransaction()
     }
   }
@@ -64,82 +64,85 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
 
   fetchData = async (): Promise<void> => {
     this.setState({ isLoading: true })
-    const [ledgers, transactions] = await Promise.all([
-      getLedgers(this.props.selectedConnection, this.state.ledgerLimit),
+    const [ transactions] = await Promise.all([
+      // getLedgers(this.props.selectedConnection, this.state.ledgerLimit),
       getTransactions(this.props.selectedConnection, undefined, this.state.transLimit),
     ])
 
-    this.setState({ ledgers, transactions, isLoading: false })
+    this.setState({  transactions, isLoading: false })
 
-    const ledgerCursor: string = (ledgers[0] || {}).paging_token
+    // const ledgerCursor: string = (ledgers[0] || {}).paging_token
     const transactionCursor: string = (transactions[0] || {}).paging_token
 
-    const ledgerResponse = await getLedgerStream(
-      this.props.selectedConnection,
-      ledgerCursor,
-    )
-    const transactionResponse = await getTransactionStream(
-      this.props.selectedConnection,
-      transactionCursor,
-    )
+    // const ledgerResponse = await getLedgerStream(this.props.selectedConnection, ledgerCursor)
+    const transactionResponseKag = await getTransactionStream(this.props.selectedConnection.kag, transactionCursor)
+    const transactionResponseKau = await getTransactionStream(this.props.selectedConnection.kau, transactionCursor)
 
-    this.closeLedgerStream = ledgerResponse.stream({
-      onmessage: this.handleStreamData(Entity.ledgers),
+    // this.closeLedgerStream = ledgerResponse.stream({
+    //   onmessage: this.handleStreamData(Entity.ledgers),
+    // })
+    this.closeTransactionStreamKag = transactionResponseKag.stream({
+      onmessage: this.handleStreamData(Entity.transactions),
     })
-    this.closeTransactionStream = transactionResponse.stream({
+    this.closeTransactionStreamKau = transactionResponseKau.stream({
       onmessage: this.handleStreamData(Entity.transactions),
     })
   }
 
   closeDataStreams = (): void => {
-    if (this.closeTransactionStream) {
-      this.closeTransactionStream()
+    if (this.closeTransactionStreamKag) {
+      this.closeTransactionStreamKag()
     }
-    if (this.closeLedgerStream) {
-      this.closeLedgerStream()
+    if (this.closeTransactionStreamKau) {
+      this.closeTransactionStreamKau()
     }
+    // if (this.closeLedgerStream) {
+    //   this.closeLedgerStream()
+    // }
   }
 
-  handleLoadData = (dataType: EntityType) => (
-    initialData: LedgerRecord[] | TransactionRecord[],
-  ): void => {
-    this.setState((state: DashboardState) => ({
-      ...state,
-      [dataType]: initialData,
-    }))
-  }
-
-  handleStreamData = (dataType: EntityType) => (nextData: LedgerRecord | TransactionRecord): void => {
-    this.setState((state: DashboardState) => {
-      let updatedData: any[] = []
-      if (dataType === 'ledgers') {
-        updatedData = [nextData, ...state[dataType].slice(0, this.state.ledgerLimit - 1)]
-      } else {
-        updatedData = [nextData, ...state[dataType].slice(0, this.state.transLimit - 1)]
-      }
-      return {
+  handleLoadData =
+    (dataType: EntityType) =>
+    (initialData: TransactionRecord[]): void => {
+      this.setState((state: DashboardState) => ({
         ...state,
-        [dataType]: updatedData,
-      }
-    })
-  }
+        [dataType]: initialData,
+      }))
+    }
+
+  handleStreamData =
+    (dataType: EntityType) =>
+    (nextData: TransactionRecord): void => {
+      this.setState((state: DashboardState) => {
+        let updatedData: any[] = []
+
+        updatedData = [nextData, ...state[dataType].slice(0, this.state.transLimit - 1)]
+
+        return {
+          ...state,
+          [dataType]: updatedData,
+        }
+      })
+    }
 
   handleConnectionChange = (): void => {
-    this.state.transLimit = 10
-    this.state.ledgerLimit = 10
+    this.state.transLimit = 20
+    // this.state.ledgerLimit = 10
     this.closeDataStreams()
     this.fetchData()
   }
 
-  moreLedgers() {
-    this.setState((prev: DashboardState) => ({
-      ...prev, ledgerLimit: prev.ledgerLimit + 10,
-    }))
-  }
+  // moreLedgers() {
+  //   this.setState((prev: DashboardState) => ({
+  //     ...prev,
+  //     // ledgerLimit: prev.ledgerLimit + 10,
+  //   }))
+  // }
 
   moreTxs() {
     this.setState((prev: DashboardState) => ({
-      ...prev, transLimit: prev.transLimit + 10,
+      ...prev,
+      transLimit: prev.transLimit + 10,
     }))
   }
 
@@ -150,66 +153,87 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
 
     const transactionCursor: string = (transactions[0] || {}).paging_token
 
-    const transactionResponse = await getTransactionStream(
-      this.props.selectedConnection,
-      transactionCursor,
-    )
+    const transactionResponseKag = await getTransactionStream(this.props.selectedConnection.kag, transactionCursor)
+    const transactionResponseKau = await getTransactionStream(this.props.selectedConnection.kau, transactionCursor)
 
-    this.closeTransactionStream = transactionResponse.stream({
+    this.closeTransactionStreamKag = transactionResponseKag.stream({
+      onmessage: this.handleStreamData(Entity.transactions),
+    })
+    this.closeTransactionStreamKau = transactionResponseKau.stream({
       onmessage: this.handleStreamData(Entity.transactions),
     })
   }
 
-  updateLedger = async (): Promise<void> => {
-    const ledgers = await getLedgers(this.props.selectedConnection, this.state.ledgerLimit)
+  // updateLedger = async (): Promise<void> => {
+  //   const ledgers = await getLedgers(this.props.selectedConnection, this.state.ledgerLimit)
 
-    this.setState({ ledgers })
+  //   this.setState({ ledgers })
 
-    const ledgerCursor: string = (ledgers[0] || {}).paging_token
+  //   const ledgerCursor: string = (ledgers[0] || {}).paging_token
 
-    const ledgerResponse = await getLedgerStream(
-      this.props.selectedConnection,
-      ledgerCursor,
-    )
+  //   const ledgerResponse = await getLedgerStream(this.props.selectedConnection, ledgerCursor)
 
-    this.closeLedgerStream = ledgerResponse.stream({
-      onmessage: this.handleStreamData(Entity.ledgers),
-    })
-  }
+  //   this.closeLedgerStream = ledgerResponse.stream({
+  //     onmessage: this.handleStreamData(Entity.ledgers),
+  //   })
+  // }
 
   connectionSelector(): string {
-    if (this.props.selectedConnection.name === 'Kinesis KAU Mainnet') {
+    // if (this.props.selectedConnection.name === 'Kinesis KAU Mainnet') {
+    //   return 'KAU'
+    // } else if (this.props.selectedConnection.name === 'Kinesis KAG Mainnet') {
+    //   return 'KAG'
+    // } else if (this.props.selectedConnection.name === 'Kinesis KEM Mainnet') {
+    //   return 'KEM'
+    // } else if (this.props.selectedConnection.name === 'Kinesis KAU Testnet') {
+    //   return 'TKAU'
+    // } else if (this.props.selectedConnection.name === 'Kinesis KAG Testnet') {
+    //   return 'TKAG'
+    // } else if (this.props.selectedConnection.name === 'Kinesis KEM Testnet') {
+    //   return 'TKEM'
+    // } else {
+    //   return 'KAU'
+    if (this.props.selectedConnection.kau.name.toLowerCase().includes('mainnet')
+      && (this.props.selectedConnection.kau.currency.toLowerCase().includes('kau'))) {
       return 'KAU'
-    } else if (this.props.selectedConnection.name === 'Kinesis KAG Mainnet') {
+    } else if (this.props.selectedConnection.kag.name.toLowerCase().includes('mainnet')
+      && (this.props.selectedConnection.kag.currency.toLowerCase().includes('kag'))) {
       return 'KAG'
-    } else if (this.props.selectedConnection.name === 'Kinesis KAU Testnet') {
-      return 'KAU_test'
-    } else if (this.props.selectedConnection.name === 'Kinesis KAG Testnet') {
-      return 'KAG_test'
-    } else { return 'KAU' }
+    } else if (this.props.selectedConnection.kau.name.toLowerCase().includes('testnet')
+      && (this.props.selectedConnection.kau.currency.toLowerCase().includes('kau'))) {
+      return 'TKAU'
+    } else if (this.props.selectedConnection.kag.name.toLowerCase().includes('testnet')
+      && (this.props.selectedConnection.kag.currency.toLowerCase().includes('kag'))) {
+      return 'TKAG'
+    }
   }
 
   render() {
     return (
       <section className='section'>
         <div className='tile is-ancestor'>
-          <div className='tile is-vertical is-4 is-parent'>
-            <Statistics />
-            <Converter />
+          {/* <div className='tile is-vertical is-4 is-parent'> */}
+          <div className='tile is-vertical is-parent flex-n'>
+          {this.props.selectedConnection.kag.stage! === 'testnet' && <Statistics/>}
+            {/* <Converter /> */}
           </div>
           <div className='tile is-vertical is-parent'>
             <article className='tile is-child'>
-              <p className='title'>Ledgers</p>
+              <p className='title  is-child box' style={{ marginBottom: '0.3rem' }}>
+                Transactions
+              </p>
               <div className={this.state.isLoading ? 'is-loading-blur' : ''}>
-                <Ledgers ledgers={this.state.ledgers} />
+                <Transactions
+                  transactions={this.state.transactions}
+                  conn={this.connectionSelector()}
+                  translimit={this.state.transLimit}
+                />
               </div>
-            </article>
-            <article className='tile is-child'>
-              <p className='title'>Transactions</p>
-              <div className={this.state.isLoading ? 'is-loading-blur' : ''}>
-                <Transactions transactions={this.state.transactions} conn={this.connectionSelector()} />
-              </div>
-              <button className='button' onClick={() => this.moreTxs()} style={{ width: '100%', marginTop: '3px' }}>
+              <button
+                className='button'
+                onClick={() => this.moreTxs()}
+                style={{ width: '100%', marginTop: '3px', overflowAnchor: 'none' }}
+              >
                 Load More...
               </button>
             </article>
@@ -224,9 +248,7 @@ class ConnectedDashboard extends React.Component<ConnectedDashboardProps> {
   render() {
     return (
       <Subscribe to={[ConnectionContainer]}>
-        {({ state }: ConnectionContainer) => (
-          <Dashboard {...this.props} {...state} />
-        )}
+        {({ state }: ConnectionContainer) => <Dashboard {...this.props} {...state} />}
       </Subscribe>
     )
   }

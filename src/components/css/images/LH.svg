@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="33px" height="49px" viewBox="0 0 33 49" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 64 (93537) - https://sketch.com -->
+    <title>L logo</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="A4" transform="translate(-964.000000, -169.000000)">
+            <g id="L-logo" transform="translate(951.000000, 164.000000)">
+                <rect id="Rectangle" x="0" y="0" width="59" height="59"></rect>
+                <g id="Group" stroke-width="1" fill-rule="evenodd" transform="translate(13.000000, 5.000000)" fill="#2F86BD">
+                    <path d="M33,43.7918969 L9.30903328,43.7918969 C8.21077655,43.7918969 7.37400951,43.5856354 6.85103011,43.1731123 C6.27575277,42.7605893 6.01426307,42.1418048 6.01426307,41.2651934 L6.01426307,21 L0,21 L0,41.3167587 C0,43.8950276 0.784469097,45.8029466 2.30110935,47.092081 C3.8177496,48.3296501 6.17115689,49 9.30903328,49 L33,49 L33,43.7918969 Z" id="Shape" fill-rule="nonzero"></path>
+                    <path d="M27.0095541,41 L27.0095541,21.3020258 C27.0095541,20.3222836 26.7993631,19.6003683 26.2738854,19.0847145 C25.8009554,18.5690608 25.0652866,18.3627993 24.066879,18.3627993 L0,18.3627993 L0,13 L24.066879,13 C27.0621019,13 29.2691083,13.6703499 30.7929936,15.0626151 C32.2643312,16.4548803 33,18.5174954 33,21.3020258 L33,41 L27.0095541,41 L27.0095541,41 Z" id="Shape_1_" fill-rule="nonzero"></path>
+                    <rect id="Rectangle-path" fill-rule="nonzero" x="0" y="0" width="6" height="10"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

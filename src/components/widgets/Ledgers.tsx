@@ -12,7 +12,7 @@ function renderLedger(ledger: LedgerRecord): JSX.Element {
     <tr className='tr' key={ledger.id}>
       <td className='td'><Link to={`/ledger/${ledger.sequence}`}>{ledger.sequence}</Link></td>
       <td className='td'>{renderRelativeDate(ledger.closed_at)}</td>
-      <td className='td'>{ledger.transaction_count}</td>
+      <td className='td'>{ledger.transaction_count || 0}</td>
       <td className='td'>{ledger.operation_count}</td>
     </tr>
   )
