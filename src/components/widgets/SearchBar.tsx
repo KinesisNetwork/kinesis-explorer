@@ -1,6 +1,6 @@
 import { TransactionRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 import { Connection } from '../../types'
 interface State {
   transaction: TransactionRecord | null
@@ -23,22 +23,41 @@ export class SearchBar extends React.Component<OperationProps> {
     operations: [],
     selectedConnection: '',
     data: [],
-    redirectUrl: '/search/memo',
+    redirect: false,
   }
   handleChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
     this.setState({ value: event.currentTarget.value })
     const query = event.target.value
     this.setState({ query: event.target.value, loading: true, message: '' }, () => {
-      // console.log("query");
+      // console.log('empty')
     })
   }
-  clearInput: React.MouseEventHandler<HTMLAnchorElement> = (event) => {
-    this.setState({ value: '', redirectUrl: '/search/memo' })
+  clearInput: React.MouseEventHandler<HTMLButtonElement> = (event) => {
+    this.setState({ value: '', redirect: true })
   }
 
   handleKeypress = (e) => {
     if (e.key === 'Enter') {
-      top.location.href = `/search/${this.state.query?.replaceAll('#', '_').replaceAll(' ', '-')}`
+      top.location.href = !this.state.query.replaceAll(' ', '')
+        ? ''
+        : `/search/${this.state.query?.replaceAll('#', '_').replaceAll(' ', '-')}`
+      top.location.href = !this.state.value.replaceAll(' ', '')
+        ? ''
+        : `/search/${this.state.query?.replaceAll('#', '_').replaceAll(' ', '-')}`
+    }
+  }
+  renderRedirect = () => {
+    if (this.state.redirect) {
+      this.setState({ value: '', redirect: false })
+      return (
+        <Redirect
+          to={
+            !this.state.query
+              ? window.location.pathname
+              : `/search/${this.state.query?.replaceAll('#', '_').replaceAll(' ', '-')}`
+          }
+        />
+      )
     }
   }
   render() {
@@ -59,13 +78,14 @@ export class SearchBar extends React.Component<OperationProps> {
           </span>
         </div>
         <div className='control'>
-          <Link
-            to={`/search/${this.state.query?.replaceAll('#', '_').replaceAll(' ', '-')}`}
+          <button
             className='button'
+            disabled={!this.state.query.replaceAll(' ', '') || !this.state.value}
             onClick={this.clearInput}
           >
             Search
-          </Link>
+          </button>
+          {this.renderRedirect()}
         </div>
       </div>
     )

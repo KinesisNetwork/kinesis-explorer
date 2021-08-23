@@ -8,12 +8,12 @@ import { ConnectionContainer, ConnectionContext } from '../../services/connectio
 import { convertStroopsToKinesis } from '../../services/kinesis'
 import { Connection } from '../../types'
 import { renderAmount } from '../../utils'
+import Logo from '../css/images/copy.svg'
 import { HorizontalLabelledField } from '../shared'
 import OperationValue from '../widgets/OperationValue'
-
 let currConn: string
-interface ConnectedTransactionProps extends RouteComponentProps<{ id: string; connection: string }> {}
-interface Props extends ConnectedTransactionProps, ConnectionContext {}
+interface ConnectedTransactionProps extends RouteComponentProps<{ id: string; connection: string }> { }
+interface Props extends ConnectedTransactionProps, ConnectionContext { }
 
 interface State {
   transaction: TransactionRecord | null
@@ -34,6 +34,7 @@ interface State {
   dataKauKag: any
   dataKauDetailsRecursive: any
   dataKagDetailsRecursive: any
+  sortType: any
 }
 
 class MemoPage extends React.Component<Props, State> {
@@ -58,8 +59,10 @@ class MemoPage extends React.Component<Props, State> {
       dataKauKag: [],
       dataKauDetailsRecursive: [],
       dataKagDetailsRecursive: [],
+      sortType: 'desc',
     }
     this.moreTxs = this.moreTxs.bind(this)
+    //  this.imageClick = this.imageClick.bind(this)
   }
 
   fetchSearch = async (query) => {
@@ -215,18 +218,33 @@ class MemoPage extends React.Component<Props, State> {
       return { transLimit: old.transLimit + 10 }
     })
   }
+  // onSort = sortType => {
+
+  //   this.setState({sortType})
+  // }
+  // sortByField(field) {
+  //   if (field == 'created_at') {
+  //     const datas = [...this.state.dataKauDetailsRecursive, ...this.state.dataKagDetailsRecursive]
+  //     datas.sort((a,b) => (Number(a.created_at) > Number(b.created_at)) ? 1
+  // : ((Number(b.created_at) > Number(a.created_at)) ? -1 : 0));
+  //   } else if (field == 'starting_balance'? field == 'starting_balance' : field == 'amount') {
+  //     const datas = [...this.state.dataKauDetailsRecursive, ...this.state.dataKagDetailsRecursive]
+  //     datas.sort((a,b) => (a.starting_balance? a.starting_balance: a.amount >
+  //  b.starting_balance? b.starting_balance: b.amount) ? 1 : ((b.starting_balance? b.starting_balance:
+  //  b.amount > a.starting_balance? a.starting_balance: a.amount) ? -1 : 0));
+  //   }
+  //   console.log('triggered....')
+  //   }
   render() {
     const query = this.createQuery()
-    const datas = [...this.state.dataKauDetailsRecursive, ...this.state.dataKagDetailsRecursive]
-    datas.sort((a, b) =>
-      moment(a.created_at).valueOf() < moment(b.created_at).valueOf()
-        ? 1
-        : moment(b.created_at).valueOf() < moment(a.created_at).valueOf()
-        ? -1
-        : 0,
-    )
+    const { sortType } = this.state
+    // const records = this.sortedData()
     // console.log(this.state.dataKauKag, 'this.state.dataMixed....')
-
+    const datas = [...this.state.dataKauDetailsRecursive, ...this.state.dataKagDetailsRecursive]
+    const sorted = datas.sort((a, b) => {
+      const isReversed = sortType === 'asc' ? 1 : -1
+      return isReversed * a.created_at.localeCompare(b.created_at)
+    })
     return (
       <section className='section'>
         <div className='container'>
@@ -238,7 +256,11 @@ class MemoPage extends React.Component<Props, State> {
               <table className='table is-bordered is-striped is-fullwidth'>
                 <thead className='thead'>
                   <tr className='tr'>
-                    <th className='th'>Date & Time (UTC)</th>
+                    <th className='th'>
+                      Date & Time (UTC)
+                      {/* <button className = 'button' onClick={() => this.onSort('asc')} >Sort by Asc</button>
+                       <button className = 'button' onClick={() => this.onSort('desc')} >Sort by desc</button>   */}
+                    </th>
                     <th className='th'>Hash</th>
                     <th className='th'>From</th>
                     <th className='th'>To</th>
@@ -248,14 +270,15 @@ class MemoPage extends React.Component<Props, State> {
                   </tr>
                 </thead>
 
-                {[
-                  ...this.state.dataKauKag,
-                  // ...this.state.dataKauDetailsRecursive,
-                  // ...this.state.dataKagDetailsRecursive,
-                  ...datas,
-                ]
-                  .slice(0, this.state.transLimit)
-                  .map((record) => {
+                {
+                  // [
+                  //   ...this.state.dataKauKag,
+                  //   // ...this.state.dataKauDetailsRecursive,
+                  //   // ...this.state.dataKagDetailsRecursive,
+                  //   ...datas
+
+                  // ]
+                  sorted.slice(0, this.state.transLimit).map((record) => {
                     const networkType = record._links.self.href.slice(11, 18) === 'testnet' ? 'T' : ''
                     currConn = networkType + record._links.self.href.slice(7, 10).toUpperCase()
                     const feePaid = record.fee_paid || Number(record.fee_charged)
@@ -264,13 +287,13 @@ class MemoPage extends React.Component<Props, State> {
                     const operationAmount =
                       record.operations?.amount && parseFloat(record.operations?.amount).toFixed(5)
                     const precision = currConn === 'KEM' ? 7 : 5
-                    this.state.dataKauKag.sort((a, b) =>
-                      moment(a.created_at).valueOf() < moment(b.created_at).valueOf()
-                        ? 1
-                        : moment(b.created_at).valueOf() < moment(a.created_at).valueOf()
-                        ? -1
-                        : 0,
-                    )
+                    //   this.state.dataKauKag.sort((a, b) =>
+                    //   moment(a.created_at).valueOf() < moment(b.created_at).valueOf()
+                    //     ? 1
+                    //     : moment(b.created_at).valueOf() < moment(a.created_at).valueOf()
+                    //     ? -1
+                    //     : 0,
+                    // )
                     return (
                       <tbody key={record.id} className='tbody'>
                         <tr key={record.id} className='tr'>
@@ -301,12 +324,12 @@ class MemoPage extends React.Component<Props, State> {
                                   record.operations?.to.substr(record.operations?.to.length - 4)}{' '}
                               </Link>
                             ) : (
-                              <Link to={`/account/${record.operations?.account}`}>
-                                {record.operations?.account.slice(0, 4) +
-                                  '.....' +
-                                  record.operations?.account.substr(record.operations?.account.length - 4)}
-                              </Link>
-                            )}
+                                <Link to={`/account/${record.operations?.account}`}>
+                                  {record.operations?.account.slice(0, 4) +
+                                    '.....' +
+                                    record.operations?.account.substr(record.operations?.account.length - 4)}
+                                </Link>
+                              )}
                           </td>
                           <td>
                             {record.operations?.starting_balance ? operationBalance : operationAmount}
@@ -319,7 +342,8 @@ class MemoPage extends React.Component<Props, State> {
                         </tr>
                       </tbody>
                     )
-                  })}
+                  })
+                }
               </table>
               <button
                 className='button'
