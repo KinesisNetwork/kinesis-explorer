@@ -44,11 +44,11 @@ const FORMAT_VALUE: { [key: string]: (value: string) => string | number | React.
 }
 
 export const OperationInfo: React.SFC<{
-  selectedConnection: any,
-  operation: OperationRecord | null,
+  selectedConnection: any
+  operation: OperationRecord | null
   conn: string,
 }> = ({ selectedConnection, operation, conn }) => {
-  const networkType =  operation._links?.effects?.href.slice(12, 19) === 'testnet' ? 'T' : ''
+  const networkType = operation._links?.effects?.href.slice(12, 19) === 'testnet' ? 'T' : ''
   currConn = networkType + operation._links?.effects?.href.slice(8, 11).toUpperCase()
 
   const fields = operation
@@ -56,7 +56,13 @@ export const OperationInfo: React.SFC<{
         .filter(([, val]) => typeof val === 'string')
         .filter(([key]) => !BASE_OPERATION_KEYS.includes(key))
         .map(([key, value]) => (FORMAT_VALUE[key] ? [key, FORMAT_VALUE[key](value)] : [key, value]))
-        .map(([key, value]) => <HorizontalLabelledField key={key} label={startCase(key.replace('starting_balance', 'amount'))} value={value} />)
+        .map(([key, value]) => (
+          <HorizontalLabelledField
+            key={key}
+            label={startCase(key.replace('starting_balance', 'amount'))}
+            value={value}
+          />
+        ))
     : []
 
   const field = operation

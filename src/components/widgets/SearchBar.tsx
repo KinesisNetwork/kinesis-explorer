@@ -28,7 +28,9 @@ export class SearchBar extends React.Component<OperationProps> {
   handleChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
     this.setState({ value: event.currentTarget.value })
     const query = event.target.value
-    this.setState({ query: event.target.value, loading: true, message: '' }, () => {})
+    this.setState({ query: event.target.value, loading: true, message: '' }, () => {
+      // console.log('empty')
+    })
   }
   clearInput: React.MouseEventHandler<HTMLButtonElement> = (event) => {
     this.setState({ value: '', redirect: true })
@@ -61,23 +63,23 @@ export class SearchBar extends React.Component<OperationProps> {
   render() {
     const { query } = this.state
     return (
-      <div className="field has-addons">
-        <div className="control has-icons-right">
+      <div className='field has-addons'>
+        <div className='control has-icons-right'>
           <input
-            className="input"
-            type="text"
+            className='input'
+            type='text'
             value={this.state.value}
             onChange={this.handleChange}
             onKeyPress={(e) => this.handleKeypress(e)}
-            placeholder="Search..."
+            placeholder='Search...'
           />
-          <span className="icon is-right">
-            <i className="fas fa-search" />
+          <span className='icon is-right'>
+            <i className='fas fa-search' />
           </span>
         </div>
-        <div className="control">
+        <div className='control'>
           <button
-            className="button"
+            className='button'
             disabled={!this.state.query.replaceAll(' ', '') || !this.state.value}
             onClick={this.clearInput}
           >

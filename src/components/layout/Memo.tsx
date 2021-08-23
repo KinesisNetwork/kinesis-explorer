@@ -8,12 +8,12 @@ import { ConnectionContainer, ConnectionContext } from '../../services/connectio
 import { convertStroopsToKinesis } from '../../services/kinesis'
 import { Connection } from '../../types'
 import { renderAmount } from '../../utils'
+import Logo from '../css/images/copy.svg'
 import { HorizontalLabelledField } from '../shared'
 import OperationValue from '../widgets/OperationValue'
-import Logo from '../css/images/copy.svg'
 let currConn: string
-interface ConnectedTransactionProps extends RouteComponentProps<{ id: string; connection: string }> {}
-interface Props extends ConnectedTransactionProps, ConnectionContext {}
+interface ConnectedTransactionProps extends RouteComponentProps<{ id: string; connection: string }> { }
+interface Props extends ConnectedTransactionProps, ConnectionContext { }
 
 interface State {
   transaction: TransactionRecord | null
@@ -225,10 +225,13 @@ class MemoPage extends React.Component<Props, State> {
   // sortByField(field) {
   //   if (field == 'created_at') {
   //     const datas = [...this.state.dataKauDetailsRecursive, ...this.state.dataKagDetailsRecursive]
-  //     datas.sort((a,b) => (Number(a.created_at) > Number(b.created_at)) ? 1 : ((Number(b.created_at) > Number(a.created_at)) ? -1 : 0));
+  //     datas.sort((a,b) => (Number(a.created_at) > Number(b.created_at)) ? 1
+  // : ((Number(b.created_at) > Number(a.created_at)) ? -1 : 0));
   //   } else if (field == 'starting_balance'? field == 'starting_balance' : field == 'amount') {
   //     const datas = [...this.state.dataKauDetailsRecursive, ...this.state.dataKagDetailsRecursive]
-  //     datas.sort((a,b) => (a.starting_balance? a.starting_balance: a.amount > b.starting_balance? b.starting_balance: b.amount) ? 1 : ((b.starting_balance? b.starting_balance: b.amount > a.starting_balance? a.starting_balance: a.amount) ? -1 : 0));
+  //     datas.sort((a,b) => (a.starting_balance? a.starting_balance: a.amount >
+  //  b.starting_balance? b.starting_balance: b.amount) ? 1 : ((b.starting_balance? b.starting_balance:
+  //  b.amount > a.starting_balance? a.starting_balance: a.amount) ? -1 : 0));
   //   }
   //   console.log('triggered....')
   //   }
@@ -243,27 +246,27 @@ class MemoPage extends React.Component<Props, State> {
       return isReversed * a.created_at.localeCompare(b.created_at)
     })
     return (
-      <section className="section">
-        <div className="container">
-          <div className="tile is-vertical is-parent">
-            <article className="tile is-child">
-              <p className="title  is-child box" style={{ marginBottom: '1.0rem' }}>
+      <section className='section'>
+        <div className='container'>
+          <div className='tile is-vertical is-parent'>
+            <article className='tile is-child'>
+              <p className='title  is-child box' style={{ marginBottom: '1.0rem' }}>
                 Showing results for <b>{query}</b>
               </p>
-              <table className="table is-bordered is-striped is-fullwidth">
-                <thead className="thead">
-                  <tr className="tr">
-                    <th className="th">
+              <table className='table is-bordered is-striped is-fullwidth'>
+                <thead className='thead'>
+                  <tr className='tr'>
+                    <th className='th'>
                       Date & Time (UTC)
-                      {/* <button className = 'button' onClick={() => this.onSort('asc')} >Sort by Asc</button>  
+                      {/* <button className = 'button' onClick={() => this.onSort('asc')} >Sort by Asc</button>
                        <button className = 'button' onClick={() => this.onSort('desc')} >Sort by desc</button>   */}
                     </th>
-                    <th className="th">Hash</th>
-                    <th className="th">From</th>
-                    <th className="th">To</th>
-                    <th className="th">Amount</th>
-                    <th className="th">Fee</th>
-                    <th className="th">Memo</th>
+                    <th className='th'>Hash</th>
+                    <th className='th'>From</th>
+                    <th className='th'>To</th>
+                    <th className='th'>Amount</th>
+                    <th className='th'>Fee</th>
+                    <th className='th'>Memo</th>
                   </tr>
                 </thead>
 
@@ -288,27 +291,27 @@ class MemoPage extends React.Component<Props, State> {
                     //     : 0,
                     // )
                     return (
-                      <tbody key={record.id} className="tbody">
-                        <tr key={record.id} className="tr">
-                          <td className="td">
+                      <tbody key={record.id} className='tbody'>
+                        <tr key={record.id} className='tr'>
+                          <td className='td'>
                             {record.created_at.slice(8, 10)}/{record.created_at.slice(5, 7)}/
                             {record.created_at.slice(0, 4)}&nbsp;
                             {record.created_at.slice(11, 14)}
                             {record.created_at.slice(14, 17)}
                             {record.created_at.slice(17, 19)}
                           </td>
-                          <td className="td">
+                          <td className='td'>
                             <Link to={`/transaction/${currConn}/${record.hash}`}>
                               {record.hash.slice(0, 4)}.....{record.hash.substr(record.hash.length - 4)}
                             </Link>
                           </td>
-                          <td className="td">
+                          <td className='td'>
                             <Link to={`/account/${record.source_account}`}>
                               {record.source_account.slice(0, 4)}.....
                               {record.source_account.substr(record.source_account.length - 4)}
                             </Link>
                           </td>
-                          <td className="td">
+                          <td className='td'>
                             {record.operations?.to ? (
                               <Link to={`/account/${record.operations?.to}`}>
                                 {' '}
@@ -317,12 +320,12 @@ class MemoPage extends React.Component<Props, State> {
                                   record.operations?.to.substr(record.operations?.to.length - 4)}{' '}
                               </Link>
                             ) : (
-                              <Link to={`/account/${record.operations?.account}`}>
-                                {record.operations?.account.slice(0, 4) +
-                                  '.....' +
-                                  record.operations?.account.substr(record.operations?.account.length - 4)}
-                              </Link>
-                            )}
+                                <Link to={`/account/${record.operations?.account}`}>
+                                  {record.operations?.account.slice(0, 4) +
+                                    '.....' +
+                                    record.operations?.account.substr(record.operations?.account.length - 4)}
+                                </Link>
+                              )}
                           </td>
                           <td>
                             {record.operations?.starting_balance
@@ -330,10 +333,10 @@ class MemoPage extends React.Component<Props, State> {
                               : record.operations?.amount}
                             &nbsp; {currConn}
                           </td>
-                          <td className="td">
+                          <td className='td'>
                             {renderAmount(convertStroopsToKinesis(feePaid), precision)} {currConn}
                           </td>
-                          <td className="td">{record.memo}</td>
+                          <td className='td'>{record.memo}</td>
                         </tr>
                       </tbody>
                     )
@@ -341,7 +344,7 @@ class MemoPage extends React.Component<Props, State> {
                 }
               </table>
               <button
-                className="button"
+                className='button'
                 onClick={() => this.moreTxs()}
                 style={{ width: '100%', marginTop: '3px', overflowAnchor: 'none' }}
               >
