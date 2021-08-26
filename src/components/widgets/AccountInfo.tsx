@@ -26,36 +26,20 @@ interface Props {
 }
 interface State {
   operations: CollectionPage<OperationRecord> | any
-  lastPagingToken: string | undefined
-  showLoadMore: boolean
-  showLoadMore1: boolean
   isSignersOpen: boolean
-  transLimitKau: number
-  transLimitKag: number
-  limitOpKau: number
-  limitOpKag: number
+  transLimitKauKag: number
   dataKau: any[]
   dataKag: any[]
-  dataKauKag: any
-  sortType: any
 }
 export class AccountInfo extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
     this.state = {
       operations: {},
-      lastPagingToken: undefined,
-      showLoadMore: true,
-      showLoadMore1: true,
       isSignersOpen: false,
-      transLimitKau: 20,
-      transLimitKag: 10,
-      limitOpKau: 10,
-      limitOpKag: 10,
+      transLimitKauKag: 20,
       dataKau: [],
       dataKag: [],
-      dataKauKag: [],
-      sortType: 'desc',
     }
     this.moreTxs = this.moreTxs.bind(this)
   }
@@ -63,8 +47,8 @@ export class AccountInfo extends React.Component<Props, State> {
   //   this.fetchSearch()
   // }
   async componentDidMount() {
-    await this.fetchSearch()
-    await this.fetchSearch()
+    await this.fetchSearchAccountOperations()
+    await this.fetchSearchAccountOperations()
     
   }
   renderBalances = () => {
@@ -181,24 +165,22 @@ export class AccountInfo extends React.Component<Props, State> {
     }
   }
 
-  fetchSearch = async () => {
-    console.log(this.props, 'accountkau...')
+  fetchSearchAccountOperations = async () => {
     const valKau = this.props.selectedConnection.kau.horizonURL
     const accountKauId = this.props.accountKau?.account_id
     const accountKagId = this.props.accountKag?.account_id
-    const searchUrl = `${valKau}/accounts/${accountKauId}/operations?limit=200&order=desc `
+    const searchKauOperations = `${valKau}/accounts/${accountKauId}/operations?limit=200&order=desc `
     const valKag = this.props.selectedConnection.kag.horizonURL
-    const searchLink = `${valKag}/accounts/${accountKagId}/operations?limit=200&order=desc `
+    const searchKagOperations = `${valKag}/accounts/${accountKagId}/operations?limit=200&order=desc `
     let dataKau = [...this.state.dataKau]
     let dataKag = [...this.state.dataKag]
-    await fetch(searchUrl)
+    await fetch(searchKauOperations)
       .then((response) => {
         return response.json()
       })
 
       .then((response) => {
         const data = response._embedded.records
-
         dataKau = data
       })
 
@@ -207,7 +189,7 @@ export class AccountInfo extends React.Component<Props, State> {
           // console.log('error')
         }
       })
-    await fetch(searchLink)
+    await fetch(searchKagOperations)
       .then((response) => {
         return response.json()
       })
@@ -225,7 +207,7 @@ export class AccountInfo extends React.Component<Props, State> {
   }
   moreTxs() {
     this.setState((old) => {
-      return { transLimitKau: old.transLimitKau + 20 }
+      return { transLimitKauKag: old.transLimitKauKag + 20 }
     })
   }
 
@@ -234,7 +216,6 @@ export class AccountInfo extends React.Component<Props, State> {
    console.log(this.props.accountId, 'accountid...')
   }
   render() {
-    // const fetch = this.fetchSearch()
     const datas = [...this.state.dataKau, ...this.state.dataKag]
     return (
       <div className="tile is-ancestor">
@@ -273,7 +254,7 @@ export class AccountInfo extends React.Component<Props, State> {
             ''
           )}
           <div className="tile is-parent is-vertical">
-            {datas.slice(0, this.state.transLimitKau).map((record) => {
+            {datas.slice(0, this.state.transLimitKauKag).map((record) => {
               const networkType = record._links.self.href.slice(11, 18) === 'testnet' ? 'T' : ''
               currConn = networkType + record._links.self.href.slice(7, 10).toUpperCase()
               const data = `${renderAmount(record.amount)}`
@@ -387,7 +368,7 @@ export class AccountInfo extends React.Component<Props, State> {
                 </div>
               )
             })}
-            {this.state.transLimitKau < datas.length && (
+            {this.state.transLimitKauKag < datas.length && (
               <button
                 className="button"
                 onClick={() => this.moreTxs()}
