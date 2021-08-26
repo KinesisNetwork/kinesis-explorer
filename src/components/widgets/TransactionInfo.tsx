@@ -207,7 +207,7 @@ export class TransactionInfo extends React.Component<Props, State> {
                 <Link to={`/account/${this.props.transaction['account']}`}>{this.props.transaction['account']}</Link>}
             />
             <HorizontalLabelledField
-              label={this.props.transaction['type'] === 'set_options' ? 'Signer Key' : ''}
+              label={this.props.transaction['type'] === 'set_options' ? 'Signer Key' : this.props.transaction['signer_key'] ? 'Signer Key': ''}
               value={this.props.transaction['signer_key']}
             />
           </div>
