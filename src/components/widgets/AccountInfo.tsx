@@ -211,7 +211,7 @@ export class AccountInfo extends React.Component<Props, State> {
   }
 
   refreshPage() {
-    ;<Link to={`/account/${this.props?.accountId}`}></Link>
+    <Link to={`/account/${this.props?.accountId}`}></Link>
     console.log(this.props.accountId, 'accountid...')
   }
   render() {
