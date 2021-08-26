@@ -59,11 +59,14 @@ export class AccountInfo extends React.Component<Props, State> {
     }
     this.moreTxs = this.moreTxs.bind(this)
   }
+// componentDidUpdate(){
+//  this.fetchSearch()
 
-  async componentDidMount() {
-    await this.fetchSearch()
-    await this.fetchSearch()
-  }
+// }
+  // async componentDidMount() {
+  //   await this.fetchSearch()
+  //   await this.fetchSearch()
+  // }
   renderBalances = () => {
     const currencyArray = this.props.selectedConnection?.currency
     let balances = []
@@ -233,6 +236,7 @@ export class AccountInfo extends React.Component<Props, State> {
     window.location.reload()
   }
   render() {
+    const fetch = this.fetchSearch()
     return (
       <div className="tile is-ancestor">
         <div className="tile is-vertical">
@@ -355,9 +359,9 @@ export class AccountInfo extends React.Component<Props, State> {
                           record.from ? (
                             <Link to={`/account/${record.from}`}>{record.from}</Link>
                           ) : record.into ? (
-                            // <Link to={`/account/${record.from}`}>
-                              record.into
-                              // </Link>
+                           <Link to={`/account/${record.into}`}>
+                              {record.into}
+                             </Link>
                           ) : record.type === 'create_account' ? (
                             <Link to={`/account/${record.source_account}`}>{record.source_account}</Link>
                           ) : (
