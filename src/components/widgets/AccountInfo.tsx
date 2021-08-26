@@ -49,7 +49,6 @@ export class AccountInfo extends React.Component<Props, State> {
   async componentDidMount() {
     await this.fetchSearchAccountOperations()
     await this.fetchSearchAccountOperations()
-    
   }
   renderBalances = () => {
     const currencyArray = this.props.selectedConnection?.currency
@@ -211,9 +210,9 @@ export class AccountInfo extends React.Component<Props, State> {
     })
   }
 
-   refreshPage() {
-    <Link to={`/account/${this.props?.accountId}`}></Link>
-   console.log(this.props.accountId, 'accountid...')
+  refreshPage() {
+    ;<Link to={`/account/${this.props?.accountId}`}></Link>
+    console.log(this.props.accountId, 'accountid...')
   }
   render() {
     const datas = [...this.state.dataKau, ...this.state.dataKag]
@@ -269,9 +268,13 @@ export class AccountInfo extends React.Component<Props, State> {
                         label="Source Account"
                         value={
                           record.from ? (
-                            <Link to={`/account/${record.from}`} onClick= {this.refreshPage}>{record.from}</Link>
+                            <Link to={`/account/${record.from}`} onClick={this.refreshPage}>
+                              {record.from}
+                            </Link>
                           ) : (
-                            <Link to={`/account/${record.source_account}`} onClick= {this.refreshPage}>{record.source_account}</Link>
+                            <Link to={`/account/${record.source_account}`} onClick={this.refreshPage}>
+                              {record.source_account}
+                            </Link>
                           )
                         }
                       />
@@ -315,7 +318,9 @@ export class AccountInfo extends React.Component<Props, State> {
                           record.type === 'payment' ? (
                             record.asset_type
                           ) : record.type === 'account_merge' ? (
-                            <Link to={`/account/${record.source_account}` } onClick= {this.refreshPage}>{record.source_account} </Link>
+                            <Link to={`/account/${record.source_account}`} onClick={this.refreshPage}>
+                              {record.source_account}{' '}
+                            </Link>
                           ) : record.type === 'create_account' ? (
                             dataBalance + ' ' + currConn
                           ) : record.signer_key ? (
@@ -337,11 +342,17 @@ export class AccountInfo extends React.Component<Props, State> {
                         }
                         value={
                           record.from ? (
-                            <Link to={`/account/${record.from}`} onClick= {this.refreshPage}>{record.from}</Link>
+                            <Link to={`/account/${record.from}`} onClick={this.refreshPage}>
+                              {record.from}
+                            </Link>
                           ) : record.into ? (
-                            <Link to={`/account/${record.into}`} onClick= {this.refreshPage}>{record.into}</Link>
+                            <Link to={`/account/${record.into}`} onClick={this.refreshPage}>
+                              {record.into}
+                            </Link>
                           ) : record.type === 'create_account' ? (
-                            <Link to={`/account/${record.source_account}`} onClick= {this.refreshPage}>{record.source_account}</Link>
+                            <Link to={`/account/${record.source_account}`} onClick={this.refreshPage}>
+                              {record.source_account}
+                            </Link>
                           ) : (
                             ''
                           )
@@ -351,9 +362,13 @@ export class AccountInfo extends React.Component<Props, State> {
                         label={record.type === 'payment' ? 'To' : record.type === 'create_account' ? 'To' : ''}
                         value={
                           record.to ? (
-                            <Link to={`/account/${record.to}`} onClick= {this.refreshPage}>{record.to}</Link>
+                            <Link to={`/account/${record.to}`} onClick={this.refreshPage}>
+                              {record.to}
+                            </Link>
                           ) : record.type === 'create_account' ? (
-                            <Link to={`/account/${record.account}`} onClick= {this.refreshPage}>{record.account}</Link>
+                            <Link to={`/account/${record.account}`} onClick={this.refreshPage}>
+                              {record.account}
+                            </Link>
                           ) : (
                             ''
                           )
