@@ -54,7 +54,7 @@ export class AccountInfo extends React.Component<Props, State> {
       limitOpKag: 10,
       dataKau: [],
       dataKag: [],
-      dataKauKag: [],
+       dataKauKag: [],
       sortType: 'desc',
     }
     this.moreTxs = this.moreTxs.bind(this)
@@ -63,10 +63,10 @@ export class AccountInfo extends React.Component<Props, State> {
 //  this.fetchSearch()
 
 // }
-  // async componentDidMount() {
-  //   await this.fetchSearch()
-  //   await this.fetchSearch()
-  // }
+  async componentDidMount() {
+    await this.fetchSearch()
+    await this.fetchSearch()
+  }
   renderBalances = () => {
     const currencyArray = this.props.selectedConnection?.currency
     let balances = []
@@ -222,10 +222,7 @@ export class AccountInfo extends React.Component<Props, State> {
         }
       })
     this.setState({ dataKau, dataKag })
-    const datas = [...this.state.dataKau, ...this.state.dataKag]
-    let dataKauKag = [...this.state.dataKauKag]
-    dataKauKag = datas
-    this.setState({ dataKauKag })
+   
   }
   moreTxs() {
     this.setState((old) => {
@@ -236,7 +233,8 @@ export class AccountInfo extends React.Component<Props, State> {
     window.location.reload()
   }
   render() {
-    const fetch = this.fetchSearch()
+    // const fetch = this.fetchSearch()
+    const datas = [...this.state.dataKau, ...this.state.dataKag]
     return (
       <div className="tile is-ancestor">
         <div className="tile is-vertical">
@@ -274,7 +272,7 @@ export class AccountInfo extends React.Component<Props, State> {
             ''
           )}
           <div className="tile is-parent is-vertical">
-            {this.state.dataKauKag.slice(0, this.state.transLimitKau).map((record) => {
+            {datas.slice(0, this.state.transLimitKau).map((record) => {
               const networkType = record._links.self.href.slice(11, 18) === 'testnet' ? 'T' : ''
               currConn = networkType + record._links.self.href.slice(7, 10).toUpperCase()
               const data = `${renderAmount(record.amount)}`
@@ -390,7 +388,7 @@ export class AccountInfo extends React.Component<Props, State> {
                 </div>
               )
             })}
-            {this.state.transLimitKau < this.state.dataKauKag.length && (
+            {this.state.transLimitKau < datas.length && (
               <button
                 className="button"
                 onClick={() => this.moreTxs()}
