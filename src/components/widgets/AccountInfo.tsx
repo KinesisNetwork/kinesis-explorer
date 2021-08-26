@@ -54,19 +54,17 @@ export class AccountInfo extends React.Component<Props, State> {
       limitOpKag: 10,
       dataKau: [],
       dataKag: [],
-       dataKauKag: [],
+      dataKauKag: [],
       sortType: 'desc',
     }
     this.moreTxs = this.moreTxs.bind(this)
   }
-// componentDidUpdate(){
-//  this.fetchSearch()
-
-// }
-  async componentDidMount() {
-    await this.fetchSearch()
-    await this.fetchSearch()
+  componentDidUpdate() {
+    this.fetchSearch()
   }
+  // componentDidMount() {
+  //   this.fetchSearch()
+  // }
   renderBalances = () => {
     const currencyArray = this.props.selectedConnection?.currency
     let balances = []
@@ -180,7 +178,7 @@ export class AccountInfo extends React.Component<Props, State> {
       return
     }
   }
- 
+
   fetchSearch = async () => {
     console.log(this.props, 'accountkau...')
     const valKau = this.props.selectedConnection.kau.horizonURL
@@ -222,7 +220,6 @@ export class AccountInfo extends React.Component<Props, State> {
         }
       })
     this.setState({ dataKau, dataKag })
-   
   }
   moreTxs() {
     this.setState((old) => {
@@ -357,9 +354,7 @@ export class AccountInfo extends React.Component<Props, State> {
                           record.from ? (
                             <Link to={`/account/${record.from}`}>{record.from}</Link>
                           ) : record.into ? (
-                           <Link to={`/account/${record.into}`}>
-                              {record.into}
-                             </Link>
+                            <Link to={`/account/${record.into}`}>{record.into}</Link>
                           ) : record.type === 'create_account' ? (
                             <Link to={`/account/${record.source_account}`}>{record.source_account}</Link>
                           ) : (
