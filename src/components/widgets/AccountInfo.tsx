@@ -38,8 +38,6 @@ interface State {
   dataKag: any[]
   dataKauKag: any
   sortType: any
-  // operationResults: any
-  
 }
 export class AccountInfo extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -61,195 +59,7 @@ export class AccountInfo extends React.Component<Props, State> {
     }
     this.moreTxs = this.moreTxs.bind(this)
   }
-  // loadOperations = async (
-  //   cursor?: string,
-  //   limit: number = 10,
-  //   account?: any,
-  //   lastPagingToken?: any,
-  //   showLoadMore?: any,
-  //   operations?: any,
-  //   keys?: any,
-  //   network?: string,
-  // ) => {
-  //   operations = await account.operations({ limit, cursor, order: 'desc' })
-  //   console.log(account, 'acc...')
-  //   lastPagingToken = operations.records.length
-  //     ? operations.records[operations.records.length - 1].paging_token
-  //     : undefined
-  //   showLoadMore = operations.records.length ? operations.records.length === limit : !cursor
-  //   // const showLoadMore = transactions.length ? transactions.length === limit : !cursor
-  //   const originalRecordSet = this.state[operations] ? this.state[operations].records : []
-  //   // Simple de-duping
-  //   operations.records = originalRecordSet.concat(
-  //     ...operations.records.filter((v) => {
-  //       return originalRecordSet.findIndex((ov) => ov.id === v.id) === -1
-  //     }),
-  //   )
-  //   return [operations, lastPagingToken, showLoadMore, network]
-  //   // this.setState({
-  //   //  [this.state[keys.operations]]:operations,
-  //   //  [this.state[keys.lastPagingToken]]:lastPagingToken,
-  //   //  [this.state[keys.showLoadMore]]:showLoadMore,
-  //   // })
-  // }
-  // handleOperations = async (account?: any, network?: string, cursor: string = 'now',limit: number = 10) => {
-  //   if (!account) {
-  //     return
-  //   }
-  //   // let [operations, lastPagingToken, showLoadMore] = await this.loadOperations(
-  //   const result = await this.loadOperations(
-  //     cursor,
-  //     limit,
-  //     account,
-  //     this.state.lastPagingToken,
-  //     this.state.showLoadMore,
-  //     this.state.operations,
-  //     network,
-  //   )
-  //   // console.log(result, 'result')
-  //   const [lastPagingToken, showLoadMore] = result
-  //   let [operations] = result
-  //   let operation = this.state.operations
-  //   if (operations && operations.records && operations.records.length > 0) {
-  //     if (this.state.operations && Object.keys(this.state.operations) && Object.keys(this.state.operations).length) {
-  //       operations = await this.getAccountMergedAmount(operations)
-  //       operation['records'] = [...operations.records, ...operation['records']]
-  //     } else {
-  //       operations = await this.getAccountMergedAmount(operations)
-  //       operation = operations
-  //       console.log(operations, 'op.......')
-  //     }
-  //   }
-  //   this.setState({
-  //     operations: operation,
-  //     lastPagingToken,
-  //     showLoadMore,
-  //   })
-  // }
-  // getAccountMergedAmount = async (operations) => {
-  //   for (const operationsData of operations?.records) {
-  //     const operation = operationsData
-  //     if (operation?.type === 'account_merge') {
-  //       const AmountMergeAddressNetwork = operation?._links.effects?.href
-  //       const response = await fetch(`${AmountMergeAddressNetwork}?order=desc`, {
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           Accept: 'application/json',
-  //         },
-  //       })
-  //       const url = await response.json()
-  //       const getAccountMergeAmount = url?._embedded?.records[2]?.amount
-  //       operation['amount'] = getAccountMergeAmount
-  //     }
-  //   }
-  //   return operations
-  // }
-  // loadMergedTransactions = async (cursor: string = 'now', limit: number = 10,  showLoadMore1?: any,) => {
-  //   const transactions = await getTransactions(this.props.selectedConnection, this.props.accountId, limit, cursor)
-  //   const lastPagingToken = transactions.length ? transactions[transactions.length - 1].paging_token : undefined
-  //   // const showLoadMore = transactions.length ? transactions.length === limit : !cursor
-  //   const originalRecordSet = this.state.operations ? this.state.operations['records'] : []
-  //   const originalRecord = this.state.operations ? this.state.operations['records'] : []
-  //   // Simple de-duping
-  //   const records = await Promise.all(
-  //     transactions.map((transaction) =>
-  //       transaction.operations({
-  //         limit: transaction.operation_count,
-  //         cursor: undefined,
-  //         order: 'desc',
-  //       }),
-  //     ),
-  //   )
-  //   showLoadMore1 = records.length ? records.length === limit : !cursor
-  //   console.log(records, 'records.......')
-  //   console.log( limit , 're.......')
-  //   const operations = {
-  //     records: records.map((entry) => entry.records).reduce((total, amount) => total.concat(amount), []),
-  //     next: () => Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
-  //     prev: () => Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
-  //   }
-  //   console.log(operations, 'operations.......')
-  //   this.setState({ operations })
-  //   // Simple de-duping
-  //   operations.records = originalRecordSet.concat(
-  //     ...operations.records.filter((v) => {
-  //       return originalRecordSet.findIndex((ov) => ov.id === v.id) === -1
-  //     }),
-  //   )
-  //   this.setState({
-  //     operations,
-  //     lastPagingToken,
-  //     // showLoadMore,
-  //     showLoadMore1
-  //   })
-  // }
-  // componentDidUpdate(prevProps: Props) {
-  //   if (prevProps.accountKag?.balances[0]?.balance === '0.0') {
-  //     this.state.showLoadMore
-  //   } else if (prevProps.accountKau?.balances[0]?.balance === '0.0') {
-  //    this.state.showLoadMore
-  //   }
-  // }
-  createQuery = () => {
-    // const query = location.reload()
-  }
-   componentDidUpdate(){
-     this.fetchSearch(this.state.operations)
-  }
- async componentDidMount() {
-  // const query = this.createQuery()
-  //  await this.fetchSearch(query)
-    
-    // this.setState({
-    //   lastPagingToken: undefined,
-    // })
-    // if (this.props.accountKag?.balances[0]?.balance === '0.0') {
-    //   // this.loadMergedTransactions()
-    //   console.log('A')
-    // } else {
-    //   // this.loadOperations()
-    //   // this.handleOperations(this.props.accountKag)
-    // console.log('h')
-    // const query = this.createQuery()
-    // this.fetchSearch(query)
-    // }
-    // if (this.props.accountKau?.balances[0]?.balance === '0.0') {
-    //   // this.loadMergedTransactions()
-    //   console.log('b')
-    // } else {
-    //   // this.loadOperations()
-    //   // this.handleOperations(this.props.accountKau)
-    //   const query = this.createQuery()
-    //   this.fetchSearch(query)
-    // }
-    // if (this.props.accountKag?.account_id !== this.props.accountKag?.account_id) {
-    //   // this.handleOperations(this.props.accountKag)
-    // } else if (this.props.accountKau?.account_id !== this.props.accountKau?.account_id) {
-    //   console.log('d')
-    //   // this.handleOperations(this.props.accountKau)
-    // }
-  }
-  // onClickLoadMore() {
-  //   // 200 is the limit as defined on the horizon server
-  //   if (this.props.accountKag?.balances[0].balance === '0.0') {
-  //     let transLimitKag = this.state.transLimitKag + 10
-  //     this.setState({ transLimitKag })
-  //     // this.loadMergedTransactions(this.state.lastPagingToken, transLimitKag)
-  //   } else {
-  //     let transLimitKag = this.state.transLimitKag + 10
-  //     this.setState({ transLimitKag })
-  //     // this.handleOperations()
-  //   }
-  //   if (this.props.accountKau?.balances[0].balance === '0.0') {
-  //     let transLimitKau = this.state.transLimitKau + 10
-  //     this.setState({ transLimitKau })
-  //     // const showLoadMore1 = this.props.accountKau.balances ? this.props.accountKau.balances.length :
-  //     // console.log(showLoadMore1, 'show...')
-  //     // this.loadMergedTransactions(this.state.lastPagingToken, transLimitKau)
-  //   } else {
-  //     // this.handleOperations()
-  //   }
-  // }
+
   renderBalances = () => {
     const currencyArray = this.props.selectedConnection?.currency
     let balances = []
@@ -363,9 +173,12 @@ export class AccountInfo extends React.Component<Props, State> {
       return
     }
   }
-
-  fetchSearch = async (query) => {
-    console.log( this.props.accountKag, 'accountkag...')
+  async componentDidMount() {
+    await this.fetchSearch()
+    await this.fetchSearch()
+  }
+  fetchSearch = async () => {
+    console.log(this.props, 'accountkau...')
     const valKau = this.props.selectedConnection.kau.horizonURL
     const accountKauId = this.props.accountKau?.account_id
     const accountKagId = this.props.accountKag?.account_id
@@ -405,43 +218,20 @@ export class AccountInfo extends React.Component<Props, State> {
         }
       })
     this.setState({ dataKau, dataKag })
+    const datas = [...this.state.dataKau, ...this.state.dataKag]
+    let dataKauKag = [...this.state.dataKauKag]
+    dataKauKag = datas
+    this.setState({ dataKauKag })
   }
-  // async addOperationsToTransactionArray(transactionArray) {
-  //   // console.log(transactionArray, 'transactionArray....')
-  //   const dataMixed = await Promise.all(
-  //     transactionArray.map((transactionRecord) => {
-  //       const operationUrl = transactionRecord._links.effects.href
-  //       return fetch(operationUrl)
-  //         .then((res) => res.json())
-  //         .then((response) => ({ ...transactionRecord, op: response._embedded.records[0] }))
-  //     }),
-  //   )
-  //   console.log(dataMixed, 'dataMixed...')
-  //   this.setState({ dataKauKag: dataMixed })
-  // }
   moreTxs() {
     this.setState((old) => {
       return { transLimitKau: old.transLimitKau + 20 }
     })
   }
-
+  refreshPage() {
+    window.location.reload()
+  }
   render() {
-    const { accountKag } = this.props
-    const { showLoadMore1, operations } = this.state
-    const KagValue = this.props.accountKag?._links?.data?.href
-    const KauValue = this.props.accountKau?._links?.data?.href.slice(8, 11)
-    // const dataMixedKauKag = this. addOperationsToTransactionArray(this.state.operations)
-    const query = this.createQuery()
-    const { sortType } = this.state
-    // const records = this.sortedData()
-    // console.log(this.state.dataKauKag, 'this.state.dataMixed....')
-    const datas = [...this.state.dataKau, ...this.state.dataKag]
-    console.log(datas, 'Datas..')
-    // const sorted = datas.sort((a, b) => {
-    //   const isReversed = sortType === 'asc' ? 1 : -1
-    //   return isReversed * a.created_at.localeCompare(b.created_at)
-    // })
-    
     return (
       <div className="tile is-ancestor">
         <div className="tile is-vertical">
@@ -478,26 +268,8 @@ export class AccountInfo extends React.Component<Props, State> {
           ) : (
             ''
           )}
-          {/* <div className="tile is-parent">
-            <div className="tile is-child box">
-              <p className="subtitle">Signers</p>
-              {this.renderSigners()}
-            </div>
-          </div> */}
           <div className="tile is-parent is-vertical">
-            {/* <OperationList
-              operations={operations}
-              conn={this.connectionSelector()}
-              // conn={(this.props.accountKau?._links?.data?.href.slice(8,11)) ? "TKAU" : "TKAG"  }
-              selectedConnection={this.props.selectedConnection}
-            /> */}
-            {/* {showLoadMore1 && ( */}
-            {/* <button className="button" onClick={this.onClickLoadMore}>
-                Load more
-              </button> */}
-            {/* )}     */}
-            {datas.slice(0, this.state.transLimitKau).map((record) => {
-              
+            {this.state.dataKauKag.slice(0, this.state.transLimitKau).map((record) => {
               const networkType = record._links.self.href.slice(11, 18) === 'testnet' ? 'T' : ''
               currConn = networkType + record._links.self.href.slice(7, 10).toUpperCase()
               const data = `${renderAmount(record.amount)}`
@@ -507,7 +279,7 @@ export class AccountInfo extends React.Component<Props, State> {
                   <div className="tile is-vertical is-parent">
                     <div className="tile is-child box">
                       <p className="subtitle">{startCase(record.type)}</p>
-                      
+
                       <HorizontalLabelledField
                         label="Source Account"
                         value={
@@ -537,7 +309,7 @@ export class AccountInfo extends React.Component<Props, State> {
                       <HorizontalLabelledField
                         label="Transaction Hash"
                         value={
-                          <Link to={`/transaction/${currConn}/${record.transaction_hash}`} >
+                          <Link to={`/transaction/${currConn}/${record.transaction_hash}`}>
                             {record.transaction_hash}
                           </Link>
                         }
@@ -579,14 +351,13 @@ export class AccountInfo extends React.Component<Props, State> {
                             : ''
                         }
                         value={
-                          record.from ? 
-                            <Link to={`/account/${record.from}`} >{record.from}</Link>
-                           : record.into ? 
-                            <Link to={`/account/${record.into}`}>{record.into}</Link>
-                           : record.type === 'create_account' ? 
-                             <Link to={`/account/${record.source_account}`}>{record.source_account}</Link>
-                           
-                           : (
+                          record.from ? (
+                            <Link to={`/account/${record.from}`}>{record.from}</Link>
+                          ) : record.into ? (
+                           record.into
+                          ) : record.type === 'create_account' ? (
+                            <Link to={`/account/${record.source_account}`}>{record.source_account}</Link>
+                          ) : (
                             ''
                           )
                         }
@@ -595,8 +366,7 @@ export class AccountInfo extends React.Component<Props, State> {
                         label={record.type === 'payment' ? 'To' : record.type === 'create_account' ? 'To' : ''}
                         value={
                           record.to ? (
-                             <Link to={`/account/${record.to}`}>{record.to}</Link>
-                            
+                            <Link to={`/account/${record.to}`}>{record.to}</Link>
                           ) : record.type === 'create_account' ? (
                             <Link to={`/account/${record.account}`}>{record.account}</Link>
                           ) : (
@@ -613,7 +383,7 @@ export class AccountInfo extends React.Component<Props, State> {
                 </div>
               )
             })}
-            {this.state.transLimitKau < datas.length && (
+            {this.state.transLimitKau < this.state.dataKauKag.length && (
               <button
                 className="button"
                 onClick={() => this.moreTxs()}
