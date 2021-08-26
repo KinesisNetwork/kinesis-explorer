@@ -60,6 +60,10 @@ export class AccountInfo extends React.Component<Props, State> {
     this.moreTxs = this.moreTxs.bind(this)
   }
 
+  async componentDidMount() {
+    await this.fetchSearch()
+    await this.fetchSearch()
+  }
   renderBalances = () => {
     const currencyArray = this.props.selectedConnection?.currency
     let balances = []
@@ -173,10 +177,7 @@ export class AccountInfo extends React.Component<Props, State> {
       return
     }
   }
-  async componentDidMount() {
-    await this.fetchSearch()
-    await this.fetchSearch()
-  }
+ 
   fetchSearch = async () => {
     console.log(this.props, 'accountkau...')
     const valKau = this.props.selectedConnection.kau.horizonURL
@@ -354,7 +355,9 @@ export class AccountInfo extends React.Component<Props, State> {
                           record.from ? (
                             <Link to={`/account/${record.from}`}>{record.from}</Link>
                           ) : record.into ? (
-                           record.into
+                            // <Link to={`/account/${record.from}`}>
+                              record.into
+                              // </Link>
                           ) : record.type === 'create_account' ? (
                             <Link to={`/account/${record.source_account}`}>{record.source_account}</Link>
                           ) : (
