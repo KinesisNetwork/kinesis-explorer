@@ -150,6 +150,8 @@ export class TransactionInfo extends React.Component<Props, State> {
   }
   componentDidMount() {
     this.handleOperations(this.props.transaction)
+    this.addOperationsToTransactionArray(this.props.transaction)
+    this.addOperationsToTransaction(this.props.transaction)
   }
 
   componentDidUpdate(prevProps: Props) {
@@ -164,8 +166,8 @@ export class TransactionInfo extends React.Component<Props, State> {
     const precision = conn === 'KEM' ? 7 : 5
     const networkType = this.state.operations?.records[0]?._links?.self?.href.slice(12, 19) === 'testnet' ? 'T' : ''
     currConn = networkType + this.state.operations?.records[0]?._links?.self?.href.slice(8, 11).toUpperCase()
-    const Amount = this.addOperationsToTransactionArray(transaction)
-    const SignerKey = this.addOperationsToTransaction(transaction)
+    // const Amount = this.addOperationsToTransactionArray(transaction)
+    // const SignerKey = this.addOperationsToTransaction(transaction)
     const data = `${renderAmount(this.props.transaction['amount'])}`
     return (
       <div className='tile is-ancestor'>
@@ -207,7 +209,13 @@ export class TransactionInfo extends React.Component<Props, State> {
                 <Link to={`/account/${this.props.transaction['account']}`}>{this.props.transaction['account']}</Link>}
             />
             <HorizontalLabelledField
-              label={this.props.transaction['type'] === 'set_options' ? 'Signer Key' : this.props.transaction['signer_key'] ? 'Signer Key': ''}
+              label={
+                this.props.transaction['type'] === 'set_options'
+                  ? 'Signer Key'
+                  : this.props.transaction['signer_key']
+                  ? 'Signer Key'
+                  : ''
+              }
               value={this.props.transaction['signer_key']}
             />
           </div>

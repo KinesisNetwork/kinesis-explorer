@@ -14,7 +14,7 @@ interface KemRecord extends AccountRecord {
   signers: Array<{
     public_key: string
     weight: number
-    key?: string
+    key?: string,
   }>
 }
 interface Props {
@@ -22,7 +22,7 @@ interface Props {
   accountKau: KemRecord
   accountKag: KemRecord
   selectedConnection: Connection
-  conn: String
+  conn: string
 }
 interface State {
   operations: CollectionPage<OperationRecord> | any
@@ -128,7 +128,7 @@ export class AccountInfo extends React.Component<Props, State> {
       return (
         <div key={i}>
           <HorizontalLabelledField
-            label="Public Key"
+            label='Public Key'
             value={signer.public_key || signer.key}
             tag={`Weight: ${signer.weight}`}
           />
@@ -211,27 +211,28 @@ export class AccountInfo extends React.Component<Props, State> {
   }
 
   refreshPage() {
-    <Link to={`/account/${this.props?.accountId}`}></Link>
-    console.log(this.props.accountId, 'accountid...')
+    const refresh = <Link to={`/account/${this.props.accountId}`}/>
+    return refresh
+    // console.log(this.props.accountId, 'accountid...')
   }
   render() {
     const datas = [...this.state.dataKau, ...this.state.dataKag]
     return (
-      <div className="tile is-ancestor">
-        <div className="tile is-vertical">
-          <div className="tile">
-            <div className="tile is-parent">
-              <div className="tile is-child box">
-                <p className="subtitle">Balances</p>
+      <div className='tile is-ancestor'>
+        <div className='tile is-vertical'>
+          <div className='tile'>
+            <div className='tile is-parent'>
+              <div className='tile is-child box'>
+                <p className='subtitle'>Balances</p>
                 {this.renderBalances()}
               </div>
             </div>
-            <div className="tile is-parent">
-              <div className="tile is-child box">
-                <p className="subtitle">Info</p>
+            <div className='tile is-parent'>
+              <div className='tile is-child box'>
+                <p className='subtitle'>Info</p>
                 {this.renderThresholds()}
                 {/* //Expandable View */}
-                <button className="button w-100" onClick={() => this.renderSignersKey()}>
+                <button className='button w-100' onClick={() => this.renderSignersKey()}>
                   View Signers
                 </button>
               </div>
@@ -239,12 +240,12 @@ export class AccountInfo extends React.Component<Props, State> {
           </div>
           {this.state.isSignersOpen ? (
             <div>
-              <div className="tile is-parent">
-                <div className="tile is-child box">
-                  <p className="subtitle">KAU Signers</p>
+              <div className='tile is-parent'>
+                <div className='tile is-child box'>
+                  <p className='subtitle'>KAU Signers</p>
                   {this.renderSigners(this.props.accountKau?.signers)}
                   <br />
-                  <p className="subtitle">KAG Signers</p>
+                  <p className='subtitle'>KAG Signers</p>
                   {this.renderSigners(this.props.accountKag?.signers)}
                 </div>
               </div>
@@ -252,20 +253,20 @@ export class AccountInfo extends React.Component<Props, State> {
           ) : (
             ''
           )}
-          <div className="tile is-parent is-vertical">
+          <div className='tile is-parent is-vertical'>
             {datas.slice(0, this.state.transLimitKauKag).map((record) => {
               const networkType = record._links.self.href.slice(11, 18) === 'testnet' ? 'T' : ''
               currConn = networkType + record._links.self.href.slice(7, 10).toUpperCase()
               const data = `${renderAmount(record.amount)}`
               const dataBalance = `${renderAmount(record.starting_balance)}`
               return (
-                <div className="tile is-ancestor">
-                  <div className="tile is-vertical is-parent">
-                    <div className="tile is-child box">
-                      <p className="subtitle">{startCase(record.type)}</p>
+                <div className='tile is-ancestor' key={record.id}>
+                  <div className='tile is-vertical is-parent'>
+                    <div className='tile is-child box'>
+                      <p className='subtitle'>{startCase(record.type)}</p>
 
                       <HorizontalLabelledField
-                        label="Source Account"
+                        label='Source Account'
                         value={
                           record.from ? (
                             <Link to={`/account/${record.from}`} onClick={this.refreshPage}>
@@ -279,7 +280,7 @@ export class AccountInfo extends React.Component<Props, State> {
                         }
                       />
                       <HorizontalLabelledField
-                        label="Created At"
+                        label='Created At'
                         value={
                           record.created_at.slice(8, 10) +
                           '/' +
@@ -295,12 +296,11 @@ export class AccountInfo extends React.Component<Props, State> {
                         }
                       />
                       <HorizontalLabelledField
-                        label="Transaction Hash"
+                        label='Transaction Hash'
                         value={
                           <Link to={`/transaction/${currConn}/${record.transaction_hash}`}>
                             {record.transaction_hash}
-                          </Link>
-                        }
+                          </Link>}
                       />
                       <HorizontalLabelledField
                         label={
@@ -385,7 +385,7 @@ export class AccountInfo extends React.Component<Props, State> {
             })}
             {this.state.transLimitKauKag < datas.length && (
               <button
-                className="button"
+                className='button'
                 onClick={() => this.moreTxs()}
                 style={{ width: '100%', marginTop: '3px', overflowAnchor: 'none' }}
               >
