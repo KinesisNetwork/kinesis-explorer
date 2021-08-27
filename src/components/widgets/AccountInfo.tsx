@@ -22,7 +22,6 @@ interface Props {
   accountKau: KemRecord
   accountKag: KemRecord
   selectedConnection: Connection
-  conn: string
 }
 interface State {
   operations: CollectionPage<OperationRecord> | any
