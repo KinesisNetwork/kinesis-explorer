@@ -39,10 +39,10 @@ export class SearchBar extends React.Component<OperationProps> {
   handleKeypress = (e) => {
     if (e.key === 'Enter') {
       top.location.href = !this.state.query.replaceAll(' ', '')
-        ? ''
+        ? '#'
         : `/search/${this.state.query?.replaceAll('#', '_').replaceAll(' ', '-')}`
       top.location.href = !this.state.value.replaceAll(' ', '')
-        ? ''
+        ? '#'
         : `/search/${this.state.query?.replaceAll('#', '_').replaceAll(' ', '-')}`
     }
   }
