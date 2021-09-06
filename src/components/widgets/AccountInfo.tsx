@@ -29,6 +29,7 @@ interface State {
   transLimitKauKag: number
   dataKau: any[]
   dataKag: any[]
+  sortType: any
 }
 export class AccountInfo extends React.Component<Props, State> {
   constructor(props: Props) {
@@ -39,6 +40,7 @@ export class AccountInfo extends React.Component<Props, State> {
       transLimitKauKag: 20,
       dataKau: [],
       dataKag: [],
+      sortType: 'desc',
     }
     this.moreTxs = this.moreTxs.bind(this)
   }
@@ -215,7 +217,12 @@ export class AccountInfo extends React.Component<Props, State> {
     // console.log(this.props.accountId, 'accountid...')
   }
   render() {
+    const { sortType } = this.state
     const datas = [...this.state.dataKau, ...this.state.dataKag]
+    const sorted = datas.sort((a, b) => {
+      const isReversed = sortType === 'asc' ? 1 : -1
+      return isReversed * a.created_at.localeCompare(b.created_at)
+    })
     return (
       <div className='tile is-ancestor'>
         <div className='tile is-vertical'>
@@ -253,7 +260,7 @@ export class AccountInfo extends React.Component<Props, State> {
             ''
           )}
           <div className='tile is-parent is-vertical'>
-            {datas.slice(0, this.state.transLimitKauKag).map((record) => {
+            {sorted.slice(0, this.state.transLimitKauKag).map((record) => {
               const networkType = record._links.self.href.slice(11, 18) === 'testnet' ? 'T' : ''
               currConn = networkType + record._links.self.href.slice(7, 10).toUpperCase()
               const data = `${renderAmount(record.amount)}`
@@ -382,7 +389,7 @@ export class AccountInfo extends React.Component<Props, State> {
                 </div>
               )
             })}
-            {this.state.transLimitKauKag < datas.length && (
+            {this.state.transLimitKauKag < sorted.length && (
               <button
                 className='button'
                 onClick={() => this.moreTxs()}
