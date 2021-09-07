@@ -1,9 +1,9 @@
-import { LedgerRecord, TransactionRecord } from 'js-kinesis-sdk'
+import { CollectionPage, LedgerRecord, TransactionRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
 import { RouteComponentProps } from 'react-router'
 import { Subscribe } from 'unstated'
 import { ConnectionContainer, ConnectionContext } from '../../services/connections'
-import { getLedgers, getLedgerStream, getTransactions, getTransactionStream } from '../../services/kinesis'
+import { getLedgers, getLedgerStream, getTransactions, getTransactionStream, getRecordsRecursive } from '../../services/kinesis'
 import { Converter, Ledgers, Statistics, Transactions } from '../widgets'
 
 interface ConnectedDashboardProps extends RouteComponentProps<undefined> {}
@@ -138,12 +138,21 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
   //     // ledgerLimit: prev.ledgerLimit + 10,
   //   }))
   // }
-
+// getRecordsRecursive = async (transactionsPromise, limit) => {
+//   const  records : CollectionPage<TransactionRecord> = await transactionsPromise.order('desc').call()
+//   let recursiveData = await transactionsPromise.limit(limit).order('desc').call()
+// let recursiveDataNext= await recursiveData.next()
+// console.log(recursiveData, 'records..')
+// return recursiveData
+// }
   moreTxs() {
     this.setState((prev: DashboardState) => ({
       ...prev,
       transLimit: prev.transLimit + 10,
     }))
+     getTransactions(this.props.selectedConnection, undefined, this.state.transLimit)
+    
+    
   }
 
   updateTransaction = async (): Promise<void> => {
@@ -209,6 +218,7 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
   }
 
   render() {
+    // const value = getRecordsRecursive(this.state.transactions, this.state.transLimit)
     return (
       <section className='section'>
         <div className='tile is-ancestor'>

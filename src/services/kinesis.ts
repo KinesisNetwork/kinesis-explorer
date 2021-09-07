@@ -67,6 +67,7 @@ export async function getTransactions(
   accountId?: string,
   limit = 10,
   cursor?: string,
+  next?:string
 ): Promise<TransactionRecord[]> {
   const serverKag = getServer(connection.kag.networkPassphrase, connection.kag.horizonURL)
   const serverKau = getServer(connection.kau.networkPassphrase, connection.kau.horizonURL)
@@ -82,13 +83,6 @@ export async function getTransactions(
     transactionsPromise.kag.cursor(cursor)
     transactionsPromise.kau.cursor(cursor)
   }
-  // let records
-  // const recordsKau = await getRecords(transactionsPromise.kau, limit)
-  // console.log(recordsKau, 'recordkau')
-  // const recordsKag = await getRecords(transactionsPromise.kag, limit)
-  // console.log(recordsKag, 'recordkag')
-  // records = [...recordsKau , ...recordsKag]
-  // console.log(records, 'records')
   const recordsKau = new Promise((resolve, reject) => {
     resolve(getRecords(transactionsPromise.kau, limit))
   })
@@ -113,13 +107,7 @@ export async function getTransactions(
   // console.log('output', Kau)
   let records
   const Kag: any = await outputKag.then((result) => result)
-  // const recordsKag = await getRecords(transactionsPromise.kag, limit)
   records = [...Kau, ...Kag]
-  // records.sort(function(a,b){
-  // Turn your strings into dates, and then subtract them
-  // to get a value that is either negative, positive, or zero.
-
-  // });
   records.sort((a, b) =>
     moment(a.created_at).valueOf() < moment(b.created_at).valueOf()
       ? 1
@@ -127,28 +115,15 @@ export async function getTransactions(
       ? -1
       : 0,
   )
-  // records.sort((a, b) =>
-  //   moment(b.created_at).utc().format('hhmmss') > moment(a.created_at).utc().format('hhmmss')
-  //     ? 1
-  //     : moment(a.created_at).utc().format('hhmmss') > moment(b.created_at).utc().format('hhmmss')
-  //     ? -1
-  //     : 0,
-  // )
-  // for (let index = 0; index < records.length; index++) {
-  //   const element = records[index].created_at
-  //   console.log(moment(records[index]?.created_at).utc().format("hh"), 'value', records[index]?.created_at)
-  // }
   return records
-  // console.log('getTransactionsRecords', records)
-  // return records.length > 0
-  //   ? records.sort((recordA, recordB) => {
-  //       return moment(recordA.created_at).valueOf() - moment(recordB.created_at).valueOf()
-  //     })
-  //   : []
-  // return records
 }
 export async function getRecords(transactionsPromise, limit) {
-  const { records }: CollectionPage<TransactionRecord> = await transactionsPromise.limit(limit).order('desc').call()
+  const {records} : CollectionPage<TransactionRecord> = await transactionsPromise.limit(limit).order('desc').call()
+// let recursiveData = await transactionsPromise.limit(limit).order('desc').call()
+// let recursiveDataNext=  await recursiveData.next()
+
+//    console.log(recursiveDataNext, 'transactions.......')
+  //  console.log( await recursiveDataNext.next(), 'next....')
   // console.log('Records', records, limit)
   // return records.length > 0
   //   ? records.sort((recordA, recordB) => {
@@ -156,6 +131,23 @@ export async function getRecords(transactionsPromise, limit) {
   //     })
   //   : []
   return records
+}
+export async function getRecordsRecursive(transactionsPromise, limit) {
+  const  records : CollectionPage<TransactionRecord> = await transactionsPromise.order('desc').call()
+  let recursiveData = await transactionsPromise.limit(limit).order('desc').call()
+let recursiveDataNext= await recursiveData.next()
+
+
+console.log(recursiveData, 'records..')
+  //  console.log(recursiveDataNext, 'next.......')
+  // console.log(recursiveData, 'recursive Data....')
+  // console.log('Records', records, limit)
+  // return records.length > 0
+  //   ? records.sort((recordA, recordB) => {
+  //       return moment(recordA.created_at).valueOf() - moment(recordB.created_at).valueOf()
+  //     })
+  //   : []
+  return recursiveDataNext
 }
 
 export async function getTransactionStream(
