@@ -13,8 +13,8 @@
 // import { HorizontalLabelledField } from '../shared'
 // import OperationValue from '../widgets/OperationValue'
 // let currConn: string
-// interface ConnectedTransactionProps extends RouteComponentProps<{ id: string; connection: string }> { }
-// interface Props extends ConnectedTransactionProps, ConnectionContext { }
+// interface ConnectedTransactionProps extends RouteComponentProps<{ id: string; connection: string }> {}
+// interface Props extends ConnectedTransactionProps, ConnectionContext {}
 
 // interface State {
 //   transaction: TransactionRecord | null
@@ -170,7 +170,6 @@
 //       }
 //     })
 //     this.setState({ dataKagRecursive })
-
 //   }
 //   // async addOperationsToTransactionArray(transactionArray) {
 //   //   console.log(transactionArray, 'transactionArray....')
@@ -182,8 +181,6 @@
 //   //       return fetch(operationUrl)
 //   //         .then((res) => res.json())
 //   //         .then((response) => ({ ...transactionRecord, operations: response }))
-
-
 
 //   //     }),
 //   //   )
@@ -197,10 +194,9 @@
 //         return fetch(operationUrl)
 //           .then((res) => res.json())
 //           .then((response) => ({ ...transactionRecord, operations: response }))
-//       })
+//       }),
 //     )
 //     this.setState({ dataKauDetailsRecursive: dataMixedRecursive })
-
 //   }
 
 //   async addOperationsToKagRecursive(transactionArray) {
@@ -214,7 +210,6 @@
 //     )
 
 //     this.setState({ dataKagDetailsRecursive: dataMixedKagRecursive })
-
 //   }
 //   //   async addEffectsToKauRecursive(transactionArray) {
 //   //     //  console.log(transactionArray, 'transactionArray....')
@@ -225,7 +220,7 @@
 //   //         // console.log(effectsUrl, 'effects..')
 //   //     // console.log(operationUrl, 'url...')
 //   //    return fetch(effectsUrl)
-//   //            .then((res) => res.json())   
+//   //            .then((res) => res.json())
 //   //         .then((response) => ({ ...transactionRecord, effects: response._embedded.records[0] }))
 
 //   //       })
@@ -242,7 +237,6 @@
 //     const query = window.location.pathname.split('/')
 //     console.log(query[3].replaceAll('_', ' '), 'query..')
 //     if (query[1] === 'transactiontype') {
-
 //       return query[3]
 //     }
 //     return query[2]
@@ -283,27 +277,27 @@
 //     })
 //     console.log(sorted, 'Sorted...')
 //     return (
-//       <section className='section'>
-//         <div className='container'>
-//           <div className='tile is-vertical is-parent'>
-//             <article className='tile is-child'>
-//               <p className='title  is-child box' style={{ marginBottom: '1.0rem' }}>
+//       <section className="section">
+//         <div className="container">
+//           <div className="tile is-vertical is-parent">
+//             <article className="tile is-child">
+//               <p className="title  is-child box" style={{ marginBottom: '1.0rem' }}>
 //                 Showing results for <b>{query}</b>
 //               </p>
-//               <table className='table is-bordered is-striped is-fullwidth'>
-//                 <thead className='thead'>
-//                   <tr className='tr'>
-//                     <th className='th'>
+//               <table className="table is-bordered is-striped is-fullwidth">
+//                 <thead className="thead">
+//                   <tr className="tr">
+//                     <th className="th">
 //                       Date & Time (UTC)
 //                       {/* <button className = 'button' onClick={() => this.onSort('asc')} >Sort by Asc</button>
 //                        <button className = 'button' onClick={() => this.onSort('desc')} >Sort by desc</button>   */}
 //                     </th>
-//                     <th className='th'>Hash</th>
-//                     <th className='th'>From</th>
-//                     <th className='th'>To</th>
-//                     <th className='th'>Amount</th>
-//                     <th className='th'>Fee</th>
-//                     <th className='th'>Transaction Type</th>
+//                     <th className="th">Hash</th>
+//                     <th className="th">From</th>
+//                     <th className="th">To</th>
+//                     <th className="th">Amount</th>
+//                     <th className="th">Fee</th>
+//                     <th className="th">Transaction Type</th>
 //                   </tr>
 //                 </thead>
 
@@ -320,7 +314,9 @@
 //                     currConn = networkType + record._links.self.href.slice(7, 10).toUpperCase()
 //                     const feePaid = record.fee_paid || Number(record.fee_charged)
 //                     const operationBalance =
-//                       record.operations?.starting_balance && parseFloat(record.operations?.starting_balance).toFixed(5)
+//                       record.operations?.starting_balance
+// && parseFloat(record.operations?.starting_balance)
+// .toFixed(5)
 //                     const operationAmount =
 //                       record.operations?.amount && parseFloat(record.operations?.amount).toFixed(5)
 //                     const precision = currConn === 'KEM' ? 7 : 5
@@ -333,87 +329,66 @@
 //                     // )
 //                     //  console.log(record, 'rec')
 //                     return (
-//                       <tbody key={record.id} className='tbody'>
-//                         <tr key={record.id} className='tr'>
-//                           <td className='td'>
+//                       <tbody key={record.id} className="tbody">
+//                         <tr key={record.id} className="tr">
+//                           <td className="td">
 //                             {record?.created_at?.slice(8, 10)}/{record?.created_at?.slice(5, 7)}/
 //                             {record?.created_at?.slice(0, 4)}&nbsp;
 //                             {record?.created_at?.slice(11, 14)}
 //                             {record?.created_at?.slice(14, 17)}
 //                             {record?.created_at?.slice(17, 19)}
-
 //                           </td>
-//                           <td className='td'>
+//                           <td className="td">
 //                             <Link to={`/transaction/${currConn}/${record?.transaction_hash}`}>
-//                               {record?.transaction_hash?.slice(0, 4)}.....{record?.transaction_hash?.substr(record?.transaction_hash?.length - 4)}
+//                               {record?.transaction_hash?.slice(0, 4)}.....
+//                               {record?.transaction_hash?.substr(record?.transaction_hash?.length - 4)}
 //                             </Link>
 //                           </td>
-//                           <td className='td'>
+//                           <td className="td">
 //                             <Link to={`/account/${record?.operations?.source_account}`}>
 //                               {record?.operations?.source_account.slice(0, 4)}.....
-//                               {record?.operations?.source_account.substr(record?.operations?.source_account?.length - 4)}
+//                               {record?.operations?.source_account.substr(
+//                                 record?.operations?.source_account?.length - 4,
+//                               )}
 //                             </Link>
 //                           </td>
-//                           <td className='td'>
-
-//                             {
-//                               record.type === 'account_merge' ? (
-
-//                                 <Link to={`/account/${record?.into}`}>
-//                                   {record?.into.slice(0, 4)}.....
-//                                   {record?.into.substr(record?.into?.length - 4)}
-//                                 </Link>
-
-//                               ) : record.type === 'create_account' ? (
-
-//                                 <Link to={`/account/${record?.account}`}>
-//                                   {record?.account.slice(0, 4)}.....
-//                                   {record?.account.substr(record?.account?.length - 4)}
-//                                 </Link>
-
-//                               ) : record.type === 'payment' ? (
-
-//                                 <Link to={`/account/${record?.to}`}>
-//                                   {record?.to.slice(0, 4)}.....
-//                                   {record?.to.substr(record?.to?.length - 4)}
-//                                 </Link>
-//                               ) : record.type === 'inflation' ? (
-
-//                                 ''
-//                               ) : (
-//                                         ''
-//                                       )
-//                             }
+//                           <td className="td">
+//                             {record.type === 'account_merge' ? (
+//                               <Link to={`/account/${record?.into}`}>
+//                                 {record?.into.slice(0, 4)}.....
+//                                 {record?.into.substr(record?.into?.length - 4)}
+//                               </Link>
+//                             ) : record.type === 'create_account' ? (
+//                               <Link to={`/account/${record?.account}`}>
+//                                 {record?.account.slice(0, 4)}.....
+//                                 {record?.account.substr(record?.account?.length - 4)}
+//                               </Link>
+//                             ) : record.type === 'payment' ? (
+//                               <Link to={`/account/${record?.to}`}>
+//                                 {record?.to.slice(0, 4)}.....
+//                                 {record?.to.substr(record?.to?.length - 4)}
+//                               </Link>
+//                             ) : record.type === 'inflation' ? (
+//                               ''
+//                             ) : (
+//                               ''
+//                             )}
 //                           </td>
 //                           <td>
-//                             {
-//                               record.type === 'account_merge' ? (
-
-
-//                                 record.starting_balance
-
-//                               ) : record.type === 'create_account' ? (
-
-//                                 record.starting_balance
-
-//                               ) : record.type === 'payment' ? (
-//                                 record.amount
-
-//                               ) : record.type === 'inflation' ? (
-
-//                                 ''
-//                               ) : (
-//                                         ''
-//                                       )
-//                             }
-
+//                             {record.type === 'account_merge'
+//                               ? record.starting_balance
+//                               : record.type === 'create_account'
+//                               ? record.starting_balance
+//                               : record.type === 'payment'
+//                               ? record.amount
+//                               : record.type === 'inflation'
+//                               ? ''
+//                               : ''}
 //                           </td>
-//                           <td className='td'>
+//                           <td className="td">
 //                             {/* {renderAmount(convertStroopsToKinesis(feePaid), precision)} {currConn} */}
 //                           </td>
-//                           <td className='td'>
-//                             {startCase(record.type)}
-//                           </td>
+//                           <td className="td">{startCase(record.type)}</td>
 //                         </tr>
 //                       </tbody>
 //                     )
@@ -421,7 +396,7 @@
 //                 }
 //               </table>
 //               <button
-//                 className='button'
+//                 className="button"
 //                 onClick={() => this.moreTxs()}
 //                 style={{ width: '100%', marginTop: '3px', overflowAnchor: 'none' }}
 //               >

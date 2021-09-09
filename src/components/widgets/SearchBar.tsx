@@ -30,6 +30,7 @@ export class SearchBar extends React.Component<OperationProps> {
     this.setState({ value: event.currentTarget.value })
     const query = event.target.value
     this.setState({ query: event.target.value, loading: true, message: '' }, () => {
+      // console.log('empty')
     })
 
   }

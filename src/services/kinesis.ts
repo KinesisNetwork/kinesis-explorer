@@ -67,7 +67,7 @@ export async function getTransactions(
   accountId?: string,
   limit = 10,
   cursor?: string,
-  next?:string
+  next?: string,
 ): Promise<TransactionRecord[]> {
   const serverKag = getServer(connection.kag.networkPassphrase, connection.kag.horizonURL)
   const serverKau = getServer(connection.kau.networkPassphrase, connection.kau.horizonURL)
@@ -105,7 +105,7 @@ export async function getTransactions(
   //   })
   // const Kau: any = await outputKau.then((result) => result)
   // // console.log('output', Kau)
-   let records
+  let records
   // const Kag: any = await outputKag.then((result) => result)
   const recordsKau = await getRecords(transactionsPromise.kau, limit)
   const recordsKag = await getRecords(transactionsPromise.kag, limit)
@@ -120,11 +120,11 @@ export async function getTransactions(
   return records
 }
 export async function getRecords(transactionsPromise, limit) {
-  const {records} : CollectionPage<TransactionRecord> = await transactionsPromise.limit(limit).order('desc').call()
-// let recursiveData = await transactionsPromise.limit(limit).order('desc').call()
-// let recursiveDataNext=  await recursiveData.next()
+  const { records }: CollectionPage<TransactionRecord> = await transactionsPromise.limit(limit).order('desc').call()
+  // let recursiveData = await transactionsPromise.limit(limit).order('desc').call()
+  // let recursiveDataNext=  await recursiveData.next()
 
-//    console.log(recursiveDataNext, 'transactions.......')
+  //    console.log(recursiveDataNext, 'transactions.......')
   //  console.log( await recursiveDataNext.next(), 'next....')
   // console.log('Records', records, limit)
   // return records.length > 0
@@ -135,12 +135,11 @@ export async function getRecords(transactionsPromise, limit) {
   return records
 }
 export async function getRecordsRecursive(transactionsPromise, limit) {
-  const  records : CollectionPage<TransactionRecord> = await transactionsPromise.order('desc').call()
-  let recursiveData = await transactionsPromise.limit(limit).order('desc').call()
-let recursiveDataNext= await recursiveData.next()
+  const records: CollectionPage<TransactionRecord> = await transactionsPromise.order('desc').call()
+  const recursiveData = await transactionsPromise.limit(limit).order('desc').call()
+  const recursiveDataNext = await recursiveData.next()
 
-
-console.log(recursiveData, 'records..')
+  // console.log(recursiveData, 'records..')
   //  console.log(recursiveDataNext, 'next.......')
   // console.log(recursiveData, 'recursive Data....')
   // console.log('Records', records, limit)
