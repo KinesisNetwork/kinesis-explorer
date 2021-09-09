@@ -83,31 +83,33 @@ export async function getTransactions(
     transactionsPromise.kag.cursor(cursor)
     transactionsPromise.kau.cursor(cursor)
   }
-  const recordsKau = new Promise((resolve, reject) => {
-    resolve(getRecords(transactionsPromise.kau, limit))
-  })
-  const recordsKag = new Promise((resolve, reject) => {
-    resolve(getRecords(transactionsPromise.kag, limit))
-  })
-  const outputKau = Promise.all([recordsKau])
-    .then((res) => {
-      return res[0]
-    })
-    .catch((err) => {
-      return []
-    })
-  const outputKag = Promise.all([recordsKag])
-    .then((res) => {
-      return res[0]
-    })
-    .catch((err) => {
-      return []
-    })
-  const Kau: any = await outputKau.then((result) => result)
-  // console.log('output', Kau)
-  let records
-  const Kag: any = await outputKag.then((result) => result)
-  records = [...Kau, ...Kag]
+  // const recordsKau = new Promise((resolve, reject) => {
+  //   resolve(getRecords(transactionsPromise.kau, limit))
+  // })
+  // const recordsKag = new Promise((resolve, reject) => {
+  //   resolve(getRecords(transactionsPromise.kag, limit))
+  // })
+  // const outputKau = Promise.all([recordsKau])
+  //   .then((res) => {
+  //     return res[0]
+  //   })
+  //   .catch((err) => {
+  //     return []
+  //   })
+  // const outputKag = Promise.all([recordsKag])
+  //   .then((res) => {
+  //     return res[0]
+  //   })
+  //   .catch((err) => {
+  //     return []
+  //   })
+  // const Kau: any = await outputKau.then((result) => result)
+  // // console.log('output', Kau)
+   let records
+  // const Kag: any = await outputKag.then((result) => result)
+  const recordsKau = await getRecords(transactionsPromise.kau, limit)
+  const recordsKag = await getRecords(transactionsPromise.kag, limit)
+  records = [...recordsKau, ...recordsKag]
   records.sort((a, b) =>
     moment(a.created_at).valueOf() < moment(b.created_at).valueOf()
       ? 1
