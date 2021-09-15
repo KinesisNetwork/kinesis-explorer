@@ -40,7 +40,7 @@
     "moment": "2.22.1",
     "react": "^17.0.2",
     "react-dom": "16.3.3",
-    "react-router": "^4.2.0",
+    "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
     "react-tooltip": "^4.2.21",
     "unstated": "2.1.1",
