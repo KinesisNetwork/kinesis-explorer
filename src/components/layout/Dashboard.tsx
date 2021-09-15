@@ -1,9 +1,15 @@
-import { LedgerRecord, TransactionRecord } from 'js-kinesis-sdk'
+import { CollectionPage, LedgerRecord, TransactionRecord } from 'js-kinesis-sdk'
 import * as React from 'react'
 import { RouteComponentProps } from 'react-router'
 import { Subscribe } from 'unstated'
 import { ConnectionContainer, ConnectionContext } from '../../services/connections'
-import { getLedgers, getLedgerStream, getTransactions, getTransactionStream } from '../../services/kinesis'
+import {
+  getLedgers,
+  getLedgerStream,
+  getRecordsRecursive,
+  getTransactions,
+  getTransactionStream,
+} from '../../services/kinesis'
 import { Converter, Ledgers, Statistics, Transactions } from '../widgets'
 
 interface ConnectedDashboardProps extends RouteComponentProps<undefined> {}
@@ -42,16 +48,16 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
   }
 
   componentDidUpdate(prevProps: DashboardProps, prevState: DashboardState) {
-  //  console.log('prevProps.selectedConnection.kau', prevProps.selectedConnection.kau)
-  //  console.log('this.props.selectedConnection.kau', this.props.selectedConnection.kau)
+    //  console.log('prevProps.selectedConnection.kau', prevProps.selectedConnection.kau)
+    //  console.log('this.props.selectedConnection.kau', this.props.selectedConnection.kau)
 
-   if (prevProps.selectedConnection.kau !== this.props.selectedConnection.kau) {
+    if (prevProps.selectedConnection.kau !== this.props.selectedConnection.kau) {
       this.handleConnectionChange()
     }
-   if (prevProps.selectedConnection.kag !== this.props.selectedConnection.kag) {
+    if (prevProps.selectedConnection.kag !== this.props.selectedConnection.kag) {
       this.handleConnectionChange()
     }
-   if (prevState.transLimit !== this.state.transLimit || prevState.ledgerLimit !== this.state.ledgerLimit) {
+    if (prevState.transLimit !== this.state.transLimit || prevState.ledgerLimit !== this.state.ledgerLimit) {
       this.closeTransactionStreamKag()
       this.closeTransactionStreamKau()
       this.updateTransaction()
@@ -64,12 +70,12 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
 
   fetchData = async (): Promise<void> => {
     this.setState({ isLoading: true })
-    const [ transactions] = await Promise.all([
+    const [transactions] = await Promise.all([
       // getLedgers(this.props.selectedConnection, this.state.ledgerLimit),
       getTransactions(this.props.selectedConnection, undefined, this.state.transLimit),
     ])
 
-    this.setState({  transactions, isLoading: false })
+    this.setState({ transactions, isLoading: false })
 
     // const ledgerCursor: string = (ledgers[0] || {}).paging_token
     const transactionCursor: string = (transactions[0] || {}).paging_token
@@ -138,12 +144,19 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
   //     // ledgerLimit: prev.ledgerLimit + 10,
   //   }))
   // }
-
+  // getRecordsRecursive = async (transactionsPromise, limit) => {
+  //   const  records : CollectionPage<TransactionRecord> = await transactionsPromise.order('desc').call()
+  //   let recursiveData = await transactionsPromise.limit(limit).order('desc').call()
+  // let recursiveDataNext= await recursiveData.next()
+  // console.log(recursiveData, 'records..')
+  // return recursiveData
+  // }
   moreTxs() {
     this.setState((prev: DashboardState) => ({
       ...prev,
       transLimit: prev.transLimit + 10,
     }))
+    //  getTransactions(this.props.selectedConnection, undefined, this.state.transLimit)
   }
 
   updateTransaction = async (): Promise<void> => {
@@ -193,28 +206,37 @@ class Dashboard extends React.Component<DashboardProps, DashboardState> {
     //   return 'TKEM'
     // } else {
     //   return 'KAU'
-    if (this.props.selectedConnection.kau.name.toLowerCase().includes('mainnet')
-      && (this.props.selectedConnection.kau.currency.toLowerCase().includes('kau'))) {
+    if (
+      this.props.selectedConnection.kau.name.toLowerCase().includes('mainnet') &&
+      this.props.selectedConnection.kau.currency.toLowerCase().includes('kau')
+    ) {
       return 'KAU'
-    } else if (this.props.selectedConnection.kag.name.toLowerCase().includes('mainnet')
-      && (this.props.selectedConnection.kag.currency.toLowerCase().includes('kag'))) {
+    } else if (
+      this.props.selectedConnection.kag.name.toLowerCase().includes('mainnet') &&
+      this.props.selectedConnection.kag.currency.toLowerCase().includes('kag')
+    ) {
       return 'KAG'
-    } else if (this.props.selectedConnection.kau.name.toLowerCase().includes('testnet')
-      && (this.props.selectedConnection.kau.currency.toLowerCase().includes('kau'))) {
+    } else if (
+      this.props.selectedConnection.kau.name.toLowerCase().includes('testnet') &&
+      this.props.selectedConnection.kau.currency.toLowerCase().includes('kau')
+    ) {
       return 'TKAU'
-    } else if (this.props.selectedConnection.kag.name.toLowerCase().includes('testnet')
-      && (this.props.selectedConnection.kag.currency.toLowerCase().includes('kag'))) {
+    } else if (
+      this.props.selectedConnection.kag.name.toLowerCase().includes('testnet') &&
+      this.props.selectedConnection.kag.currency.toLowerCase().includes('kag')
+    ) {
       return 'TKAG'
     }
   }
 
   render() {
+    // const value = getRecordsRecursive(this.state.transactions, this.state.transLimit)
     return (
       <section className='section'>
         <div className='tile is-ancestor'>
           {/* <div className='tile is-vertical is-4 is-parent'> */}
           <div className='tile is-vertical is-parent flex-n'>
-          {this.props.selectedConnection.kag.stage! === 'testnet' && <Statistics/>}
+            {this.props.selectedConnection.kag.stage! === 'testnet' && <Statistics />}
             {/* <Converter /> */}
           </div>
           <div className='tile is-vertical is-parent'>

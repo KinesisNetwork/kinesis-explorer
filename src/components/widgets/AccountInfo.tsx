@@ -2,13 +2,14 @@ import { AccountRecord, CollectionPage, OperationRecord, TransactionRecord } fro
 import _, { startCase } from 'lodash'
 import { isEmpty } from 'lodash'
 import * as React from 'react'
+import { Link } from 'react-router-dom'
 import { getRecords, getTransactions, getTransactionStream } from '../../services/kinesis'
 import { Connection } from '../../types'
 import { renderAmount } from '../../utils'
 import DownArrow from '../css/images/down-arrow.svg'
 import { HorizontalLabelledField, HorizontalLabelledFieldBalance, HorizontalLabelledFieldInfo } from '../shared'
 import { OperationList } from './OperationList'
-
+let currConn: string
 interface KemRecord extends AccountRecord {
   signers: Array<{
     public_key: string
@@ -16,207 +17,40 @@ interface KemRecord extends AccountRecord {
     key?: string,
   }>
 }
-
 interface Props {
   accountId: string
   accountKau: KemRecord
   accountKag: KemRecord
   selectedConnection: Connection
 }
-
 interface State {
   operations: CollectionPage<OperationRecord> | any
-  lastPagingToken: string | undefined
-  showLoadMore: boolean
   isSignersOpen: boolean
+  transLimitKauKag: number
+  dataKau: any[]
+  dataKag: any[]
+  sortType: any
 }
-
 export class AccountInfo extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props)
-
     this.state = {
       operations: {},
-      lastPagingToken: undefined,
-      showLoadMore: true,
       isSignersOpen: false,
+      transLimitKauKag: 20,
+      dataKau: [],
+      dataKag: [],
+      sortType: 'desc',
     }
-    // console.log('seectedConnection', this.props.accountKag, this.props.accountKau)
-    this.onClickLoadMore = this.onClickLoadMore.bind(this)
+    this.moreTxs = this.moreTxs.bind(this)
   }
-
-  loadOperations = async (
-    cursor?: string,
-    limit: number = 10,
-    account?: any,
-    lastPagingToken?: any,
-    showLoadMore?: any,
-    operations?: any,
-    keys?: any,
-    network?: string,
-  ) => {
-    operations = await account.operations({ limit, cursor, order: 'desc' })
-
-    lastPagingToken = operations.records.length
-      ? operations.records[operations.records.length - 1].paging_token
-      : undefined
-
-    showLoadMore = operations.records.length ? operations.records.length === limit : !cursor
-    // const showLoadMore = transactions.length ? transactions.length === limit : !cursor
-    const originalRecordSet = this.state[operations] ? this.state[operations].records : []
-    // Simple de-duping
-
-    operations.records = originalRecordSet.concat(
-      ...operations.records.filter((v) => {
-        return originalRecordSet.findIndex((ov) => ov.id === v.id) === -1
-      }),
-    )
-
-    return [operations, lastPagingToken, showLoadMore, network]
-    // this.setState({
-    //  [this.state[keys.operations]]:operations,
-    //  [this.state[keys.lastPagingToken]]:lastPagingToken,
-    //  [this.state[keys.showLoadMore]]:showLoadMore,
-    // })
+  // componentDidUpdate() {
+  //   this.fetchSearch()
+  // }
+  async componentDidMount() {
+    await this.fetchSearchAccountOperations()
+    await this.fetchSearchAccountOperations()
   }
-
-  handleOperations = async (account?: any, network?: string, cursor?: string, limit: number = 10) => {
-    if (!account) {
-      return
-    }
-    // let [operations, lastPagingToken, showLoadMore] = await this.loadOperations(
-    const result = await this.loadOperations(
-      cursor,
-      limit,
-      account,
-      this.state.lastPagingToken,
-      this.state.showLoadMore,
-      this.state.operations,
-      network,
-    )
-    // console.log(result, 'result')
-    const [lastPagingToken, showLoadMore] = result
-    let [operations] = result
-
-    let operation = this.state.operations
-    if (operations && operations.records && operations.records.length > 0) {
-      if (this.state.operations && Object.keys(this.state.operations) && Object.keys(this.state.operations).length) {
-        operations = await this.getAccountMergedAmount(operations)
-        operation['records'] = [...operations.records, ...operation['records']]
-      } else {
-        operations = await this.getAccountMergedAmount(operations)
-        operation = operations
-      }
-    }
-    this.setState({
-      operations: operation,
-      lastPagingToken,
-      showLoadMore,
-    })
-  }
-
-  getAccountMergedAmount = async (operations) => {
-    for (const operationsData of operations?.records) {
-      const operation = operationsData
-      if (operation?.type === 'account_merge') {
-        const AmountMergeAddressNetwork = operation?._links.effects?.href
-        const response = await fetch(`${AmountMergeAddressNetwork}?order=desc`, {
-          headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-          },
-        })
-        const url = await response.json()
-        const getAccountMergeAmount = url?._embedded?.records[2]?.amount
-        operation['amount'] = getAccountMergeAmount
-      }
-    }
-    return operations
-  }
-
-  loadMergedTransactions = async (cursor: string = 'now', limit: number = 10) => {
-    const transactions = await getTransactions(this.props.selectedConnection, this.props.accountId, limit, cursor)
-    const lastPagingToken = transactions.length ? transactions[transactions.length - 1].paging_token : undefined
-    const showLoadMore = transactions.length ? transactions.length === limit : !cursor
-    const originalRecordSet = this.state.operations ? this.state.operations['records'] : []
-    const originalRecord = this.state.operations ? this.state.operations['records'] : []
-
-    // Simple de-duping
-    const records = await Promise.all(
-      transactions.map((transaction) =>
-        transaction.operations({
-          limit: transaction.operation_count,
-          cursor: undefined,
-          order: 'desc',
-        }),
-      ),
-    )
-    // console.log(records, 'records.......')
-    const operations = {
-      records: records.map((entry) => entry.records).reduce((total, amount) => total.concat(amount), []),
-      next: () => Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
-      prev: () => Promise.resolve({ records: [], next: () => Promise.resolve(), prev: () => Promise.resolve() } as any),
-    }
-    this.setState({ operations })
-    // Simple de-duping
-    operations.records = originalRecordSet.concat(
-      ...operations.records.filter((v) => {
-        return originalRecordSet.findIndex((ov) => ov.id === v.id) === -1
-      }),
-    )
-    this.setState({
-      operations,
-      lastPagingToken,
-      showLoadMore,
-    })
-  }
-
-  componentDidUpdate(prevProps: Props) {
-    // if (prevProps.accountKag?.account_id !== this.props.accountKag?.account_id) {
-    //   this.handleOperations(this.props.accountKag)
-    // } else if (prevProps.accountKau?.account_id !== this.props.accountKau?.account_id) {
-    //   this.handleOperations(this.props.accountKau)
-    // }
-  }
-
-  componentDidMount() {
-    this.setState({
-      lastPagingToken: undefined,
-    })
-
-    if (this.props.accountKag?.balances[0]?.balance === '0.0') {
-      this.loadMergedTransactions()
-    } else {
-      // this.loadOperations()
-      this.handleOperations(this.props.accountKag)
-    }
-    if (this.props.accountKau?.balances[0]?.balance === '0.0') {
-      this.loadMergedTransactions()
-    } else {
-      // this.loadOperations()
-      this.handleOperations(this.props.accountKau)
-    }
-    if (this.props.accountKag?.account_id !== this.props.accountKag?.account_id) {
-      this.handleOperations(this.props.accountKag)
-    } else if (this.props.accountKau?.account_id !== this.props.accountKau?.account_id) {
-      this.handleOperations(this.props.accountKau)
-    }
-  }
-
-  onClickLoadMore() {
-    // 200 is the limit as defined on the horizon server
-    if (this.props.accountKag?.balances[0].balance === '0.0') {
-      this.loadMergedTransactions(this.state.lastPagingToken, 10)
-    } else {
-      this.handleOperations(this.props.accountKag?.account_id !== this.props.accountKag?.account_id)
-    }
-    if (this.props.accountKau?.balances[0].balance === '0.0') {
-      this.loadMergedTransactions(this.state.lastPagingToken, 10)
-    } else {
-      this.handleOperations(this.props.accountKau.account_id !== this.props.accountKau?.account_id)
-    }
-  }
-
   renderBalances = () => {
     const currencyArray = this.props.selectedConnection?.currency
     let balances = []
@@ -241,7 +75,6 @@ export class AccountInfo extends React.Component<Props, State> {
       return <React.Fragment>{balances}</React.Fragment>
     }
   }
-
   getBalances = (balances, currency, precision) => {
     if (!balances || !balances.length) {
       return []
@@ -256,16 +89,13 @@ export class AccountInfo extends React.Component<Props, State> {
       .map((balance) => ({ ...balance, balance: renderAmount(balance?.balance, precision) }))
     return balances
   }
-
   getThresholdData = (threshold, key) => {
     const thresholdData = {}
-
     for (const thresholds of Object.keys(threshold)) {
       thresholdData[key + '_' + thresholds] = threshold[thresholds]
     }
     return thresholdData
   }
-
   getAccountThresholds = () => {
     const thresholdKag = this.props.accountKag?.thresholds
     const thresholdKau = this.props.accountKau?.thresholds
@@ -287,7 +117,6 @@ export class AccountInfo extends React.Component<Props, State> {
       }
     }
   }
-
   renderThresholds = () => {
     const threshold = this.getAccountThresholds()
     const thresholds = Object.entries(threshold).map(([key, value]) => (
@@ -295,7 +124,6 @@ export class AccountInfo extends React.Component<Props, State> {
     ))
     return <React.Fragment>{thresholds}</React.Fragment>
   }
-
   renderSigners = (account) => {
     const signers = account?.map((signer, i) => {
       return (
@@ -310,7 +138,6 @@ export class AccountInfo extends React.Component<Props, State> {
     })
     return <React.Fragment>{signers}</React.Fragment>
   }
-
   renderSignersKey = () => {
     this.setState({ isSignersOpen: !this.state.isSignersOpen })
   }
@@ -337,27 +164,65 @@ export class AccountInfo extends React.Component<Props, State> {
       return
     }
   }
-  // connectionSelector(): string {
-  //   if ((Number(localStorage.getItem('selectedConnection')) === 1)) {
-  //   if ( this.props.accountKag ===undefined)
-  //     {
-  //       console.log("kau")
-  //       return 'TKAU'
-  //     }
-  //     if ( this.props.accountKau ===undefined)
-  //     {
-  //       console.log("kag")
-  //       return 'TKAG'
-  //     }
-  //   }
 
-  // }
+  fetchSearchAccountOperations = async () => {
+    const valKau = this.props.selectedConnection.kau.horizonURL
+    const accountKauId = this.props.accountKau?.account_id
+    const accountKagId = this.props.accountKag?.account_id
+    const searchKauOperations = `${valKau}/accounts/${accountKauId}/operations?limit=200&order=desc `
+    const valKag = this.props.selectedConnection.kag.horizonURL
+    const searchKagOperations = `${valKag}/accounts/${accountKagId}/operations?limit=200&order=desc `
+    let dataKau = [...this.state.dataKau]
+    let dataKag = [...this.state.dataKag]
+    await fetch(searchKauOperations)
+      .then((response) => {
+        return response.json()
+      })
+
+      .then((response) => {
+        const data = response._embedded.records
+        dataKau = data
+      })
+
+      .catch((error) => {
+        if (error) {
+          // console.log('error')
+        }
+      })
+    await fetch(searchKagOperations)
+      .then((response) => {
+        return response.json()
+      })
+      .then((response) => {
+        const data = response._embedded.records
+
+        dataKag = data
+      })
+      .catch((error) => {
+        if (error) {
+          // console.log('error')
+        }
+      })
+    this.setState({ dataKau, dataKag })
+  }
+  moreTxs() {
+    this.setState((old) => {
+      return { transLimitKauKag: old.transLimitKauKag + 20 }
+    })
+  }
+
+  refreshPage() {
+    const refresh = <Link to={`/account/${this.props.accountId}`}/>
+    return refresh
+    // console.log(this.props.accountId, 'accountid...')
+  }
   render() {
-    const { accountKag } = this.props
-    const { showLoadMore, operations } = this.state
-    const KagValue = this.props.accountKag?._links?.data?.href
-    const KauValue = this.props.accountKau?._links?.data?.href.slice(8, 11)
-    //  console.log(KagValue, 'KAG...'  )
+    const { sortType } = this.state
+    const datas = [...this.state.dataKau, ...this.state.dataKag]
+    const sorted = datas.sort((a, b) => {
+      const isReversed = sortType === 'asc' ? 1 : -1
+      return isReversed * a.created_at.localeCompare(b.created_at)
+    })
     return (
       <div className='tile is-ancestor'>
         <div className='tile is-vertical'>
@@ -394,22 +259,143 @@ export class AccountInfo extends React.Component<Props, State> {
           ) : (
             ''
           )}
-          {/* <div className="tile is-parent">
-            <div className="tile is-child box">
-              <p className="subtitle">Signers</p>
-              {this.renderSigners()}
-            </div>
-          </div> */}
           <div className='tile is-parent is-vertical'>
-            <OperationList
-              operations={operations}
-              conn={this.connectionSelector()}
-              // conn={(this.props.accountKau?._links?.data?.href.slice(8,11)) ? "TKAU" : "TKAG"  }
-              selectedConnection={this.props.selectedConnection}
-            />
-            {showLoadMore && (
-              <button className='button' onClick={this.onClickLoadMore}>
-                Load more
+            {sorted.slice(0, this.state.transLimitKauKag).map((record) => {
+              const networkType = record._links.self.href.slice(11, 18) === 'testnet' ? 'T' : ''
+              currConn = networkType + record._links.self.href.slice(7, 10).toUpperCase()
+              const data = `${renderAmount(record.amount)}`
+              const dataBalance = `${renderAmount(record.starting_balance)}`
+              return (
+                <div className='tile is-ancestor' key={record.id}>
+                  <div className='tile is-vertical is-parent'>
+                    <div className='tile is-child box'>
+                      <p className='subtitle'>{startCase(record.type)}</p>
+
+                      <HorizontalLabelledField
+                        label='Source Account'
+                        value={
+                          record.from ? (
+                            <Link to={`/account/${record.from}`} onClick={this.refreshPage}>
+                              {record.from}
+                            </Link>
+                          ) : (
+                            <Link to={`/account/${record.source_account}`} onClick={this.refreshPage}>
+                              {record.source_account}
+                            </Link>
+                          )
+                        }
+                      />
+                      <HorizontalLabelledField
+                        label='Created At'
+                        value={
+                          record.created_at.slice(8, 10) +
+                          '/' +
+                          record.created_at.slice(5, 7) +
+                          '/' +
+                          record.created_at.slice(0, 4) +
+                          ' ' +
+                          record.created_at.slice(11, 14) +
+                          record.created_at.slice(14, 17) +
+                          record.created_at.slice(17, 19) +
+                          ' ' +
+                          'UTC'
+                        }
+                      />
+                      <HorizontalLabelledField
+                        label='Transaction Hash'
+                        value={
+                          <Link to={`/transaction/${currConn}/${record.transaction_hash}`}>
+                            {record.transaction_hash}
+                          </Link>}
+                      />
+                      <HorizontalLabelledField
+                        label={
+                          record.type === 'payment'
+                            ? 'Asset Type'
+                            : record.type === 'account_merge'
+                            ? 'Account'
+                            : record.type === 'create_account'
+                            ? 'Amount'
+                            : record.signer_key
+                            ? 'Signer Key'
+                            : ''
+                        }
+                        value={
+                          record.type === 'payment' ? (
+                            record.asset_type
+                          ) : record.type === 'account_merge' ? (
+                            <Link to={`/account/${record.source_account}`} onClick={this.refreshPage}>
+                              {record.source_account}{' '}
+                            </Link>
+                          ) : record.type === 'create_account' ? (
+                            dataBalance + ' ' + currConn
+                          ) : record.signer_key ? (
+                            record.signer_key
+                          ) : (
+                            ''
+                          )
+                        }
+                      />
+                      <HorizontalLabelledField
+                        label={
+                          record.type === 'payment'
+                            ? 'From'
+                            : record.type === 'account_merge'
+                            ? 'Into'
+                            : record.type === 'create_account'
+                            ? 'Funder'
+                            : ''
+                        }
+                        value={
+                          record.from ? (
+                            <Link to={`/account/${record.from}`} onClick={this.refreshPage}>
+                              {record.from}
+                            </Link>
+                          ) : record.into ? (
+                            <Link to={`/account/${record.into}`} onClick={this.refreshPage}>
+                              {record.into}
+                            </Link>
+                          ) : record.type === 'create_account' ? (
+                            <Link to={`/account/${record.source_account}`} onClick={this.refreshPage}>
+                              {record.source_account}
+                            </Link>
+                          ) : (
+                            ''
+                          )
+                        }
+                      />
+                      <HorizontalLabelledField
+                        label={record.type === 'payment' ? 'To' : record.type === 'create_account' ? 'To' : ''}
+                        value={
+                          record.to ? (
+                            <Link to={`/account/${record.to}`} onClick={this.refreshPage}>
+                              {record.to}
+                            </Link>
+                          ) : record.type === 'create_account' ? (
+                            <Link to={`/account/${record.account}`} onClick={this.refreshPage}>
+                              {record.account}
+                            </Link>
+                          ) : (
+                            ''
+                          )
+                        }
+                      />
+                      <HorizontalLabelledField
+                        label={record.type === 'payment' ? 'Amount' : ''}
+                        value={record.amount ? data + ' ' + currConn : ''}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+            {this.state.transLimitKauKag < sorted.length && (
+              <button
+                className='button'
+                onClick={() => this.moreTxs()}
+                style={{ width: '100%', marginTop: '3px', overflowAnchor: 'none' }}
+              >
+                Load More...
               </button>
             )}
           </div>
