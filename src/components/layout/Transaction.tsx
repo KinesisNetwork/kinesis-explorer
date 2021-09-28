@@ -12,8 +12,8 @@ import { TransactionInfo } from '../widgets/TransactionInfo'
 
 // import { TransactionMemo } from '../widgets/TransactionMemo'
 
-interface ConnectedTransactionProps extends RouteComponentProps<{ id: string; connection: string }> { }
-interface Props extends ConnectedTransactionProps, ConnectionContext { }
+interface ConnectedTransactionProps extends RouteComponentProps<{ id: string; connection: string }> {}
+interface Props extends ConnectedTransactionProps, ConnectionContext {}
 
 interface State {
   transaction: TransactionRecord | null
@@ -52,50 +52,18 @@ class TransactionPage extends React.Component<Props, State> {
     }
   }
   loadTransaction = async () => {
-    // try {
-    const elementMainnet = this.props.connections[0]
-    const elementTestnet = this.props.connections[1]
-    //   try {
-    //     const value = await getTransaction(element, this.props.match.params.id)
-    //     this.setState({ transaction: value, selectedConnectionName: element })
-    //   } catch (err) {
-    //     // tslint:disable-next-line:no-console
-    //     console.error(err)
-    //   }
-    // } catch (e) {
-    //   this.setState({ invalidTransaction: true })
-    // }
-    // console.log(records, 'records')
-    const recordsKau = new Promise((resolve, reject) => {
-      resolve(getTransaction(elementMainnet, this.props.match.params.id))
-    })
-    const recordsKag = new Promise((resolve, reject) => {
-      resolve(getTransaction(elementTestnet, this.props.match.params.id))
-    })
-    const outputKau = Promise.all([recordsKau])
-      .then((res) => {
-        return res[0]
-      })
-      .catch((err) => {
-        return []
-      })
-    const outputKag = Promise.all([recordsKag])
-      .then((res) => {
-        return res[0]
-      })
-      .catch((err) => {
-        return []
-      })
-    const Kau: any = await outputKau.then((result) => result)
-    let records
-    const Kag: any = await outputKag.then((result) => result)
-    records = [Kau, Kag]
-    //  console.log(records, 'rec...')
-    const data = elementMainnet || elementTestnet
-    // this.setState({transaction: records[1], selectedConnectionName: data })
-    this.setState({ transaction: records[0] ? records[0] : records[1], selectedConnectionName: data })
-    return records
-
+    try {
+      const element = this.props.selectedConnection
+      try {
+        const value = await getTransaction(element, this.props.match.params.id)
+        this.setState({ transaction: value, selectedConnectionName: element })
+      } catch (err) {
+        // tslint:disable-next-line:no-console
+        console.error(err)
+      }
+    } catch (e) {
+      this.setState({ invalidTransaction: true })
+    }
   }
 
   componentDidMount() {
@@ -174,19 +142,19 @@ class TransactionPage extends React.Component<Props, State> {
                 <ReactTooltip backgroundColor={'#017DE8'} />{' '}
               </button>
             )} */}
-          <h2 className='subtitle'>
+            <h2 className='subtitle'>
             {this.props.match.params.id}
           </h2>
 
           {!this.state.transaction ? (
             <div />
           ) : (
-              <TransactionInfo
-                transaction={this.state.transaction}
-                conn={this.props.match.params.connection}
-                selectedConnection={this.props.selectedConnection}
-              />
-            )}
+            <TransactionInfo
+              transaction={this.state.transaction}
+              conn={this.props.match.params.connection}
+              selectedConnection={this.props.selectedConnection}
+            />
+          )}
           {/* <section className='section'>
         <div className='container'>
         {!this.state.transaction?.memo ? (
