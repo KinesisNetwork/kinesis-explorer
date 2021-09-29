@@ -12,8 +12,8 @@ import { TransactionInfo } from '../widgets/TransactionInfo'
 
 // import { TransactionMemo } from '../widgets/TransactionMemo'
 
-interface ConnectedTransactionProps extends RouteComponentProps<{ id: string; connection: string }> { }
-interface Props extends ConnectedTransactionProps, ConnectionContext { }
+interface ConnectedTransactionProps extends RouteComponentProps<{ id: string; connection: string }> {}
+interface Props extends ConnectedTransactionProps, ConnectionContext {}
 
 interface State {
   transaction: TransactionRecord | null
@@ -94,8 +94,36 @@ class TransactionPage extends React.Component<Props, State> {
     const data = elementMainnet || elementTestnet
     // this.setState({transaction: records[1], selectedConnectionName: data })
     this.setState({ transaction: records[0] ? records[0] : records[1], selectedConnectionName: data })
-    return records
+    if (records[1]) {
+      localStorage.setItem('selectedConnection', '1')
 
+      if (window.localStorage) {
+        if (!localStorage.getItem('reload')) {
+          localStorage['reload'] = true
+          window.location.reload()
+          // console.log('true....')
+        } else {
+          localStorage.removeItem('reload')
+          // console.log('false....')
+        }
+      }
+    } else if (records[0]) {
+      localStorage.setItem('selectedConnection', '0')
+      // console.log('mainnet.....')
+
+      if (!localStorage.getItem('reload')) {
+        localStorage['reload'] = true
+        window.location.reload()
+        // console.log('true....')
+      } else {
+        // If there exists a 'reload' item
+        // then clear the 'reload' item in
+        // local storage
+        // console.log('false....')
+        localStorage.removeItem('reload')
+      }
+    }
+    return records
   }
 
   componentDidMount() {
@@ -127,7 +155,11 @@ class TransactionPage extends React.Component<Props, State> {
   //   document.body.removeChild(el)
   //   this.setState({ copySuccess: true })
   // }
-
+  // refreshPage() {
+  //   const refresh = window.location.reload()
+  //   return refresh
+  //   // console.log(this.props.accountId, 'accountid...')
+  // }
   render() {
     const query = this.createQuery()
     const curr = localStorage.getItem('selectedConnection')
@@ -174,19 +206,17 @@ class TransactionPage extends React.Component<Props, State> {
                 <ReactTooltip backgroundColor={'#017DE8'} />{' '}
               </button>
             )} */}
-          <h2 className='subtitle'>
-            {this.props.match.params.id}
-          </h2>
+          <h2 className='subtitle'>{this.props.match.params.id}</h2>
 
           {!this.state.transaction ? (
             <div />
           ) : (
-              <TransactionInfo
-                transaction={this.state.transaction}
-                conn={this.props.match.params.connection}
-                selectedConnection={this.props.selectedConnection}
-              />
-            )}
+            <TransactionInfo
+              transaction={this.state.transaction}
+              conn={this.props.match.params.connection}
+              selectedConnection={this.props.selectedConnection}
+            />
+          )}
           {/* <section className='section'>
         <div className='container'>
         {!this.state.transaction?.memo ? (
