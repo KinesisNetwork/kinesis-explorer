@@ -52,18 +52,78 @@ class TransactionPage extends React.Component<Props, State> {
     }
   }
   loadTransaction = async () => {
-    try {
-      const element = this.props.selectedConnection
-      try {
-        const value = await getTransaction(element, this.props.match.params.id)
-        this.setState({ transaction: value, selectedConnectionName: element })
-      } catch (err) {
-        // tslint:disable-next-line:no-console
-        console.error(err)
+    // try {
+    const elementMainnet = this.props.connections[0]
+    const elementTestnet = this.props.connections[1]
+    //   try {
+    //     const value = await getTransaction(element, this.props.match.params.id)
+    //     this.setState({ transaction: value, selectedConnectionName: element })
+    //   } catch (err) {
+    //     // tslint:disable-next-line:no-console
+    //     console.error(err)
+    //   }
+    // } catch (e) {
+    //   this.setState({ invalidTransaction: true })
+    // }
+    // console.log(records, 'records')
+    const recordsKau = new Promise((resolve, reject) => {
+      resolve(getTransaction(elementMainnet, this.props.match.params.id))
+    })
+    const recordsKag = new Promise((resolve, reject) => {
+      resolve(getTransaction(elementTestnet, this.props.match.params.id))
+    })
+    const outputKau = Promise.all([recordsKau])
+      .then((res) => {
+        return res[0]
+      })
+      .catch((err) => {
+        return []
+      })
+    const outputKag = Promise.all([recordsKag])
+      .then((res) => {
+        return res[0]
+      })
+      .catch((err) => {
+        return []
+      })
+    const Kau: any = await outputKau.then((result) => result)
+    let records
+    const Kag: any = await outputKag.then((result) => result)
+    records = [Kau, Kag]
+    //  console.log(records, 'rec...')
+    const data = elementMainnet || elementTestnet
+    // this.setState({transaction: records[1], selectedConnectionName: data })
+    this.setState({ transaction: records[0] ? records[0] : records[1], selectedConnectionName: data })
+    if (records[1]) {
+      localStorage.setItem('selectedConnection', '1')
+
+      if (window.localStorage) {
+        if (!localStorage.getItem('reload')) {
+          localStorage['reload'] = true
+          window.location.reload()
+          // console.log('true....')
+        } else {
+          localStorage.removeItem('reload')
+          // console.log('false....')
+        }
       }
-    } catch (e) {
-      this.setState({ invalidTransaction: true })
+    } else if (records[0]) {
+      localStorage.setItem('selectedConnection', '0')
+      // console.log('mainnet.....')
+
+      if (!localStorage.getItem('reload')) {
+        localStorage['reload'] = true
+        window.location.reload()
+        // console.log('true....')
+      } else {
+        // If there exists a 'reload' item
+        // then clear the 'reload' item in
+        // local storage
+        // console.log('false....')
+        localStorage.removeItem('reload')
+      }
     }
+    return records
   }
 
   componentDidMount() {
@@ -95,7 +155,11 @@ class TransactionPage extends React.Component<Props, State> {
   //   document.body.removeChild(el)
   //   this.setState({ copySuccess: true })
   // }
-
+  // refreshPage() {
+  //   const refresh = window.location.reload()
+  //   return refresh
+  //   // console.log(this.props.accountId, 'accountid...')
+  // }
   render() {
     const query = this.createQuery()
     const curr = localStorage.getItem('selectedConnection')
@@ -142,9 +206,7 @@ class TransactionPage extends React.Component<Props, State> {
                 <ReactTooltip backgroundColor={'#017DE8'} />{' '}
               </button>
             )} */}
-            <h2 className='subtitle'>
-            {this.props.match.params.id}
-          </h2>
+          <h2 className='subtitle'>{this.props.match.params.id}</h2>
 
           {!this.state.transaction ? (
             <div />
